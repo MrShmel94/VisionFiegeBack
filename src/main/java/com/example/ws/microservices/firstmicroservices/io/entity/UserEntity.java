@@ -1,6 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.io.entity;
 
 
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.Column;

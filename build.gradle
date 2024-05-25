@@ -8,7 +8,7 @@ group = 'com.example.ws.microservices'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '22'
+    sourceCompatibility = '18'
 }
 
 configurations {
@@ -24,6 +24,7 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
+    implementation 'org.springframework.data:spring-data-jpa:3.3.0'
     implementation 'javax.persistence:javax.persistence-api:2.2'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
