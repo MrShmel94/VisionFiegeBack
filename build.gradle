@@ -24,6 +24,8 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'org.postgresql:postgresql:42.7.3'
     implementation 'org.springframework.data:spring-data-jpa:3.3.0'
     implementation 'javax.persistence:javax.persistence-api:2.2'
     annotationProcessor 'org.projectlombok:lombok'

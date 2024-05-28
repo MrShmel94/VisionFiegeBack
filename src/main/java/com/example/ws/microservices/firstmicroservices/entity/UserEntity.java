@@ -1,17 +1,14 @@
-package com.example.ws.microservices.firstmicroservices.io.entity;
+package com.example.ws.microservices.firstmicroservices.entity;
 
 
-import lombok.Builder;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 
-@Entity(name="users")
+@Table(name="users2")
+@Entity
 @Data
 public class UserEntity implements Serializable {
     @Serial

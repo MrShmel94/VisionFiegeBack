@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.repository;
 
-import com.example.ws.microservices.firstmicroservices.io.entity.UserEntity;
+import com.example.ws.microservices.firstmicroservices.entity.UserEntity;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

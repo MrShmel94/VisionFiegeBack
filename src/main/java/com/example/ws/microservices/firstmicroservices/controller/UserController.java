@@ -3,16 +3,19 @@ package com.example.ws.microservices.firstmicroservices.controller;
 import com.example.ws.microservices.firstmicroservices.dto.UserDto;
 import com.example.ws.microservices.firstmicroservices.response.UserRest;
 import com.example.ws.microservices.firstmicroservices.service.UserService;
-import com.example.ws.microservices.firstmicroservices.ui.model.request.UserDetailsRequestModel;
+import com.example.ws.microservices.firstmicroservices.request.UserDetailsRequestModel;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private UserService userServices;
+    private final UserService userServices;
+
+    public UserController(UserService userServices) {
+        this.userServices = userServices;
+    }
 
     @GetMapping
     public String getUser(){

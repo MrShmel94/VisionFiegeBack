@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.ui.model.request;
+package com.example.ws.microservices.firstmicroservices.request;
 
 import lombok.*;
 
