@@ -1,16 +1,18 @@
 package com.example.ws.microservices.firstmicroservices.entity;
 
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import lombok.Data;
-
-import javax.persistence.*;
 import java.io.Serial;
 import java.io.Serializable;
 
 @Table(name="users2")
 @Entity
-@Data
+@Getter
+@Setter
 public class UserEntity implements Serializable {
+
     @Serial
     private static final long serialVersionUID = 5394912682131877193L;
 
@@ -34,6 +36,6 @@ public class UserEntity implements Serializable {
     private String encryptedPassword;
     private String emailVerificationToken;
 
-    @Column(nullable = false, columnDefinition = "boolean default false")
-    private Boolean emailVerificationStatus;
+    @Column(nullable = false)
+    private Boolean emailVerificationStatus = false;
 }
