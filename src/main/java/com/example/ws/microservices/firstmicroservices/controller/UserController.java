@@ -1,7 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.controller;
 
 import com.example.ws.microservices.firstmicroservices.dto.UserDto;
-import com.example.ws.microservices.firstmicroservices.entity.UserEntity;
 import com.example.ws.microservices.firstmicroservices.request.UserDetailsRequestModel;
 import com.example.ws.microservices.firstmicroservices.response.UserRest;
 import com.example.ws.microservices.firstmicroservices.service.UserService;
@@ -10,7 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/v1/users")
 public class UserController {
 
     private final UserService userServices;
@@ -54,10 +53,5 @@ public class UserController {
         BeanUtils.copyProperties(updatedUser, returnUser);
 
         return returnUser;
-    }
-
-    @DeleteMapping
-    public String deleteUser(){
-        return "";
     }
 }

@@ -17,9 +17,4 @@ public class FirstMicroservicesApplication {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public SpringApplicationContext springApplicationContext() {
-        return new SpringApplicationContext();
-    }
-
 }

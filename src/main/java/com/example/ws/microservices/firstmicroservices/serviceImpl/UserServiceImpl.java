@@ -5,6 +5,7 @@ import com.example.ws.microservices.firstmicroservices.dto.UserDto;
 import com.example.ws.microservices.firstmicroservices.entity.UserEntity;
 import com.example.ws.microservices.firstmicroservices.repository.UserRepository;
 import com.example.ws.microservices.firstmicroservices.service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,17 +16,12 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 
 @Service
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final Utils utils;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-
-    public UserServiceImpl(UserRepository userRepository, Utils utils, BCryptPasswordEncoder bCryptPasswordEncoder) {
-        this.userRepository = userRepository;
-        this.utils = utils;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-    }
 
     @Override
     public UserDto createUser(UserDto user) {

@@ -5,6 +5,7 @@ import lombok.*;
 @Data
 public class UserDetailsRequestModel {
     private String firstName;
+    private String expertis;
     private String lastName;
     private String email;
     private String password;

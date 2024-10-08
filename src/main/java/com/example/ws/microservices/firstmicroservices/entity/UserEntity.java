@@ -3,14 +3,15 @@ package com.example.ws.microservices.firstmicroservices.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.io.Serial;
 import java.io.Serializable;
 
-@Table(name="users2")
 @Entity
 @Getter
 @Setter
+@Table(name = "user_registration")
 public class UserEntity implements Serializable {
 
     @Serial
@@ -18,7 +19,11 @@ public class UserEntity implements Serializable {
 
     @Id
     @GeneratedValue
+    @Column(name = "id", nullable = false)
     private long id;
+
+    @Column(name = "expertis", nullable = false)
+    private String expertis;
 
     @Column(nullable = false)
     private String userId;
@@ -29,13 +34,21 @@ public class UserEntity implements Serializable {
     @Column(nullable = false, length = 50)
     private String lastName;
 
-    @Column(nullable = false, length = 120)
+    @Column(name = "email", nullable = false, length = 256)
     private String email;
 
-    @Column(nullable = false)
+    @Column(name = "encrypted_password", nullable = false, length = 256)
     private String encryptedPassword;
+
+    @Column(name = "email_verification_token", length = 256)
     private String emailVerificationToken;
 
-    @Column(nullable = false)
+    @ColumnDefault("false")
+    @Column(name = "email_verification_status", nullable = false)
     private Boolean emailVerificationStatus = false;
+
+
+    @ColumnDefault("false")
+    @Column(name = "is_verified", nullable = false)
+    private Boolean isVerified = false;
 }
