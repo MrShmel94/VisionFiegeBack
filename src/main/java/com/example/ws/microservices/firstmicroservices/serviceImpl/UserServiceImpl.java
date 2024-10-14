@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
-import com.example.ws.microservices.firstmicroservices.Utils;
+import com.example.ws.microservices.firstmicroservices.utils.Utils;
 import com.example.ws.microservices.firstmicroservices.dto.UserDto;
 import com.example.ws.microservices.firstmicroservices.entity.UserEntity;
 import com.example.ws.microservices.firstmicroservices.repository.UserRepository;

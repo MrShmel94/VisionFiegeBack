@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices;
+package com.example.ws.microservices.firstmicroservices.utils;
 
 import org.springframework.stereotype.Component;
 
@@ -9,7 +9,6 @@ import java.util.Random;
 public class Utils {
 
     private final Random RANDOM = new SecureRandom();
-    private final String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     public String generateUserId(int length){
         return generateRandomString(length);
@@ -19,6 +18,7 @@ public class Utils {
         StringBuilder builder = new StringBuilder();
 
         for( int i = 0; i < length; i++ ){
+            String ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
             builder.append(ALPHABET.charAt(RANDOM.nextInt(ALPHABET.length())));
         }
         return builder.toString();
