@@ -1,13 +1,15 @@
 package com.example.ws.microservices.firstmicroservices.customError;
 
-public class AuthenticationProcessingException extends RuntimeException  {
+import org.springframework.http.HttpStatus;
+
+public class AuthenticationProcessingException extends CustomException  {
 
     public AuthenticationProcessingException(String message) {
-        super(message);
+        super(message, HttpStatus.BAD_REQUEST);
     }
 
     public AuthenticationProcessingException(String message, Throwable cause) {
-        super(message, cause);
+        super(HttpStatus.BAD_REQUEST , message, cause);
     }
 
 }

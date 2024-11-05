@@ -22,7 +22,4 @@ public class SpiCluster {
 
     @Column(name = "name_table", nullable = false, length = 64)
     private String nameTable;
-
-    @OneToMany(mappedBy = "activityCluster")
-    private Set<Performance> performances = new LinkedHashSet<>();
 }

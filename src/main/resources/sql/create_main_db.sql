@@ -70,7 +70,9 @@ DO $$
         VALUES ('A', gd_id),
                ('A', gda_id),
                ('B', gd_id),
+               ('ADM', gd_id),
                ('B', gda_id),
+               ('ADM', gda_id),
                ('Night', gd_id),
                ('Parents', gd_id);
 
@@ -86,6 +88,7 @@ DO $$
                ('R', gd_id),
                ('J', gd_id),
                ('N', gd_id),
+               ('ADM', gd_id),
                ('A', gda_id),
                ('B', gda_id),
                ('C', gda_id),
@@ -93,6 +96,7 @@ DO $$
                ('E', gda_id),
                ('F', gda_id),
                ('G', gda_id),
+               ('ADM', gda_id),
                ('H', gda_id);
 
         INSERT INTO department(name, site_id)
@@ -215,7 +219,8 @@ CREATE TABLE IF NOT EXISTS user_registration
     encrypted_password VARCHAR(256) NOT NULL,
     is_verified BOOLEAN DEFAULT FALSE NOT NULL,
     email_verification_token VARCHAR(256),
-    email_verification_status BOOLEAN DEFAULT FALSE NOT NULL
+    email_verification_status BOOLEAN DEFAULT FALSE NOT NULL,
+    user_id VARCHAR(256) NOT NULL UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS role(
@@ -360,3 +365,15 @@ CREATE TRIGGER employee_audit
     ON employee
     FOR EACH ROW
 EXECUTE PROCEDURE employee_audit_trigger();
+
+CREATE TABLE refresh_tokens (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(256) NOT NULL,
+    token VARCHAR(512) NOT NULL,
+    expiration TIMESTAMP NOT NULL,
+    revoked BOOLEAN DEFAULT FALSE,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);

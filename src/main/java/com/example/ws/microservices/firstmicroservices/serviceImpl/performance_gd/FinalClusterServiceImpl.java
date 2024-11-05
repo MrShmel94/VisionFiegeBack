@@ -16,7 +16,7 @@ public class FinalClusterServiceImpl implements FinalClusterService {
 
     @Override
     public List<FinalCluster> getAllFinalClusters() {
-        return finalClusterRepository.findAll();
+        return finalClusterRepository.findAllWithPerformances();
     }
 
     @Override

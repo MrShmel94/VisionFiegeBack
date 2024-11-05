@@ -15,7 +15,7 @@ public class ActivityNameServiceImpl implements ActivityNameService {
     private ActivityNameRepository activityNameRepository;
 
     public List<ActivityName> getAllActivityNames() {
-        return activityNameRepository.findAll();
+        return activityNameRepository.findAllWithSpiClustersAndPerformances();
     }
 
     @Override

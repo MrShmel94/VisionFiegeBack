@@ -2,6 +2,21 @@ CREATE SCHEMA performance_dg;
 
 SET search_path TO performance_dg;
 
+CREATE TABLE IF NOT EXISTS available_department(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR (64) NOT NULL UNIQUE
+);
+
+INSERT INTO available_department (name)
+VALUES ('Sort/Pack'),
+       ('Pick/Stow'),
+       ('Unloading'),
+       ('Receive'),
+       ('Shipping'),
+       ('Quality'),
+       ('Return'),
+       ('Others');
+
 CREATE TABLE IF NOT EXISTS spi_cluster (
     id SERIAL PRIMARY KEY,
     name VARCHAR (64) NOT NULL UNIQUE ,
@@ -159,33 +174,70 @@ BEGIN
 
 END $$;
 
+CREATE OR REPLACE FUNCTION set_default_department()
+    RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.department_id IS NULL THEN
+        NEW.department_id := (SELECT id FROM available_department WHERE name = 'Others' LIMIT 1);
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
 
 CREATE TABLE IF NOT EXISTS final_cluster(
     id SERIAL PRIMARY KEY,
-    name VARCHAR(64) NOT NULL UNIQUE
+    name VARCHAR(64) NOT NULL UNIQUE,
+    department_id INT REFERENCES available_department
 );
 
-INSERT INTO final_cluster (name)
-VALUES ('Linesorter Pack'),
-       ('Pack'),
-       ('Standard Pack Multi'),
-       ('Standard Pack Single'),
-       ('Manual Sort'),
-       ('Internal Orders Shipping'),
-       ('NCO Shipping'),
-       ('Pick'),
-       ('Core Stow'),
-       ('Shipping'),
-       ('Core Receive'),
-       ('Fastlane Receive'),
-       ('Goodsreceive'),
-       ('Repackreceive'),
-       ('Additional Effort'),
-       ('ActivityExclude'),
-       ('Refurbishment'),
-       ('Recommerce Receive'),
-       ('Core Retoure'),
-       ('Overhead');
+CREATE TRIGGER default_department_trigger
+    BEFORE INSERT ON final_cluster
+    FOR EACH ROW
+EXECUTE FUNCTION set_default_department();
+
+DO $$
+    DECLARE
+        pack_id INT;
+        pick_id INT;
+        receive_id INT;
+        return_id INT;
+        unloading_id INT;
+        shipping_id INT;
+        quality_id INT;
+        others_id INT;
+    BEGIN
+        SELECT id INTO pack_id FROM available_department WHERE name = 'Sort/Pack';
+        SELECT id INTO pick_id FROM available_department WHERE name = 'Pick/Stow';
+        SELECT id INTO receive_id FROM available_department WHERE name = 'Receive';
+        SELECT id INTO return_id FROM available_department WHERE name = 'Return';
+        SELECT id INTO unloading_id FROM available_department WHERE name = 'Unloading';
+        SELECT id INTO shipping_id FROM available_department WHERE name = 'Shipping';
+        SELECT id INTO quality_id FROM available_department WHERE name = 'Quality';
+        SELECT id INTO others_id FROM available_department WHERE name = 'Others';
+
+        INSERT INTO final_cluster (name, department_id)
+        VALUES ('Linesorter Pack', pack_id),
+               ('Pack', pack_id),
+               ('Standard Pack Multi', pack_id),
+               ('Standard Pack Single', pack_id),
+               ('Manual Sort', pack_id),
+               ('Internal Orders Shipping', pack_id),
+               ('NCO Shipping', pack_id),
+               ('Pick', pick_id),
+               ('Core Stow', pick_id),
+               ('Shipping', shipping_id),
+               ('Core Receive', receive_id),
+               ('Fastlane Receive', receive_id),
+               ('Goodsreceive', receive_id),
+               ('Repackreceive', receive_id),
+               ('Additional Effort',others_id),
+               ('ActivityExclude',others_id),
+               ('Refurbishment', return_id),
+               ('Recommerce Receive', return_id),
+               ('Core Retoure', return_id),
+               ('Overhead',others_id);
+
+    END $$;
 
 CREATE TABLE IF NOT EXISTS check_header (
     id SERIAL PRIMARY KEY ,
@@ -248,6 +300,8 @@ CREATE INDEX idx_performance_final_cluster ON performance (final_cluster_id);
 CREATE INDEX idx_performance_start_activity ON performance (start_activity);
 CREATE INDEX idx_performance_end_activity ON performance (end_activity);
 
+CREATE SEQUENCE performance_seq START 1;
+
 CREATE OR REPLACE FUNCTION create_partition_if_not_exists()
     RETURNS TRIGGER AS $$
 DECLARE
@@ -260,16 +314,19 @@ BEGIN
 
     partition_name := 'performance_' || to_char(partition_start, 'YYYY_MM');
 
+    RAISE NOTICE 'Attempting to create partition for % from % to %', partition_name, partition_start, partition_end;
+
     IF NOT EXISTS (
         SELECT 1
         FROM information_schema.tables
         WHERE table_name = partition_name
           AND table_schema = 'performance_dg'
     ) THEN
+        RAISE NOTICE 'Creating partition % for range % to %', partition_name, partition_start, partition_end;
+
         EXECUTE format('
             CREATE TABLE performance_dg.%I PARTITION OF performance
             FOR VALUES FROM (''%s'') TO (''%s'');
-
             CREATE INDEX ON performance_dg.%I (date);
             CREATE INDEX ON performance_dg.%I (expertis);
             CREATE INDEX ON performance_dg.%I (activity_name_id);
@@ -280,12 +337,23 @@ BEGIN
                        partition_name, partition_start, partition_end,
                        partition_name, partition_name, partition_name, partition_name, partition_name, partition_name
                 );
+    ELSE
+        RAISE NOTICE 'Partition % already exists', partition_name;
     END IF;
 
     RETURN NEW;
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'Error occurred: %', SQLERRM;
+        RETURN NULL;
 END;
 $$ LANGUAGE plpgsql;
 
 CREATE TRIGGER create_partition_trigger
     BEFORE INSERT ON performance
     FOR EACH ROW EXECUTE FUNCTION create_partition_if_not_exists();
+
+CREATE TABLE IF NOT EXISTS check_name_file(
+    id BIGSERIAL PRIMARY KEY ,
+    date DATE NOT NULL UNIQUE
+);

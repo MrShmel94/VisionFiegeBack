@@ -24,8 +24,4 @@ public class ActivityName {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "spi_cluster", nullable = false)
     private SpiCluster spiCluster;
-
-    @OneToMany(mappedBy = "activityName")
-    private Set<Performance> performances = new LinkedHashSet<>();
-
 }

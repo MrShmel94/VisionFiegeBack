@@ -1,9 +1,13 @@
 package com.example.ws.microservices.firstmicroservices.entity;
 
+import com.example.ws.microservices.firstmicroservices.entity.role.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
+
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Getter
@@ -56,4 +60,7 @@ public class Employee {
 
     @Column(name = "agency_id", nullable = false)
     private Long agencyId;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserRole> userRoles = new HashSet<>();
 }

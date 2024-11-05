@@ -1,6 +1,8 @@
 package com.example.ws.microservices.firstmicroservices.secure;
 
+import com.example.ws.microservices.firstmicroservices.service.RefreshTokenService;
 import com.example.ws.microservices.firstmicroservices.service.UserService;
+import com.example.ws.microservices.firstmicroservices.utils.Utils;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,26 +23,29 @@ public class WebSecurity {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final SecretKeyProvider secretKeyProvider;
+    private final RefreshTokenService refreshTokenService;
+    private final Utils utils;
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
+
         authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(passwordEncoder);
 
         AuthenticationManager authenticationManager = authenticationManagerBuilder.build();
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager, userService, secretKeyProvider);
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager, refreshTokenService, utils);
         authenticationFilter.setFilterProcessesUrl("/api/v1/users/login");
 
 
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL).permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
                 )
                 .authenticationManager(authenticationManager)
                 .addFilter(authenticationFilter)
-                .addFilter(new AuthorizationFilter(authenticationManager, secretKeyProvider))
+                .addFilter(new AuthorizationFilter(authenticationManager, refreshTokenService, utils))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
                 //.requiresChannel(channel -> channel.anyRequest().requiresSecure());

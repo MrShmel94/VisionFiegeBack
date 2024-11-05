@@ -6,6 +6,8 @@ import com.example.ws.microservices.firstmicroservices.service.performance_gd.Ac
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.FinalClusterService;
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.PerformanceService;
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.SpiClusterService;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,6 +28,9 @@ import java.util.stream.Stream;
 @Slf4j
 public class PerformanceServiceImpl implements PerformanceService {
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     private PerformanceRepository performanceRepository;
     private ActivityNameService activityNameService;
     private FinalClusterService finalClusterService;
@@ -37,7 +42,7 @@ public class PerformanceServiceImpl implements PerformanceService {
         Map<String, Integer> indexMap = IntStream.range(0, headersName.size())
                 .boxed()
                 .collect(Collectors.toMap(
-                        index -> checkHeaderList.get(headersName.get(index)),
+                        headersName::get,
                         index -> index
                 ));
 
@@ -72,7 +77,7 @@ public class PerformanceServiceImpl implements PerformanceService {
                 clusterActivityPerSPI.put(activityName, spiClusterName);
             }else{
                 if(!clusterActivityPerSPI.get(activityName).equals(spiClusterName)){
-                    throw new RuntimeException("QWe");
+                    throw new RuntimeException("Activity belongs to different SPI clusters");
                 }
             }
         });
@@ -130,12 +135,16 @@ public class PerformanceServiceImpl implements PerformanceService {
             log.info("Added new FinalClusters: {}", newFinalClustersName);
         }
 
-        List<Performance> allPerformanceToSave = allLineFiles.stream().map(eachProcessLine -> {
+        Long startId = performanceRepository.getNextSequenceId();
+
+        List<Performance> allPerformanceToSave = IntStream.range(0, allLineFiles.size())
+                                                          .mapToObj(index -> {
+                                                              List<String> eachProcessLine = allLineFiles.get(index);
             Performance performance = new Performance();
-            performance.setExpertis(eachProcessLine.get(indexMap.get(checkHeaderList.get("expetis"))));
+            performance.setExpertis(eachProcessLine.get(indexMap.get(checkHeaderList.get("expertis"))).replace(".0", ""));
             performance.setActivityName(allActivityNames.stream().filter(eachElement -> eachElement.getName().equals(eachProcessLine.get(indexMap.get(checkHeaderList.get("activityName"))))).findFirst().get());
             performance.setFinalCluster(allFinalClusters.stream().filter(eachElement -> eachElement.getName().equals(eachProcessLine.get(indexMap.get(checkHeaderList.get("finalCluster"))))).findFirst().get());
-            performance.setActivityCluster(allSpiClusters.stream().filter(eachElement -> eachElement.getName().equals(eachProcessLine.get(indexMap.get(checkHeaderList.get("category"))))).findFirst().get());
+            performance.setActivityCluster(allSpiClusters.stream().filter(eachElement -> eachElement.getNameTable().equals(eachProcessLine.get(indexMap.get(checkHeaderList.get("category"))))).findFirst().get());
             performance.setStartActivity(parseDate(eachProcessLine.get(indexMap.get(checkHeaderList.get("startActivity")))));
             performance.setEndActivity(parseDate(eachProcessLine.get(indexMap.get(checkHeaderList.get("endActivity")))));
             performance.setDuration(safeParseBigDecimal(eachProcessLine.get(indexMap.get(checkHeaderList.get("duration")))));
@@ -150,10 +159,11 @@ public class PerformanceServiceImpl implements PerformanceService {
 
             performance.setQl(
                     Stream.of("ql", "qlReturn", "sortReturn", "qlWmo", "cartrunner", "relocation", "stocktaking", "volumescan")
+                            .map(checkHeaderList::get)
                             .map(indexMap::get)
                             .map(eachIndex -> {
                                 try {
-                                    return Integer.parseInt(eachProcessLine.get(eachIndex));
+                                    return (int) Double.parseDouble(eachProcessLine.get(eachIndex));
                                 } catch (NumberFormatException e) {
                                     return 0;
                                 }
@@ -161,13 +171,33 @@ public class PerformanceServiceImpl implements PerformanceService {
                             .reduce(0, Integer::sum).shortValue()
             );
 
-            LocalDate date = LocalDate.parse(eachProcessLine.get(indexMap.get(checkHeaderList.get("date"))), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-            performance.setPerformanceId(new PerformanceId(null, date));
+            LocalDate date = parseDateToLocalDate(eachProcessLine.get(indexMap.get(checkHeaderList.get("date"))));
+            performance.setPerformanceId(new PerformanceId(startId + index, date));
 
             return performance;
         }).toList();
 
-        performanceRepository.saveAll(allPerformanceToSave);
+        savePerformancesInBatch(allPerformanceToSave);
+    }
+
+    @Transactional
+    public void savePerformancesInBatch(List<Performance> performances) {
+        int batchSize = 10000;
+        for (int i = 0; i < performances.size(); i++) {
+            entityManager.persist(performances.get(i));
+            if (i > 0 && i % batchSize == 0) {
+                entityManager.flush();
+                entityManager.clear();
+            }
+        }
+        entityManager.flush();
+        entityManager.clear();
+    }
+
+    private LocalDate parseDateToLocalDate(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(date, formatter);
+        return zonedDateTime.toLocalDate();
     }
 
     private Instant parseDate(String date) {
@@ -177,8 +207,16 @@ public class PerformanceServiceImpl implements PerformanceService {
     }
 
     private Short safeParseShort(String str) {
+        if (str == null || str.trim().isEmpty()) {
+            return 0;
+        }
+
         try {
-            return Short.parseShort(str);
+            double value = Double.parseDouble(str);
+            if (value == 0.0) {
+                return 0;
+            }
+            return (short) value;
         } catch (NumberFormatException e) {
             return 0;
         }
@@ -192,5 +230,4 @@ public class PerformanceServiceImpl implements PerformanceService {
             return BigDecimal.ZERO;
         }
     }
-
 }

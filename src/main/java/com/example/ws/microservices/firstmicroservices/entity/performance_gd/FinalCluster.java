@@ -19,8 +19,4 @@ public class FinalCluster {
 
     @Column(name = "name", nullable = false, length = 64)
     private String name;
-
-    @OneToMany(mappedBy = "finalCluster")
-    private Set<Performance> performances = new LinkedHashSet<>();
-
 }

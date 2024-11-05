@@ -18,8 +18,8 @@ public class CheckHeaderServiceImpl implements CheckHeaderService {
     @Override
     public Map<String, String> getAllCheckHeaders() {
         return checkHeaderRepository.findAll().stream().collect(Collectors.toMap(
-                CheckHeader::getTableName,
-                CheckHeader::getName
+                CheckHeader::getName,
+                CheckHeader::getTableName
         ));
     }
 }

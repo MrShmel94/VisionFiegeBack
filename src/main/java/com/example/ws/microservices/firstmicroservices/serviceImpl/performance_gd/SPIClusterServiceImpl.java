@@ -17,7 +17,7 @@ public class SPIClusterServiceImpl implements SpiClusterService {
 
     @Override
     public List<SpiCluster> getAllSpiClusters() {
-        return spiClusterRepository.findAll();
+        return spiClusterRepository.findAllWithPerformances();
     }
 
     @Override
