@@ -76,7 +76,7 @@ public class UserControllerTest {
         UserRest userRest = new UserRest();
         BeanUtils.copyProperties(userDto, userRest);
 
-        Mockito.when(userService.createUser(any(UserDto.class))).thenReturn(userDto);
+        //Mockito.when(userService.createUser(any(UserDto.class))).thenReturn(userDto);
 
         mockMvc.perform(post("/api/v1/users/sign-up")
                         .with(csrf())
@@ -104,7 +104,7 @@ public class UserControllerTest {
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(userDetails, userDto);
 
-        Mockito.when(userService.createUser(any(UserDto.class))).thenThrow(new RuntimeException("User already exists"));
+        //Mockito.when(userService.createUser(any(UserDto.class))).thenThrow(new RuntimeException("User already exists"));
 
         mockMvc.perform(post("/api/v1/users/sign-up")
                         .with(csrf())

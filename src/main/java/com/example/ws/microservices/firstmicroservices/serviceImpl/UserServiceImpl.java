@@ -1,33 +1,30 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
+import com.example.ws.microservices.firstmicroservices.customError.CustomException;
 import com.example.ws.microservices.firstmicroservices.customError.UserAlreadyExistsException;
 import com.example.ws.microservices.firstmicroservices.customError.VerificationException;
-import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.entity.Employee;
-import com.example.ws.microservices.firstmicroservices.repository.EmployeeRepository;
+import com.example.ws.microservices.firstmicroservices.dto.*;
+import com.example.ws.microservices.firstmicroservices.mapper.UserMapper;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
-import com.example.ws.microservices.firstmicroservices.service.EmployeeService;
-import com.example.ws.microservices.firstmicroservices.service.UserRoleService;
-import com.example.ws.microservices.firstmicroservices.utils.EmailService;
+import com.example.ws.microservices.firstmicroservices.service.*;
 import com.example.ws.microservices.firstmicroservices.utils.Utils;
-import com.example.ws.microservices.firstmicroservices.dto.UserDto;
 import com.example.ws.microservices.firstmicroservices.entity.UserEntity;
 import com.example.ws.microservices.firstmicroservices.repository.UserRepository;
-import com.example.ws.microservices.firstmicroservices.service.UserService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -35,97 +32,58 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final Utils utils;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final EmployeeService employeeService;
     private final UserRoleService userRoleService;
-    private final EmailService emailService;
+    private final PhoneSupervisorService phoneSupervisorService;
+    private final EmailSupervisorService emailSupervisorService;
+    private final EmailTokenService emailTokenService;
 
     @Override
     @Transactional
-    public UserDto createUser(UserDto user) {
+    public void createUser(UserDto user) {
 
-        Optional<UserEntity> existingUserByEmail = userRepository.findByEmail(user.getEmail());
-        Optional<UserEntity> existingUserByExpertis = userRepository.findByExpertis(user.getExpertis());
-
-
-        if (existingUserByEmail.isPresent()) {
-            throw new UserAlreadyExistsException("User with this email already exists.");
-        }
-
-        if (existingUserByExpertis.isPresent()) {
-            throw new UserAlreadyExistsException("User with this expertis already exists.");
-        }
+        userRepository.findByEmailOrExpertis(user.getEmail(), user.getExpertis())
+                .ifPresent(existingUser -> {
+                    String message = existingUser.getEmail().equals(user.getEmail())
+                            ? "User with this email already exists."
+                            : "User with this expertis already exists.";
+                    throw new UserAlreadyExistsException(message);
+                });
 
         user.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setUserId(generateUniqueUserId(30));
+        user.setEmailVerificationToken(UUID.randomUUID().toString());
+        generateAndSaveUser(user);
 
-        String token = UUID.randomUUID().toString();
-        user.setEmailVerificationToken(token);
-
-        UserEntity userEntity = new UserEntity();
-        BeanUtils.copyProperties(user, userEntity);
-
-        UserEntity storedUserDetails = userRepository.save(userEntity);
-
-        emailService.sendVerificationEmail(userEntity);
-
-        UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(storedUserDetails, userDto);
-
-        return userDto;
+        log.info("Sending email token for user: {}", user.getEmail());
+        emailTokenService.processEmailVerification(user.getEmail());
     }
 
+
+
     @Override
-    public void verifyUser(String userIdToVerify) {
+    public void verifyUser(String token, CustomUserDetails currentUser) {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        CustomUserDetails currentUser = (CustomUserDetails) authentication.getPrincipal();
+        Optional<UserEntity> userEntityOptional = userRepository.findByEmailVerificationToken(token);
 
-        String currentUserId = currentUser.getUserId();
-
-        if (currentUserId.equals(userIdToVerify)) {
-            throw new VerificationException("The user cannot verify themselves.");
+        if (userEntityOptional.isEmpty()) {
+            throw new CustomException("Token is invalid or expired.", HttpStatus.BAD_REQUEST);
         }
 
-        Optional<UserEntity> userToVerify = userRepository.findByUserId(userIdToVerify);
-        if (userToVerify.isEmpty()) {
-            throw new UsernameNotFoundException(String.format("User %s not found", userIdToVerify));
+        UserEntity userEntity = userEntityOptional.get();
+
+        if (!currentUser.getUsername().equals(userEntity.getEmail())) {
+            throw new CustomException("Token does not belong to the authenticated user.", HttpStatus.FORBIDDEN);
         }
 
-        UserEntity userEntity = userToVerify.get();
-        userEntity.setIsVerified(true);
+        userEntity.setEmailVerificationStatus(true);
         userRepository.save(userEntity);
-    }
 
-    @Override
-    public UserDto getUser(String email) {
-        Optional<UserEntity> byEmail = userRepository.findByEmail(email);
-        if(byEmail.isEmpty()){
-            throw new UsernameNotFoundException(String.format("User %s not found", email));
-        }
-
-        UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(byEmail, userDto);
-
-        return userDto;
-    }
-
-    @Override
-    public UserDto getUserByUserId(String userId) {
-        Optional<UserEntity> getUserById = userRepository.findByUserId(userId);
-
-        if(getUserById.isEmpty()){
-            throw new UsernameNotFoundException(String.format("User %s not found", userId));
-        }
-
-        UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(getUserById, userDto);
-
-        return userDto;
+        log.info("User with email {} has successfully verified their email.", userEntity.getEmail());
     }
 
     @Override
@@ -137,16 +95,27 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException(String.format("User %s not found", id));
         }
 
-        getUserById.get().setFirstName(userDto.getFirstName());
-        getUserById.get().setLastName(userDto.getLastName());
-
-
         UserEntity updatedUser = userRepository.save(getUserById.get());
         UserDto updatedUserDto = new UserDto();
         BeanUtils.copyProperties(updatedUser, updatedUserDto);
 
         return updatedUserDto;
     }
+
+    @Override
+    public Optional<SupervisorAllInformationDTO> getSupervisorAllInformation(String userId) {
+        Optional<SupervisorAllInformationDTO> byExpertis = userRepository.findByExpertis(userId);
+        if(byExpertis.isEmpty()){
+            throw new UsernameNotFoundException(String.format("User %s not found", userId));
+        }
+
+        List<EmailDTO> emails = emailSupervisorService.getAllEmailsPerUserId(Integer.parseInt(userId));
+        List<PhoneDTO> phones = phoneSupervisorService.getAllPhonePerUserId(Integer.parseInt(userId));
+        List<RoleDTO> roles = userRoleService.getAllRolePerUserId(Long.valueOf(userId));
+
+        return null;
+    }
+
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -163,10 +132,13 @@ public class UserServiceImpl implements UserService {
         }
         EmployeeDTO employeeEntity = employee.get();
 
-        List<GrantedAuthority> authorities = userRoleService.findRolesByUserId(employeeEntity.getId())
-                .stream()
-                .map(role -> new SimpleGrantedAuthority(role.getName()))
-                .collect(Collectors.toList());
+//        List<GrantedAuthority> authorities = userRoleService.findRolesByUserId(employeeEntity.getId())
+//                .stream()
+//                .map(role -> new SimpleGrantedAuthority(role.getName()))
+//                .collect(Collectors.toList());
+
+        //TODO
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
 
         return new CustomUserDetails(
                 userEntity.getUserId(),
@@ -174,6 +146,7 @@ public class UserServiceImpl implements UserService {
                 userEntity.getEmail(),
                 userEntity.getEncryptedPassword(),
                 userEntity.getIsVerified(),
+                userEntity.getEmailVerificationStatus(),
                 employeeEntity.getFirstName(),
                 employeeEntity.getLastName(),
                 employeeEntity.getSiteName(),
@@ -182,11 +155,16 @@ public class UserServiceImpl implements UserService {
                 );
     }
 
-    private String generateUniqueUserId(int length) {
-        String userId;
-        do {
-            userId = utils.generateUserId(length);
-        } while (userRepository.findByUserId(userId).isPresent());
-        return userId;
+    private void generateAndSaveUser(UserDto user) {
+        boolean isSaved = false;
+        while (!isSaved) {
+            try {
+                user.setUserId(UUID.randomUUID().toString().replace("-", "").substring(0, 30));
+                userRepository.save(UserMapper.INSTANCE.toUserEntity(user));
+                isSaved = true;
+            } catch (DataIntegrityViolationException ex) {
+                log.warn("UUID collision detected for userId: {}. Retrying...", user.getUserId());
+            }
+        }
     }
 }

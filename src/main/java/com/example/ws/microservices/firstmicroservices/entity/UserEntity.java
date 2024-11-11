@@ -28,12 +28,6 @@ public class UserEntity implements Serializable {
     @Column(nullable = false)
     private String userId;
 
-    @Column(nullable = false, length = 50)
-    private String firstName;
-
-    @Column(nullable = false, length = 50)
-    private String lastName;
-
     @Column(name = "email", nullable = false, length = 256)
     private String email;
 
@@ -47,8 +41,11 @@ public class UserEntity implements Serializable {
     @Column(name = "email_verification_status", nullable = false)
     private Boolean emailVerificationStatus = false;
 
-
     @ColumnDefault("false")
     @Column(name = "is_verified", nullable = false)
     private Boolean isVerified = false;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "expertis", referencedColumnName = "expertis", insertable = false, updatable = false)
+    private Employee employee;
 }

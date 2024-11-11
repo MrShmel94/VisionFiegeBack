@@ -1,7 +1,9 @@
 package com.example.ws.microservices.firstmicroservices.controller;
 
+import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.secure.SecurityConstants;
 import com.example.ws.microservices.firstmicroservices.service.RefreshTokenService;
+import com.example.ws.microservices.firstmicroservices.service.UserService;
 import com.example.ws.microservices.firstmicroservices.utils.Utils;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,6 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class TokenController {
 
     private final RefreshTokenService refreshTokenService;
+    private final UserService userService;
     private final Utils utils;
 
     @PostMapping("/refresh")
@@ -35,7 +40,6 @@ public class TokenController {
         try {
             if (refreshTokenService.validateRefreshToken(refreshToken)) {
 
-                System.out.println(request.getRemoteAddr());
                 Claims claims = utils.parseToken(refreshToken);
                 String requestIp = request.getRemoteAddr();
                 String tokenIp = claims.get("ip", String.class);
@@ -46,8 +50,12 @@ public class TokenController {
                 }
 
                 String userId = refreshTokenService.getSubjectFromToken(refreshToken);
-
                 String newAccessToken = utils.generateAccessToken(userId, request);
+
+                CustomUserDetails userDetails = (CustomUserDetails) userService.loadUserByUsername(userId);
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
                 return ResponseEntity.ok()
                         .header(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX + newAccessToken)

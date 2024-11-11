@@ -223,19 +223,13 @@ CREATE TABLE IF NOT EXISTS user_registration
     user_id VARCHAR(256) NOT NULL UNIQUE
 );
 
-CREATE TABLE IF NOT EXISTS role(
-    id SERIAL PRIMARY KEY,
-    name VARCHAR (64) NOT NULL UNIQUE
+CREATE TABLE IF NOT EXISTS employee_supervisors (
+    employee_id BIGINT NOT NULL REFERENCES employee(id),
+    supervisor_expertis VARCHAR(128) NOT NULL,
+    valid_from TIMESTAMP DEFAULT NOW() NOT NULL,
+    valid_to TIMESTAMP NOT NULL,
+    PRIMARY KEY (employee_id, supervisor_expertis)
 );
-
-INSERT INTO role (name)
-VALUES ('Admin'),
-       ('Operations Manager'),
-       ('Manager'),
-       ('Team Leader'),
-       ('HR Specialist'),
-       ('Mentor'),
-       ('User');
 
 CREATE TABLE IF NOT EXISTS employee
 (
@@ -253,7 +247,6 @@ CREATE TABLE IF NOT EXISTS employee
     country_id SMALLINT NOT NULL REFERENCES county,
     department_id SMALLINT NOT NULL REFERENCES department,
     position_id SMALLINT NOT NULL REFERENCES position,
-    supervisor_id SMALLINT REFERENCES employee,
     is_supervisor BOOLEAN DEFAULT FALSE,
     agency_id SMALLINT NOT NULL REFERENCES agency,
     valid_from TIMESTAMP DEFAULT NOW() NOT NULL,
@@ -261,26 +254,55 @@ CREATE TABLE IF NOT EXISTS employee
 );
 
 CREATE INDEX idx_employee_expertis ON employee (expertis);
-CREATE INDEX idx_employee_supervisor_id ON employee (supervisor_id);
 CREATE INDEX idx_employee_site_dept_shift_team ON employee (site_id, department_id, shift_id, team_id);
+
+CREATE TABLE IF NOT EXISTS phone_email_type_supervisor (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(64) NOT NULL UNIQUE
+);
+
+INSERT INTO phone_email_type_supervisor (name)
+VALUES ('Work'),
+       ('Mobile'),
+       ('Private');
+
 
 CREATE TABLE IF NOT EXISTS email_supervisor
 (
     id SERIAL PRIMARY KEY,
+    type_id INT NOT NULL REFERENCES phone_email_type_supervisor,
     email VARCHAR(256) NOT NULL UNIQUE,
-    employee_id INTEGER REFERENCES employee
+    employee_id BIGINT REFERENCES employee
 );
 
 CREATE TABLE IF NOT EXISTS phone_supervisor
 (
     id SERIAL PRIMARY KEY,
+    type_id INT NOT NULL REFERENCES phone_email_type_supervisor,
     phone_number VARCHAR(128) NOT NULL UNIQUE,
-    employee_id INTEGER REFERENCES employee
+    employee_id BIGINT REFERENCES employee
 );
+
+CREATE TABLE IF NOT EXISTS role(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR (64) NOT NULL UNIQUE,
+    weight INTEGER NOT NULL DEFAULT 1
+);
+
+INSERT INTO role (name, weight)
+VALUES ('Admin', 10),
+       ('Operations Manager', 8),
+       ('Manager', 6),
+       ('Team Leader', 4),
+       ('HR Specialist', 4),
+       ('Mentor', 2),
+       ('User', 1);
 
 CREATE TABLE user_role (
     user_id BIGINT REFERENCES employee(id),
     role_id BIGINT REFERENCES role(id),
+    valid_from TIMESTAMP DEFAULT NOW() NOT NULL,
+    valid_to TIMESTAMP DEFAULT '9999-12-31 23:59:59' NOT NULL,
     PRIMARY KEY (user_id, role_id)
 );
 
@@ -333,12 +355,12 @@ BEGIN
         INSERT INTO employee_history (
             employee_id, expertis, zalos_id, br_code, first_name, last_name,
             sex, is_work, team_id, site_id, shift_id, country_id, department_id, position_id,
-            supervisor_id, is_supervisor, agency_id, valid_from, valid_to,
+            is_supervisor, agency_id, valid_from, valid_to,
             operation, changed_by, changed_at
         ) VALUES (
                      NEW.id, NEW.expertis, NEW.zalos_id, NEW.br_code, NEW.first_name, NEW.last_name,
                      NEW.sex, NEW.is_work, NEW.team_id, NEW.site_id, NEW.shift_id, NEW.country_id, NEW.department_id, NEW.position_id,
-                     NEW.supervisor_id, NEW.is_supervisor, NEW.agency_id, NEW.valid_from, NEW.valid_to,
+                     NEW.is_supervisor, NEW.agency_id, NEW.valid_from, NEW.valid_to,
                      'INSERT', current_setting('app.current_user_id')::BIGINT, NOW()
                  );
         RETURN NEW;
@@ -347,12 +369,12 @@ BEGIN
         INSERT INTO employee_history (
             employee_id, expertis, zalos_id, br_code, first_name, last_name,
             sex, is_work, team_id, site_id, shift_id, country_id, department_id, position_id,
-            supervisor_id, is_supervisor, agency_id, valid_from, valid_to,
+            is_supervisor, agency_id, valid_from, valid_to,
             operation, changed_by, changed_at
         ) VALUES (
                      NEW.id, NEW.expertis, NEW.zalos_id, NEW.br_code, NEW.first_name, NEW.last_name,
                      NEW.sex, NEW.is_work,NEW.team_id, NEW.site_id, NEW.shift_id, NEW.country_id, NEW.department_id, NEW.position_id,
-                     NEW.supervisor_id, NEW.is_supervisor, NEW.agency_id, NEW.valid_from, NEW.valid_to,
+                     NEW.is_supervisor, NEW.agency_id, NEW.valid_from, NEW.valid_to,
                      'UPDATE', current_setting('app.current_user_id')::BIGINT, NOW()
                  );
         RETURN NEW;

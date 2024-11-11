@@ -51,24 +51,25 @@ public class SiteServiceImpl implements SiteService {
     @Override
     public List<EmployeeDTO> findEmployeesByDepartment(SiteRequestModel siteRequestModel) {
         System.out.println(siteRequestModel.toString());
-        Optional<Site> site = siteRepository.findSiteByName(siteRequestModel.nameSite());
-        List<EmployeeDTO> list = site.get().getDepartments().stream().filter(name -> name.getName().equals(siteRequestModel.nameDepartment())).toList().getFirst().getAllEmployee().stream().map(employee -> EmployeeDTO.builder()
-                .id(employee.getId())
-                .expertis(employee.getExpertis())
-                .zalosId(employee.getZalosId())
-                .brCode(employee.getBrCode())
-                .firstName(employee.getFirstName())
-                .lastName(employee.getLastName())
-                .isWork(employee.getIsWork())
-                .sex(employee.getSex())
-                .siteName(employee.getSite().getName())
-                .shiftName(employee.getShift().getName())
-                .departmentName(employee.getDepartment().getName())
-                .teamName(employee.getTeam().getName())
-                .positionName(employee.getPosition().getName())
-                .agencyName(employee.getAgency().getName())
-                .build()).toList();
-        return list;
+        return List.of();
+//        Optional<Site> site = siteRepository.findSiteByName(siteRequestModel.nameSite());
+//        List<EmployeeDTO> list = site.get().getDepartments().stream().filter(name -> name.getName().equals(siteRequestModel.nameDepartment())).toList().getFirst().getAllEmployee().stream().map(employee -> EmployeeDTO.builder()
+//                .id(employee.getId())
+//                .expertis(employee.getExpertis())
+//                .zalosId(employee.getZalosId())
+//                .brCode(employee.getBrCode())
+//                .firstName(employee.getFirstName())
+//                .lastName(employee.getLastName())
+//                .isWork(employee.getIsWork())
+//                .sex(employee.getSex())
+//                .siteName(employee.getSite().getName())
+//                .shiftName(employee.getShift().getName())
+//                .departmentName(employee.getDepartment().getName())
+//                .teamName(employee.getTeam().getName())
+//                .positionName(employee.getPosition().getName())
+//                .agencyName(employee.getAgency().getName())
+//                .build()).toList();
+//        return list;
     }
 
     @Override
@@ -104,7 +105,7 @@ public class SiteServiceImpl implements SiteService {
             predicates.add(cb.equal(agencyJoin.get("name"), siteRequestModel.nameAgency()));
         }
         if (siteRequestModel.nameCountry() != null) {
-            Join<EmployeeMapping, County> countryJoin = employee.join("county", JoinType.LEFT);
+            Join<EmployeeMapping, Country> countryJoin = employee.join("county", JoinType.LEFT);
             predicates.add(cb.equal(countryJoin.get("name"), siteRequestModel.nameCountry()));
         }
 

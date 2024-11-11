@@ -1,6 +1,5 @@
 package com.example.ws.microservices.firstmicroservices.entity.template;
 
-import com.example.ws.microservices.firstmicroservices.entity.Employee;
 import com.example.ws.microservices.firstmicroservices.entity.EmployeeMapping;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -35,7 +34,7 @@ public class Site {
     private List<Agency> agencies;
 
     @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<County> counties;
+    private List<Country> counties;
 
     @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Team> teams;

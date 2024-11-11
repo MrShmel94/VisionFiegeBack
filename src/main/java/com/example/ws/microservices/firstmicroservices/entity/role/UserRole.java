@@ -6,6 +6,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -24,4 +26,10 @@ public class UserRole {
     @MapsId("roleId")
     @JoinColumn(name = "role_id")
     private Role role;
+
+    @Column(name = "valid_from", nullable = false)
+    private LocalDateTime validFrom = LocalDateTime.now();
+
+    @Column(name = "valid_to", nullable = false)
+    private LocalDateTime validTo = LocalDateTime.of(9999, 12, 31, 23, 59, 59);
 }

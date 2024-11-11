@@ -18,4 +18,11 @@ public class PhoneSupervisor {
     @Column(name = "phone_number", nullable = false , length = 128)
     private String phoneNumber;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "type_id", nullable = false)
+    private PhoneEmailTypeSupervisor typeId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", nullable = false)
+    private Employee employee;
 }

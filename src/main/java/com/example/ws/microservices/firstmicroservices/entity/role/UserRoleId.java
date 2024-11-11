@@ -4,7 +4,6 @@ import jakarta.persistence.Embeddable;
 import lombok.*;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 
 @Embeddable
 @Getter
@@ -13,8 +12,6 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class UserRoleId implements Serializable {
-
     private Long userId;
     private Long roleId;
-
 }

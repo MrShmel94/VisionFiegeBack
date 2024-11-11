@@ -18,8 +18,11 @@ public class Role {
     @Column(name = "id", nullable = false)
     Integer id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, unique = true, length = 64)
     String name;
+
+    @Column(name = "weight", nullable = false)
+    private Integer weight;
 
     @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserRole> userRoles = new HashSet<>();

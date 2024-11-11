@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -36,7 +37,6 @@ public class WebSecurity {
         AuthenticationFilter authenticationFilter = new AuthenticationFilter(authenticationManager, refreshTokenService, utils);
         authenticationFilter.setFilterProcessesUrl("/api/v1/users/login");
 
-
         http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers(HttpMethod.POST, SecurityConstants.SIGN_UP_URL).permitAll()
@@ -45,7 +45,7 @@ public class WebSecurity {
                 )
                 .authenticationManager(authenticationManager)
                 .addFilter(authenticationFilter)
-                .addFilter(new AuthorizationFilter(authenticationManager, refreshTokenService, utils))
+                .addFilter(new AuthorizationFilter(authenticationManager, refreshTokenService, utils, userService))
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
                 //.requiresChannel(channel -> channel.anyRequest().requiresSecure());

@@ -1,9 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.secure;
 
-import com.example.ws.microservices.firstmicroservices.customError.AuthenticationFailedException;
-import com.example.ws.microservices.firstmicroservices.customError.AuthenticationProcessingException;
-import com.example.ws.microservices.firstmicroservices.customError.CustomException;
-import com.example.ws.microservices.firstmicroservices.customError.InvalidLoginRequestException;
+import com.example.ws.microservices.firstmicroservices.customError.*;
 import com.example.ws.microservices.firstmicroservices.request.UserLoginRequestModel;
 import com.example.ws.microservices.firstmicroservices.service.RefreshTokenService;
 import com.example.ws.microservices.firstmicroservices.utils.Utils;
@@ -19,6 +16,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.crypto.SecretKey;
@@ -61,7 +59,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 return getAuthenticationManager().authenticate(authenticationToken);
             } catch (DisabledException e) {
                 log.warn("User account is not verified: {}", creds.getEmail());
-                throw new AuthenticationFailedException("Account not verified. Please check your email to verify your account.");
+                throw new CustomAuthenticationException("Account not verified. Please check your email to verify your account.");
             }
 
         } catch (IOException e) {
@@ -69,7 +67,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             throw new InvalidLoginRequestException("Invalid login request data", e);
         } catch (Exception e) {
             log.error("Authentication process failed", e);
-            throw new AuthenticationProcessingException("Authentication processing error", e);
+            throw new CustomAuthenticationException("Authentication processing error", e);
         }
     }
 
@@ -82,7 +80,8 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 handleException(response, new AuthenticationFailedException("Account not verified. Please check your email to verify your account."));
             } else if (failed.getClass().getSimpleName().equals("BadCredentialsException")) {
                 handleException(response, new InvalidLoginRequestException("Invalid credentials provided. Please try again."));
-            } else {
+            }
+            else {
                 handleException(response, new AuthenticationFailedException("Authentication failed. Please check your credentials."));
             }
         } catch (IOException e) {
@@ -101,7 +100,11 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             String accessToken = utils.generateAccessToken(customUserDetails.getUserId(), req);
             String refreshToken = refreshTokenService.createRefreshToken(customUserDetails.getUserId(), req);
 
+
+
             addResponseHeaders(res, accessToken, refreshToken);
+
+            SecurityContextHolder.getContext().setAuthentication(auth);
 
             log.debug("Successful authentication for user: {}", customUserDetails.getUserId());
         } catch (Exception e) {

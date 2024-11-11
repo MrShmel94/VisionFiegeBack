@@ -24,7 +24,4 @@ public class Agency {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "site_id", nullable = false)
     private Site site;
-
-    @OneToMany(mappedBy = "agency", fetch = FetchType.LAZY)
-    private List<EmployeeMapping> allEmployee;
 }

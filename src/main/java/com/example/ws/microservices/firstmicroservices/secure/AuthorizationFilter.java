@@ -5,6 +5,7 @@ import com.example.ws.microservices.firstmicroservices.customError.CustomExcepti
 import com.example.ws.microservices.firstmicroservices.customError.InvalidTokenException;
 import com.example.ws.microservices.firstmicroservices.customError.TooManyRequestsException;
 import com.example.ws.microservices.firstmicroservices.service.RefreshTokenService;
+import com.example.ws.microservices.firstmicroservices.service.UserService;
 import com.example.ws.microservices.firstmicroservices.utils.Utils;
 import io.github.bucket4j.Bucket;
 import io.jsonwebtoken.*;
@@ -19,7 +20,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
-import javax.crypto.SecretKey;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -30,12 +30,14 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
     private final Bucket bucket;
     private final RefreshTokenService refreshTokenService;
     private final Utils utils;
+    private final UserService userService;
 
-    public AuthorizationFilter(AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService, Utils utils) {
+    public AuthorizationFilter(AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService, Utils utils, UserService userService) {
         super(authenticationManager);
 
         this.refreshTokenService = refreshTokenService;
         this.utils = utils;
+        this.userService = userService;
 
         this.bucket = Bucket.builder()
                 .addLimit(limit -> limit.capacity(200).refillGreedy(100, Duration.ofMinutes(1)))
@@ -136,6 +138,12 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
             String newAccessToken = utils.generateAccessToken(userId, request);
 
             response.setHeader(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX + newAccessToken);
+
+//            CustomUserDetails userDetails = (CustomUserDetails) userService.loadUserByUsername(userId);
+//            UsernamePasswordAuthenticationToken authentication =
+//                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+//            SecurityContextHolder.getContext().setAuthentication(authentication);
+
             log.debug("Access token refreshed for user: {}", userId);
 
             return new UsernamePasswordAuthenticationToken(userId, null, new ArrayList<>());

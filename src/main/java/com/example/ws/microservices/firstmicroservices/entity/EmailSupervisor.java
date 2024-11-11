@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.math.BigInteger;
+
 @Getter
 @Setter
 @Entity
@@ -17,5 +19,13 @@ public class EmailSupervisor {
 
     @Column(name = "email", nullable = false, length = 256)
     private String email;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "type_id", nullable = false)
+    private PhoneEmailTypeSupervisor typeId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "employee_id", nullable = false)
+    private Employee employee;
 
 }

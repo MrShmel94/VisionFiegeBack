@@ -25,6 +25,8 @@ public class CustomUserDetails implements UserDetails {
     @Getter
     private final boolean isVerified;
     @Getter
+    private final boolean isVerifiedEmail;
+    @Getter
     private final String firstName;
     @Getter
     private final String lastName;
@@ -44,7 +46,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return isVerified;
+        return isVerified && isVerifiedEmail;
     }
 
 }

@@ -24,7 +24,4 @@ public class Department {
     @JoinColumn(name = "site_id", nullable = false)
     private Site site;
 
-    @OneToMany(mappedBy = "department", fetch = FetchType.LAZY)
-    private List<EmployeeMapping> allEmployee;
-
 }
