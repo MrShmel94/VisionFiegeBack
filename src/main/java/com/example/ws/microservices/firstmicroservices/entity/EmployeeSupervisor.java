@@ -12,24 +12,22 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "employee_supervisors")
-@IdClass(EmployeeSupervisorId.class)
 public class EmployeeSupervisor {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
+
     @Column(name = "employee_id", nullable = false)
     private Long employeeId;
 
-    @Id
-    @Column(name = "supervisor_expertis", nullable = false)
-    private String supervisorExpertis;
+    @Column(name = "supervisor_id", nullable = false)
+    private Long supervisorId;
 
     @Column(name = "valid_from", nullable = false)
     private LocalDateTime validFrom;
 
     @Column(name = "valid_to", nullable = false)
     private LocalDateTime validTo;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employee_id", insertable = false, updatable = false)
-    private Employee employee;
 }

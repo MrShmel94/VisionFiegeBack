@@ -1,3 +1,7 @@
+CREATE SCHEMA vision;
+
+SET search_path TO vision;
+
 CREATE TABLE IF NOT EXISTS site
 (
     id SMALLSERIAL PRIMARY KEY,
@@ -232,13 +236,6 @@ CREATE TABLE IF NOT EXISTS favorite_search_groups (
     updated_at TIMESTAMP DEFAULT NOW()
 );
 
-CREATE TABLE IF NOT EXISTS employee_supervisors (
-    employee_id BIGINT NOT NULL REFERENCES employee(id),
-    supervisor_expertis VARCHAR(128) NOT NULL,
-    valid_from TIMESTAMP DEFAULT NOW() NOT NULL,
-    valid_to TIMESTAMP NOT NULL,
-    PRIMARY KEY (employee_id, supervisor_expertis)
-);
 
 CREATE TABLE IF NOT EXISTS employee
 (
@@ -263,6 +260,15 @@ CREATE TABLE IF NOT EXISTS employee
     valid_from TIMESTAMP DEFAULT NOW() NOT NULL,
     valid_to TIMESTAMP DEFAULT '9999-12-31 23:59:59'::TIMESTAMP WITHOUT TIME ZONE NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS employee_supervisors (
+    id BIGSERIAL PRIMARY KEY,
+    employee_id BIGINT NOT NULL REFERENCES employee(id) UNIQUE,
+    supervisor_id BIGINT NOT NULL REFERENCES employee(id),
+    valid_from TIMESTAMP DEFAULT NOW() NOT NULL,
+    valid_to TIMESTAMP DEFAULT '9999-12-31 23:59:59'::TIMESTAMP WITHOUT TIME ZONE NOT NULL
+);
+
 
 CREATE INDEX idx_employee_expertis ON employee (expertis);
 CREATE INDEX idx_employee_site_dept_shift_team ON employee (site_id, department_id, shift_id, team_id);
@@ -310,7 +316,7 @@ VALUES ('Admin', 10),
        ('User', 1);
 
 CREATE TABLE user_role (
-    user_id BIGINT REFERENCES employee(id),
+    user_id BIGINT REFERENCES user_registration(id),
     role_id INT REFERENCES role(id),
     valid_from TIMESTAMP DEFAULT NOW() NOT NULL,
     valid_to TIMESTAMP DEFAULT '9999-12-31 23:59:59' NOT NULL,
@@ -323,10 +329,10 @@ CREATE TABLE IF NOT EXISTS ai_employee
     note VARCHAR(1028),
     date_start_contract DATE NOT NULL,
     date_finish_contract DATE NOT NULL,
-    date_BHP_now DATE NOT NULL,
-    date_BHP_future DATE NOT NULL,
-    date_ADR_now DATE NOT NULL,
-    date_ADR_future DATE NOT NULL,
+    date_BHP_now DATE,
+    date_BHP_future DATE,
+    date_ADR_now DATE,
+    date_ADR_future DATE,
     employee_id BIGINT NOT NULL REFERENCES employee
 );
 

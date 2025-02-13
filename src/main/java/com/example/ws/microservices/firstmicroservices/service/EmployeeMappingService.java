@@ -9,9 +9,5 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EmployeeMappingService {
-
-    Optional<EmployeeDTO> findByExpertis(String expertis);
-    List<EmployeeDTO> findByExpertisIn(List<String> expertisList);
-
     CreateEmployeeResponse createEmployees(@Valid List<CreateEmployeeRequest> createEmployeeRequests);
 }

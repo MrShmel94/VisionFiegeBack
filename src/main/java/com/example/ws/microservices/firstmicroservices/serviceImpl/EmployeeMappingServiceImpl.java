@@ -1,13 +1,15 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
-import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.entity.AiEmployee;
 import com.example.ws.microservices.firstmicroservices.entity.EmployeeMapping;
 import com.example.ws.microservices.firstmicroservices.entity.template.*;
 import com.example.ws.microservices.firstmicroservices.mapper.EmployeeMapper;
 import com.example.ws.microservices.firstmicroservices.repository.EmployeeMappingRepository;
 import com.example.ws.microservices.firstmicroservices.request.CreateEmployeeRequest;
+import com.example.ws.microservices.firstmicroservices.request.EmployeeData;
 import com.example.ws.microservices.firstmicroservices.response.ConfigurationRegistrationDTO;
 import com.example.ws.microservices.firstmicroservices.response.CreateEmployeeResponse;
+import com.example.ws.microservices.firstmicroservices.service.AiEmployeeService;
 import com.example.ws.microservices.firstmicroservices.service.EmployeeMappingService;
 import com.example.ws.microservices.firstmicroservices.service.SiteService;
 import com.example.ws.microservices.firstmicroservices.serviceImpl.config.ConfigurationService;
@@ -27,52 +29,9 @@ public class EmployeeMappingServiceImpl implements EmployeeMappingService {
 
     private final EmployeeMappingRepository employeeMappingRepository;
     private final ConfigurationService configurationService;
+    private final AiEmployeeService aiEmployeeService;
     private final EntityManager entityManager;
     private final SiteService siteService;
-
-    @Override
-    public Optional<EmployeeDTO> findByExpertis(String expertis) {
-        return employeeMappingRepository.findByExpertis(expertis)
-                .map(employee -> EmployeeDTO.builder()
-                        .id(employee.getId())
-                        .expertis(employee.getExpertis())
-                        .zalosId(employee.getZalosId())
-                        .brCode(employee.getBrCode())
-                        .firstName(employee.getFirstName())
-                        .lastName(employee.getLastName())
-                        .isWork(employee.getIsWork())
-                        .sex(employee.getSex())
-                        .siteName(employee.getSite().getName())
-                        .shiftName(employee.getShift().getName())
-                        .departmentName(employee.getDepartment().getName())
-                        .teamName(employee.getTeam().getName())
-                        .positionName(employee.getPosition().getName())
-                        .agencyName(employee.getAgency().getName())
-                        .build());
-    }
-
-    @Override
-    public List<EmployeeDTO> findByExpertisIn(List<String> expertisList) {
-        List<EmployeeMapping> employees = employeeMappingRepository.findByExpertisIn(expertisList);
-
-        return employees.stream().map(employee -> EmployeeDTO.builder()
-                .id(employee.getId())
-                .expertis(employee.getExpertis())
-                .zalosId(employee.getZalosId())
-                .brCode(employee.getBrCode())
-                .firstName(employee.getFirstName())
-                .lastName(employee.getLastName())
-                .isWork(employee.getIsWork())
-                .sex(employee.getSex())
-                .siteName(employee.getSite().getName())
-                .shiftName(employee.getShift().getName())
-                .departmentName(employee.getDepartment().getName())
-                .teamName(employee.getTeam().getName())
-                .positionName(employee.getPosition().getName())
-                .agencyName(employee.getAgency().getName())
-                .build()
-        ).toList();
-    }
 
     /**
      * Creates new employees based on the provided requests.
@@ -88,9 +47,10 @@ public class EmployeeMappingServiceImpl implements EmployeeMappingService {
     @Transactional
     public CreateEmployeeResponse createEmployees(List<CreateEmployeeRequest> createEmployeeRequests) {
         Map<String, ConfigurationRegistrationDTO> configMap = new HashMap<>();
-        List<EmployeeMapping> validEmployees = new ArrayList<>();
-        List<String> errorMessages = new ArrayList<>();
         Map<String, Site> validSites = new HashMap<>();
+
+        List<EmployeeData> employeeDataList = new ArrayList<>();
+        List<String> errorMessages = new ArrayList<>();
 
         for (CreateEmployeeRequest request : createEmployeeRequests) {
             ConfigurationRegistrationDTO config = configMap.computeIfAbsent(
@@ -104,6 +64,7 @@ public class EmployeeMappingServiceImpl implements EmployeeMappingService {
                 errorMessages.add(err);
             } else {
                 EmployeeMapping employee = EmployeeMapper.INSTANCE.toEmployeeMapping(request);
+                AiEmployee aiEmployee = EmployeeMapper.INSTANCE.toAiEmployee(request);
 
                 Site site = validSites.computeIfAbsent(
                         request.getSite(),
@@ -196,41 +157,73 @@ public class EmployeeMappingServiceImpl implements EmployeeMappingService {
                     continue;
                 }
                 employee.setAgency(agencyEntity);
+                aiEmployee.setEmployee(employee);
 
-                validEmployees.add(employee);
+                employeeDataList.add(new EmployeeData(employee, aiEmployee));
             }
 
         }
 
-        Set<String> expertisSet = validEmployees.stream()
-                .map(EmployeeMapping::getExpertis)
-                .collect(Collectors.toSet());
+        Set<String> expertisSet = new HashSet<>();
+        Set<Short> zalosIdSet = new HashSet<>();
+        Set<String> brCodeSet = new HashSet<>();
 
-        Set<Short> zalosIdSet = validEmployees.stream()
-                .map(EmployeeMapping::getZalosId)
-                .collect(Collectors.toSet());
-
-        Set<String> brCodeSet = validEmployees.stream()
-                .map(EmployeeMapping::getBrCode)
-                .collect(Collectors.toSet());
-
-        List<String> existingExpertisList = employeeMappingRepository.findExistingExpertis(expertisSet, zalosIdSet, brCodeSet);
-        Set<String> duplicateExpertis = new HashSet<>(existingExpertisList);
-
-        if (!duplicateExpertis.isEmpty()) {
-            for (String dup : duplicateExpertis) {
-                String err = String.format("Employee with expertis '%s' already exists.", dup);
-                log.error(err);
-                errorMessages.add(err);
+        for (EmployeeData data : employeeDataList) {
+            EmployeeMapping emp = data.getEmployee();
+            expertisSet.add(emp.getExpertis());
+            if (emp.getZalosId() != null) {
+                zalosIdSet.add(emp.getZalosId());
             }
-            validEmployees = validEmployees.stream()
-                    .filter(emp -> !duplicateExpertis.contains(emp.getExpertis()))
-                    .collect(Collectors.toList());
+            if (emp.getBrCode() != null) {
+                brCodeSet.add(emp.getBrCode());
+            }
         }
 
-        if (!validEmployees.isEmpty()) {
+        List<Object[]> duplicates = employeeMappingRepository.findExistingDuplicates(expertisSet, zalosIdSet, brCodeSet);
+
+        Set<String> duplicateExpertis = new HashSet<>();
+        Set<Short> duplicateZalosId = new HashSet<>();
+        Set<String> duplicateBrCode = new HashSet<>();
+
+        for (Object[] row : duplicates) {
+            if (row[0] != null) {
+                duplicateExpertis.add((String) row[0]);
+            }
+            if (row[1] != null) {
+                duplicateZalosId.add((Short) row[1]);
+            }
+            if (row[2] != null) {
+                duplicateBrCode.add((String) row[2]);
+            }
+        }
+
+        List<EmployeeData> finalEmployeeData = employeeDataList.stream()
+                .filter(data -> {
+                    EmployeeMapping emp = data.getEmployee();
+                    boolean isDuplicate = duplicateExpertis.contains(emp.getExpertis())
+                            || (emp.getZalosId() != null && duplicateZalosId.contains(emp.getZalosId()))
+                            || (emp.getBrCode() != null && duplicateBrCode.contains(emp.getBrCode()));
+                    if (isDuplicate) {
+                        String err = String.format("Employee with expertis '%s', zalosId '%s' or brCode '%s' already exists.",
+                                emp.getExpertis(), emp.getZalosId(), emp.getBrCode());
+                        log.error(err);
+                        errorMessages.add(err);
+                    }
+                    return !isDuplicate;
+                })
+                .toList();
+
+        List<EmployeeMapping> finalEmployees = finalEmployeeData.stream()
+                .map(EmployeeData::getEmployee)
+                .collect(Collectors.toList());
+        List<AiEmployee> finalAdditionalInfo = finalEmployeeData.stream()
+                .map(EmployeeData::getAdditional)
+                .collect(Collectors.toList());
+
+        if (!finalEmployees.isEmpty()) {
             try {
-                employeeMappingRepository.saveAll(validEmployees);
+                employeeMappingRepository.saveAll(finalEmployees);
+                aiEmployeeService.saveAiEmployee(finalAdditionalInfo);
             } catch (Exception e) {
                 String err = "Error occurred while saving employees: " + e.getMessage();
                 log.error(err, e);
@@ -239,7 +232,7 @@ public class EmployeeMappingServiceImpl implements EmployeeMappingService {
         }
 
         int total = createEmployeeRequests.size();
-        int success = validEmployees.size();
+        int success = finalEmployees.size();
         int failed = total - success;
 
         return new CreateEmployeeResponse(total, success, failed, errorMessages);

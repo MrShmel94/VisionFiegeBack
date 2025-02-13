@@ -33,7 +33,7 @@ public class ShiftServiceImpl implements ShiftService {
     public List<ShiftDTO> getAllFromDB() {
         return shiftRepository.findAllWithSite().stream().map(eachObject -> ShiftDTO.builder()
                 .name(eachObject.getName())
-                .id(eachObject.getId())
+                .id(eachObject.getId().shortValue())
                 .siteName(eachObject.getSite().getName())
                 .build()).toList();
     }

@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -18,10 +19,10 @@ public class CreateEmployeeRequest {
     @Pattern(regexp = "\\d+", message = "Expertis must contain only digits")
     private String expertis;
 
-    private Short zalosId;
+    private Short zalosId = null;
 
     @Pattern(regexp = "BR\\d+", message = "BR code must start with 'BR' followed by digits")
-    private String brCode;
+    private String brCode = null;
 
     @NotBlank(message = "First name is required")
     private String firstName;
@@ -30,6 +31,7 @@ public class CreateEmployeeRequest {
     private String lastName;
 
     @NotBlank(message = "Sex is required")
+    @Pattern(regexp = "^([MF])$", message = "Sex must be either 'M' or 'F'")
     private String sex;
 
     @NotBlank(message = "Site is required")
@@ -57,6 +59,19 @@ public class CreateEmployeeRequest {
 
     private Boolean isCanHasAccount = false;
 
-    @NotNull(message = "Valid to account date is required")
-    private LocalDateTime validToAccount;
+    private LocalDateTime validToAccount = LocalDateTime.now();
+
+    private String note = "";
+
+    @NotNull(message = "Date Start Contract should be!")
+    private LocalDate dateStartContract;
+
+    @NotNull(message = "Date Start Contract should be!")
+    private LocalDate dateFinishContract;
+
+    private LocalDate dateBhpNow = null;
+    private LocalDate dateBhpFuture = null;
+    private LocalDate dateAdrNow = null;
+    private LocalDate dateAdrFuture = null;
+
 }

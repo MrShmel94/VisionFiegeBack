@@ -40,6 +40,6 @@ public class AiEmployee {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "employee_id", nullable = false)
-    private Employee employee;
+    private EmployeeMapping employee;
 
 }

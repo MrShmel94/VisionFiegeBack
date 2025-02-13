@@ -2,6 +2,7 @@ package com.example.ws.microservices.firstmicroservices.controller;
 
 import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.request.CreateEmployeeRequest;
+import com.example.ws.microservices.firstmicroservices.request.CreateEmployeeRequestList;
 import com.example.ws.microservices.firstmicroservices.request.SiteRequestModel;
 import com.example.ws.microservices.firstmicroservices.response.ConfigurationRegistrationDTO;
 import com.example.ws.microservices.firstmicroservices.response.CreateEmployeeResponse;
@@ -83,36 +84,9 @@ public class EmployeeController {
     }
 
     @PostMapping(path = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CreateEmployeeResponse> createEmployees(@Valid @RequestBody List<CreateEmployeeRequest> createEmployeeRequests){
-        CreateEmployeeResponse response = employeeMappingService.createEmployees(createEmployeeRequests);
+    public ResponseEntity<CreateEmployeeResponse> createEmployees(@Valid @RequestBody CreateEmployeeRequestList createEmployeeRequests){
+        CreateEmployeeResponse response = employeeMappingService.createEmployees(createEmployeeRequests.getEmployees());
         return ResponseEntity.ok(response);
-    }
-
-
-
-
-
-
-
-
-
-
-    @GetMapping(path = "/mapping/{expertis}")
-    public EmployeeDTO getUserMapping(@PathVariable String expertis){
-
-        Optional<EmployeeDTO> getUser = employeeMappingService.findByExpertis(expertis);
-        return getUser.orElse(null);
-    }
-
-
-    @PostMapping(path = "/mapping", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<EmployeeDTO> getListEmployeesMapping(@RequestBody List<String> expertisList){
-        return employeeMappingService.findByExpertisIn(expertisList);
-    }
-
-    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<EmployeeDTO> getListEmployees(@RequestBody List<String> expertisList){
-        return employeeServices.findEmployeesByExpertisList(expertisList);
     }
 
 }

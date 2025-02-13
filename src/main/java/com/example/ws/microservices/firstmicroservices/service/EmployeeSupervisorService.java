@@ -11,6 +11,5 @@ public interface EmployeeSupervisorService {
     void revokeAccess(Long employeeId, String supervisorExpertis);
     List<EmployeeSupervisor> getActiveAccesses();
     List<EmployeeSupervisor> getExpiredAccesses();
-    List<EmployeeSupervisor> findBySupervisorExpertis(String supervisorExpertis);
     List<EmployeeSupervisor> findByEmployeeId(Long employeeId);
 }

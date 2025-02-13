@@ -19,7 +19,6 @@ public class EmployeeSupervisorServiceImpl implements EmployeeSupervisorService 
     public void addAccess(Long employeeId, String supervisorExpertis, LocalDateTime validTo) {
         EmployeeSupervisor access = new EmployeeSupervisor();
         access.setEmployeeId(employeeId);
-        access.setSupervisorExpertis(supervisorExpertis);
         access.setValidFrom(LocalDateTime.now());
         access.setValidTo(validTo);
         repository.save(access);
@@ -35,10 +34,6 @@ public class EmployeeSupervisorServiceImpl implements EmployeeSupervisorService 
 
     public List<EmployeeSupervisor> getExpiredAccesses() {
         return repository.findExpiredAccesses(LocalDateTime.now());
-    }
-
-    public List<EmployeeSupervisor> findBySupervisorExpertis(String supervisorExpertis) {
-        return repository.findBySupervisorExpertis(supervisorExpertis);
     }
 
     public List<EmployeeSupervisor> findByEmployeeId(Long employeeId) {

@@ -34,10 +34,9 @@ END LOOP;
 
 INSERT INTO employee (
     expertis, zalos_id, br_code, first_name, last_name, sex, is_work,
-    team_id, site_id, shift_id, country_id, department_id, position_id,
-    supervisor_id, is_supervisor, agency_id, valid_from, valid_to
+    team_id, site_id, shift_id, country_id, department_id, position_id, is_supervisor, agency_id, valid_from, valid_to
 ) VALUES (
-             CONCAT('Expertis_', i),
+             CONCAT('3', i),
              new_zalos_id,
              new_br_code,
              'John' || i,
@@ -50,7 +49,6 @@ INSERT INTO employee (
              country_rec.id,
              department_rec.id,
              position_rec.id,
-             NULL,
              TRUE,
              agency_rec.id,
              NOW(),
@@ -82,7 +80,7 @@ END LOOP;
 INSERT INTO employee (
     expertis, zalos_id, br_code, first_name, last_name, sex, is_work,
     team_id, site_id, shift_id, country_id, department_id, position_id,
-    supervisor_id, is_supervisor, agency_id, valid_from, valid_to
+ is_supervisor, agency_id, valid_from, valid_to
 ) VALUES (
              CONCAT('Expertis_', i),
              new_zalos_id,
@@ -97,7 +95,6 @@ INSERT INTO employee (
              country_rec.id,
              department_rec.id,
              position_rec.id,
-             supervisor_rec.id,
              FALSE,
              agency_rec.id,
              NOW(),

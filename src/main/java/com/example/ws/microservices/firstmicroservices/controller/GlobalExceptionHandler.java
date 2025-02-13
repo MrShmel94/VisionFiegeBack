@@ -17,8 +17,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -26,6 +28,34 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<Object> handleInvalidTokenException(InvalidTokenException ex) {
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @Override
+    protected ResponseEntity<Object> handleMethodArgumentNotValid(
+            MethodArgumentNotValidException ex,
+            HttpHeaders headers,
+            HttpStatusCode status,
+            WebRequest request) {
+
+        List<Map<String, Object>> errorList = ex.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(fieldError -> {
+                    Map<String, Object> error = new HashMap<>();
+                    error.put("object", fieldError.getObjectName());
+                    error.put("field", fieldError.getField());
+                    error.put("rejectedValue", fieldError.getRejectedValue());
+                    error.put("message", fieldError.getDefaultMessage());
+                    return error;
+                })
+                .collect(Collectors.toList());
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("timestamp", LocalDateTime.now());
+        responseBody.put("status", status.value());
+        responseBody.put("errors", errorList);
+
+        return ResponseEntity.status(status).headers(headers).body(responseBody);
     }
 
     @ExceptionHandler(InvalidIdFormatException.class)
@@ -59,15 +89,15 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildErrorResponse((HttpStatus)status, "Invalid input format. Please check the request body.");
     }
 
-    @Override
-    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-                                                                  HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage())
-        );
-        return buildErrorResponse((HttpStatus)status, errors.toString());
-    }
+//    @Override
+//    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
+//                                                                  HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+//        Map<String, String> errors = new HashMap<>();
+//        ex.getBindingResult().getFieldErrors().forEach(error ->
+//                errors.put(error.getField(), error.getDefaultMessage())
+//        );
+//        return buildErrorResponse((HttpStatus)status, errors.toString());
+//    }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex) {

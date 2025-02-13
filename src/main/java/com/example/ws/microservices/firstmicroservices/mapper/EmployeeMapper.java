@@ -1,6 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.mapper;
 
 import com.example.ws.microservices.firstmicroservices.dto.UserDto;
+import com.example.ws.microservices.firstmicroservices.entity.AiEmployee;
 import com.example.ws.microservices.firstmicroservices.entity.EmployeeMapping;
 import com.example.ws.microservices.firstmicroservices.entity.UserEntity;
 import com.example.ws.microservices.firstmicroservices.request.CreateEmployeeRequest;
@@ -24,4 +25,7 @@ public interface EmployeeMapper {
     @Mapping(target = "position", ignore = true)
     @Mapping(target = "agency", ignore = true)
     EmployeeMapping toEmployeeMapping(CreateEmployeeRequest createEmployeeRequest);
+
+    @Mapping(target = "employee", ignore = true)
+    AiEmployee toAiEmployee(CreateEmployeeRequest createEmployeeRequest);
 }

@@ -51,25 +51,25 @@ public class Employee {
     private String sex;
 
     @Column(name = "site_id", nullable = false)
-    private Long siteId;
+    private Short siteId;
 
     @Column(name = "shift_id", nullable = false)
-    private Long shiftId;
+    private Short shiftId;
 
     @Column(name = "department_id", nullable = false)
-    private Long departmentId;
+    private Short departmentId;
 
     @Column(name = "country_id", nullable = false)
     private Short countryId;
 
     @Column(name = "team_id", nullable = false)
-    private Long teamId;
+    private Short teamId;
 
     @Column(name = "position_id", nullable = false)
-    private Long positionId;
+    private Short positionId;
 
     @Column(name = "agency_id", nullable = false)
-    private Long agencyId;
+    private Short agencyId;
 
 //    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 //    private Set<UserRole> userRoles = new HashSet<>();

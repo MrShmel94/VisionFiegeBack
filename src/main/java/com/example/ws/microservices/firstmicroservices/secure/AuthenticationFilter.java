@@ -66,10 +66,19 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             log.debug("Authentication attempt with email: {}", creds.getEmail());
 
             if (creds.getEmail() == null || creds.getEmail().trim().isEmpty()) {
-                throw new InvalidLoginRequestException("Email is required", HttpStatus.BAD_REQUEST);
+                sendErrorResponse(res, HttpStatus.BAD_REQUEST,
+                        "Email is required",
+                        "Please check your email.");
+                return null;
+                //throw new InvalidLoginRequestException("Email is required", HttpStatus.BAD_REQUEST);
+
             }
             if (creds.getPassword() == null || creds.getPassword().trim().isEmpty()) {
-                throw new InvalidLoginRequestException("Password is required", HttpStatus.BAD_REQUEST);
+                sendErrorResponse(res, HttpStatus.BAD_REQUEST,
+                        "Password is required",
+                        "Please check your password.");
+                return null;
+                //throw new InvalidLoginRequestException("Password is required", HttpStatus.BAD_REQUEST);
             }
 
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -92,8 +101,11 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             log.error("Failed to read user login request model", e);
             throw new InvalidLoginRequestException("Invalid login request data", HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
-            log.error("Authentication process failed", e);
-            throw new CustomAuthenticationException("Authentication processing error", HttpStatus.BAD_REQUEST);
+            log.error("Authentication process failed: {}", e.getMessage());
+            sendErrorResponse(res, HttpStatus.UNAUTHORIZED,
+                    "Authentication processing error",
+                    "Please check your credentials (email and password).");
+            //throw new CustomAuthenticationException("Authentication processing error", HttpStatus.BAD_REQUEST);
         }
         return null;
     }

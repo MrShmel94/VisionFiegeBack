@@ -79,11 +79,9 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
         try {
         String uri = request.getRequestURI();
 
-            System.out.println(uri);
-
         if (uri.equals(SIGN_UP_URL) ||
                 uri.equals("/swagger-ui/index.html") ||
-                uri.contains(TOKEN_VERIFY_PREFIX)) {
+                uri.contains("/api/v1/users/verify-email/")) {
             chain.doFilter(request, response);
             return;
         }
@@ -276,7 +274,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
     private boolean isPublicUri(String uri) {
         return uri.equals(SIGN_UP_URL)
                 || uri.equals("/swagger-ui/index.html")
-                || uri.contains(TOKEN_VERIFY_PREFIX);
+                || uri.contains("/api/v1/users/verify-email/");
     }
 
     /**

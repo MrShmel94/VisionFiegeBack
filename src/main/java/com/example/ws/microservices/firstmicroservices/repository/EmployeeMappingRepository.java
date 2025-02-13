@@ -24,6 +24,13 @@ public interface EmployeeMappingRepository extends JpaRepository<EmployeeMapping
             + "WHERE e.expertis IN :expertisList")
     List<EmployeeMapping> findByExpertisIn(@Param("expertisList") List<String> expertisList);
 
-    @Query("SELECT e.expertis FROM EmployeeMapping e WHERE e.expertis IN :expertisSet OR e.zalosId IN :zalosIdSet OR e.brCode IN :brCodeSet")
-    List<String> findExistingExpertis(@Param("expertisSet") Collection<String> expertisSet, @Param("zalosIdSet") Set<Short> zalosIdSet, @Param("brCodeSet") Collection<String> brCodeSet);
+    @Query("SELECT e.expertis, e.zalosId, e.brCode " +
+            "FROM EmployeeMapping e " +
+            "WHERE e.expertis IN :expertisSet " +
+            "   OR e.zalosId IN :zalosIdSet " +
+            "   OR e.brCode IN :brCodeSet")
+    List<Object[]> findExistingDuplicates(
+            @Param("expertisSet") Collection<String> expertisSet,
+            @Param("zalosIdSet") Collection<Short> zalosIdSet,
+            @Param("brCodeSet") Collection<String> brCodeSet);
 }

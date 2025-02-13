@@ -2,7 +2,8 @@ package com.example.ws.microservices.firstmicroservices.secure;
 
 public class SecurityConstants {
 
-    public static final long ACCESS_TOKEN_EXPIRATION = 10 * 60 * 1000L;
+    //FOR TEST 2 HOURS, SIMPLE IMPL IS 10 MIN
+    public static final long ACCESS_TOKEN_EXPIRATION = 120 * 60 * 1000L;
     public static final long REFRESH_TOKEN_EXPIRATION = 24 * 60 * 60 * 1000L;
     public static final int BUCKET_CAPACITY = 200;
     public static final int BUCKET_REFILL_TOKENS = 100;

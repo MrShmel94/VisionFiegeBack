@@ -42,10 +42,10 @@ public class AccessManagementServiceImpl implements AccessManagementService {
     public void cleanupExpiredAccess() {
         List<EmployeeSupervisor> expiredAccesses = supervisorService.getExpiredAccesses();
 
-        for (EmployeeSupervisor access : expiredAccesses) {
-            supervisorService.revokeAccess(access.getEmployeeId(), access.getSupervisorExpertis());
-            redisCacheService.removeExpiredAccess(access.getSupervisorExpertis(), access.getEmployeeId().toString());
-        }
+//        for (EmployeeSupervisor access : expiredAccesses) {
+//            supervisorService.revokeAccess(access.getEmployeeId(), access.getSupervisorExpertis());
+//            redisCacheService.removeExpiredAccess(access.getSupervisorExpertis(), access.getEmployeeId().toString());
+//        }
     }
 
     @Override
