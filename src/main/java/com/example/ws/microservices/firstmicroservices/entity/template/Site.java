@@ -21,6 +21,9 @@ public class Site {
     @Column(name = "name", nullable = false, length = 64)
     private String name;
 
+    @Column(name = "place", nullable = false, length = 64)
+    private String place;
+
     @OneToMany(mappedBy = "site", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Shift> shifts;
 

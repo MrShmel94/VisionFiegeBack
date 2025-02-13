@@ -1,11 +1,13 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.performance_gd;
 
+import com.example.ws.microservices.firstmicroservices.dto.PerformanceDTO;
 import com.example.ws.microservices.firstmicroservices.entity.performance_gd.*;
 import com.example.ws.microservices.firstmicroservices.repository.performance_gd.PerformanceRepository;
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.ActivityNameService;
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.FinalClusterService;
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.PerformanceService;
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.SpiClusterService;
+import com.example.ws.microservices.firstmicroservices.serviceImpl.ClickHousePerformanceServiceImpl;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
@@ -35,6 +37,44 @@ public class PerformanceServiceImpl implements PerformanceService {
     private ActivityNameService activityNameService;
     private FinalClusterService finalClusterService;
     private SpiClusterService spiClusterService;
+
+    private final ClickHousePerformanceServiceImpl clickHousePerformanceService;
+
+    @Transactional
+    public void processFileClickHouse(List<List<String>> allLineFiles, Map<String, String> checkHeaderList, List<String> headersName) {
+        Map<String, Integer> indexMap = IntStream.range(0, headersName.size())
+                .boxed()
+                .collect(Collectors.toMap(
+                        headersName::get,
+                        index -> index
+                ));
+
+        List<PerformanceDTO> allPerformanceToSave = IntStream.range(0, allLineFiles.size())
+                .mapToObj(index -> {
+                    List<String> row = allLineFiles.get(index);
+                    return new PerformanceDTO(
+                            parseDateToLocalDate(row.get(indexMap.get(checkHeaderList.get("date")))),
+                            row.get(indexMap.get(checkHeaderList.get("expertis"))),
+                            row.get(indexMap.get(checkHeaderList.get("activityName"))),
+                            row.get(indexMap.get(checkHeaderList.get("category"))),
+                            row.get(indexMap.get(checkHeaderList.get("finalCluster"))),
+                            parseDate(row.get(indexMap.get(checkHeaderList.get("startActivity")))),
+                            parseDate(row.get(indexMap.get(checkHeaderList.get("endActivity")))),
+                            safeParseBigDecimal(row.get(indexMap.get(checkHeaderList.get("duration")))),
+                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("ql")))),
+                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("qlBox")))),
+                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("qlHanging")))),
+                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("qlShoes")))),
+                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("qlBoots")))),
+                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("qlOther")))),
+                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("stowClarifications")))),
+                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("pickNos1")))),
+                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("pickNos2"))))
+                    );
+                }).toList();
+
+        clickHousePerformanceService.savePerformances(allPerformanceToSave);
+    }
 
     @Override
     @Transactional

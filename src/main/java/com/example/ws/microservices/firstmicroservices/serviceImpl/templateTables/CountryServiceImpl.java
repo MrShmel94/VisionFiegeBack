@@ -1,19 +1,14 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.templateTables;
 
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.AgencyDTO;
 import com.example.ws.microservices.firstmicroservices.dto.templateTables.CountryDTO;
-import com.example.ws.microservices.firstmicroservices.entity.template.Agency;
 import com.example.ws.microservices.firstmicroservices.entity.template.Country;
-import com.example.ws.microservices.firstmicroservices.repository.templateTables.AgencyRepository;
 import com.example.ws.microservices.firstmicroservices.repository.templateTables.CountryRepository;
-import com.example.ws.microservices.firstmicroservices.service.templateTables.AgencyService;
 import com.example.ws.microservices.firstmicroservices.service.templateTables.CountryService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -28,14 +23,14 @@ public class CountryServiceImpl implements CountryService {
 
     @Override
     public void preloadToCache(RedisTemplate<String, Object> redisTemplate) {
-        List<CountryDTO> countries = findAllWithSite();
+        List<CountryDTO> countries = getAllFromDB();
         for (CountryDTO country : countries) {
             redisTemplate.opsForValue().set("country:" + country.getId(), country);
         }
     }
 
     @Override
-    public List<CountryDTO> findAllWithSite() {
+    public List<CountryDTO> getAllFromDB() {
         return countryRepository.findAllWithSite().stream().map(eachObject -> CountryDTO.builder()
                 .name(eachObject.getName())
                 .id(eachObject.getId())

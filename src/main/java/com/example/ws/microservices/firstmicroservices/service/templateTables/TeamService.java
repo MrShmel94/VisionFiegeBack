@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface TeamService extends CachingService<TeamDTO> {
     List<Team> findAll();
-    List<TeamDTO> findAllWithSite();
+    List<TeamDTO> getAllFromDB();
 }

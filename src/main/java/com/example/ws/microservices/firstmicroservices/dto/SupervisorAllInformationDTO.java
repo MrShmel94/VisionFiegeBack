@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,8 @@ public class SupervisorAllInformationDTO {
     private String email;
     private Boolean isVerified;
     private Boolean emailVerificationStatus;
+    private Boolean isCanHasAccount;
+    private LocalDateTime validToAccount;
     private String note;
     private LocalDate dateStartContract;
     private LocalDate dateFinishContract;
@@ -40,6 +43,7 @@ public class SupervisorAllInformationDTO {
     private LocalDate dateBhpFuture;
     private LocalDate dateAdrNow;
     private LocalDate dateAdrFuture;
+    private String encryptedPassword;
     @Builder.Default
     private List<RoleDTO> roles = new ArrayList<>();
     @Builder.Default
@@ -54,8 +58,8 @@ public class SupervisorAllInformationDTO {
             Long id, String expertis, Short zalosId, String brCode, String firstName, String lastName, Boolean isWork,
             String sex, String siteName, String shiftName, String departmentName, String teamName,
             String positionName, String agencyName, String userId, String email, Boolean isVerified,
-            Boolean emailVerificationStatus, String note, LocalDate dateStartContract, LocalDate dateFinishContract,
-            LocalDate dateBhpNow, LocalDate dateBhpFuture, LocalDate dateAdrNow, LocalDate dateAdrFuture
+            Boolean emailVerificationStatus, Boolean isCanHasAccount, LocalDateTime validToAccount, String note, LocalDate dateStartContract, LocalDate dateFinishContract,
+            LocalDate dateBhpNow, LocalDate dateBhpFuture, LocalDate dateAdrNow, LocalDate dateAdrFuture, String encryptedPassword
     ) {
         this.id = id;
         this.expertis = expertis;
@@ -75,6 +79,8 @@ public class SupervisorAllInformationDTO {
         this.email = email;
         this.isVerified = isVerified;
         this.emailVerificationStatus = emailVerificationStatus;
+        this.isCanHasAccount = isCanHasAccount;
+        this.validToAccount = validToAccount;
         this.note = note;
         this.dateStartContract = dateStartContract;
         this.dateFinishContract = dateFinishContract;
@@ -82,6 +88,7 @@ public class SupervisorAllInformationDTO {
         this.dateBhpFuture = dateBhpFuture;
         this.dateAdrNow = dateAdrNow;
         this.dateAdrFuture = dateAdrFuture;
+        this.encryptedPassword = encryptedPassword;
     }
 
 }

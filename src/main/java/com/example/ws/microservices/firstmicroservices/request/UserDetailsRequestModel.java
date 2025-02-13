@@ -20,4 +20,8 @@ public class UserDetailsRequestModel {
     @NotBlank(message = "Password cannot be empty")
     @ValidPassword
     private String password;
+
+    @NotBlank(message = "BR-code cannot be empty")
+    @ValidBrCode
+    private String brCode;
 }

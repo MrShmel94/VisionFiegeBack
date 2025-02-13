@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface CachingService<T> {
     void preloadToCache(RedisTemplate<String, Object> redisTemplate);
-    List<T> findAllWithSite();
+    List<T> getAllFromDB();
     boolean supportsType(Class<?> type);
 }

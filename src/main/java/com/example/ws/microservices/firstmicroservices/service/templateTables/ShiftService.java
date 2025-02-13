@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface ShiftService extends CachingService<ShiftDTO> {
     List<Shift> findAll();
-    List<ShiftDTO> findAllWithSite();
+    List<ShiftDTO> getAllFromDB();
 }

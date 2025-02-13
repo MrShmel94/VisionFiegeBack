@@ -8,9 +8,8 @@ import java.util.List;
 
 public interface UserRoleService {
 
-    List<UserRole> getAllRoles();
-    void assignRoleToUser(Long userId, String roleName, LocalDateTime validFrom, LocalDateTime validTo);
-    void removeRoleFromUser(Long userId, String roleName);
+    void assignRoleToUser(String userId, String roleName, LocalDateTime validFrom, LocalDateTime validTo);
+    void removeRoleFromUser(String userId, String roleName);
     void cleanupExpiredRoles();
     List<RoleDTO> getAllRolePerUserId(Long userId);
 }

@@ -1,18 +1,21 @@
 package com.example.ws.microservices.firstmicroservices.controller;
 
 import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.*;
+import com.example.ws.microservices.firstmicroservices.request.CreateEmployeeRequest;
 import com.example.ws.microservices.firstmicroservices.request.SiteRequestModel;
 import com.example.ws.microservices.firstmicroservices.response.ConfigurationRegistrationDTO;
+import com.example.ws.microservices.firstmicroservices.response.CreateEmployeeResponse;
 import com.example.ws.microservices.firstmicroservices.service.EmployeeMappingService;
 import com.example.ws.microservices.firstmicroservices.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.service.SiteService;
 import com.example.ws.microservices.firstmicroservices.serviceImpl.config.ConfigurationService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -50,7 +53,7 @@ public class EmployeeController {
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
     @GetMapping("/config/{siteName}")
-    public ResponseEntity<ConfigurationRegistrationDTO> getAllConfigurationForRegistration(@PathVariable String siteName){
+    public ResponseEntity<ConfigurationRegistrationDTO> getAllConfigurationForRegistration(@Valid @PathVariable String siteName){
         try {
             ConfigurationRegistrationDTO dto = configurationService.getConfigurationForSite(siteName);
             return ResponseEntity.ok(dto);
@@ -61,21 +64,44 @@ public class EmployeeController {
         }
     }
 
-    @GetMapping(path = "/site/{nameSite}")
-    public List<EmployeeDTO> getEmployeeBySite(@PathVariable String nameSite){
-        return siteService.findEmployeesBySiteName(nameSite);
+    @Operation(
+            summary = "Retrieve employees by site filters",
+            description = "Fetches a list of employees using dynamic criteria. The 'nameSite' field is required, "
+                    + "while additional fields (nameDepartment, nameShift, nameTeam, namePosition, nameAgency, nameCountry) "
+                    + "are optional and can accept multiple values. If an optional filter is not provided or empty, it is ignored."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved employee list",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            array = @ArraySchema(schema = @Schema(implementation = EmployeeDTO.class)))),
+            @ApiResponse(responseCode = "400", description = "Invalid input provided", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
+    @PostMapping(path = "/search", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<EmployeeDTO> getListEmployeesMappingForSite(@Valid @RequestBody SiteRequestModel siteRequestModel){
+        return siteService.findEmployeesByDynamicFilters(siteRequestModel);
     }
+
+    @PostMapping(path = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<CreateEmployeeResponse> createEmployees(@Valid @RequestBody List<CreateEmployeeRequest> createEmployeeRequests){
+        CreateEmployeeResponse response = employeeMappingService.createEmployees(createEmployeeRequests);
+        return ResponseEntity.ok(response);
+    }
+
+
+
+
+
+
+
+
+
 
     @GetMapping(path = "/mapping/{expertis}")
     public EmployeeDTO getUserMapping(@PathVariable String expertis){
 
         Optional<EmployeeDTO> getUser = employeeMappingService.findByExpertis(expertis);
         return getUser.orElse(null);
-    }
-
-    @PostMapping(path = "/site", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<EmployeeDTO> getListEmployeesMappingForSite(@RequestBody SiteRequestModel siteRequestModel){
-        return siteService.findEmployeesByDynamicFilters(siteRequestModel);
     }
 
 

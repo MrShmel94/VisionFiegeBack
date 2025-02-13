@@ -5,8 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface EmployeeMappingRepository extends JpaRepository<EmployeeMapping, Long> {
 
@@ -22,4 +24,6 @@ public interface EmployeeMappingRepository extends JpaRepository<EmployeeMapping
             + "WHERE e.expertis IN :expertisList")
     List<EmployeeMapping> findByExpertisIn(@Param("expertisList") List<String> expertisList);
 
+    @Query("SELECT e.expertis FROM EmployeeMapping e WHERE e.expertis IN :expertisSet OR e.zalosId IN :zalosIdSet OR e.brCode IN :brCodeSet")
+    List<String> findExistingExpertis(@Param("expertisSet") Collection<String> expertisSet, @Param("zalosIdSet") Set<Short> zalosIdSet, @Param("brCodeSet") Collection<String> brCodeSet);
 }

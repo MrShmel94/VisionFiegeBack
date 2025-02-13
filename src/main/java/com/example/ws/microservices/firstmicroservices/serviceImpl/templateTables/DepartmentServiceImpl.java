@@ -1,11 +1,8 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.templateTables;
 
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.CountryDTO;
 import com.example.ws.microservices.firstmicroservices.dto.templateTables.DepartmentDTO;
-import com.example.ws.microservices.firstmicroservices.entity.template.Country;
 import com.example.ws.microservices.firstmicroservices.entity.template.Department;
 import com.example.ws.microservices.firstmicroservices.repository.templateTables.DepartmentRepository;
-import com.example.ws.microservices.firstmicroservices.service.templateTables.CountryService;
 import com.example.ws.microservices.firstmicroservices.service.templateTables.DepartmentService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -26,14 +23,14 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public void preloadToCache(RedisTemplate<String, Object> redisTemplate) {
-        List<DepartmentDTO> departments = findAllWithSite();
+        List<DepartmentDTO> departments = getAllFromDB();
         for (DepartmentDTO department : departments) {
             redisTemplate.opsForValue().set("department:" + department.getId(), department);
         }
     }
 
     @Override
-    public List<DepartmentDTO> findAllWithSite() {
+    public List<DepartmentDTO> getAllFromDB() {
         return departmentRepository.findAllWithSite().stream().map(eachObject -> DepartmentDTO.builder()
                 .name(eachObject.getName())
                 .id(eachObject.getId())

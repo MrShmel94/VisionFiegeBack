@@ -223,6 +223,15 @@ CREATE TABLE IF NOT EXISTS user_registration
     user_id VARCHAR(256) NOT NULL UNIQUE
 );
 
+CREATE TABLE IF NOT EXISTS favorite_search_groups (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES user_registration(id),
+    group_name VARCHAR(128) NOT NULL,
+    expertis_list JSONB NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
 CREATE TABLE IF NOT EXISTS employee_supervisors (
     employee_id BIGINT NOT NULL REFERENCES employee(id),
     supervisor_expertis VARCHAR(128) NOT NULL,
@@ -248,6 +257,8 @@ CREATE TABLE IF NOT EXISTS employee
     department_id SMALLINT NOT NULL REFERENCES department,
     position_id SMALLINT NOT NULL REFERENCES position,
     is_supervisor BOOLEAN DEFAULT FALSE,
+    is_can_has_account BOOLEAN DEFAULT FALSE,
+    valid_to_account TIMESTAMP DEFAULT '1999-12-31 23:59:59'::TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     agency_id SMALLINT NOT NULL REFERENCES agency,
     valid_from TIMESTAMP DEFAULT NOW() NOT NULL,
     valid_to TIMESTAMP DEFAULT '9999-12-31 23:59:59'::TIMESTAMP WITHOUT TIME ZONE NOT NULL
@@ -300,7 +311,7 @@ VALUES ('Admin', 10),
 
 CREATE TABLE user_role (
     user_id BIGINT REFERENCES employee(id),
-    role_id BIGINT REFERENCES role(id),
+    role_id INT REFERENCES role(id),
     valid_from TIMESTAMP DEFAULT NOW() NOT NULL,
     valid_to TIMESTAMP DEFAULT '9999-12-31 23:59:59' NOT NULL,
     PRIMARY KEY (user_id, role_id)

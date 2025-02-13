@@ -15,7 +15,7 @@ import java.util.List;
 @Repository
 public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
 
-    @Query("SELECT r FROM Role r JOIN UserRole ur ON ur.role.id = r.id WHERE ur.user.id = :userId")
+    @Query("SELECT r FROM Role r JOIN UserRole ur ON ur.id.roleId = r.id WHERE ur.id.userId = :userId")
     List<UserRole> findRolesByUserId(@Param("userId") Long userId);
 
     @Query("""
@@ -25,16 +25,9 @@ public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
     """)
     List<UserRole> findExpiredRoles(@Param("expirationDate") LocalDateTime expirationDate);
 
-    @Query("""
-        SELECT ur.user.id
-        FROM UserRole ur
-        WHERE ur.role.name = :roleName
-    """)
-    List<Long> findUsersByRoleName(@Param("roleName") String roleName);
-
     void deleteById(UserRoleId id);
 
     @Modifying
     @Query("DELETE FROM UserRole ur WHERE ur.id.userId = :userId AND ur.id.roleId = :roleId")
-    void deleteByUserIdAndRoleId(@Param("userId") Long userId, @Param("roleId") Integer roleId);
+    void deleteByUserIdAndRoleId(@Param("userId") String userId, @Param("roleId") Integer roleId);
 }

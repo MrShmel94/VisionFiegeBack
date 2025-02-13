@@ -1,12 +1,8 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.templateTables;
 
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.DepartmentDTO;
 import com.example.ws.microservices.firstmicroservices.dto.templateTables.PositionDTO;
-import com.example.ws.microservices.firstmicroservices.entity.template.Department;
 import com.example.ws.microservices.firstmicroservices.entity.template.Position;
-import com.example.ws.microservices.firstmicroservices.repository.templateTables.DepartmentRepository;
 import com.example.ws.microservices.firstmicroservices.repository.templateTables.PositionRepository;
-import com.example.ws.microservices.firstmicroservices.service.templateTables.DepartmentService;
 import com.example.ws.microservices.firstmicroservices.service.templateTables.PositionService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,14 +23,14 @@ public class PositionServiceImpl implements PositionService {
 
     @Override
     public void preloadToCache(RedisTemplate<String, Object> redisTemplate) {
-        List<PositionDTO> positions = findAllWithSite();
+        List<PositionDTO> positions = getAllFromDB();
         for (PositionDTO position : positions) {
             redisTemplate.opsForValue().set("position:" + position.getId(), position);
         }
     }
 
     @Override
-    public List<PositionDTO> findAllWithSite() {
+    public List<PositionDTO> getAllFromDB() {
         return positionRepository.findAllWithSite().stream().map(eachObject -> PositionDTO.builder()
                 .name(eachObject.getName())
                 .id(eachObject.getId())

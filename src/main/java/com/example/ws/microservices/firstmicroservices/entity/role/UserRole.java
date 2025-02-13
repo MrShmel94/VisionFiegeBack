@@ -17,15 +17,15 @@ public class UserRole {
     @EmbeddedId
     private UserRoleId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("userId")
-    @JoinColumn(name = "user_id")
-    private Employee user;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @MapsId("userId")
+//    @JoinColumn(name = "user_id")
+//    private Employee user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("roleId")
-    @JoinColumn(name = "role_id")
-    private Role role;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @MapsId("roleId")
+//    @JoinColumn(name = "role_id")
+//    private Role role;
 
     @Column(name = "valid_from", nullable = false)
     private LocalDateTime validFrom = LocalDateTime.now();

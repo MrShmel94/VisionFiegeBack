@@ -2,14 +2,18 @@ package com.example.ws.microservices.firstmicroservices.entity;
 
 import com.example.ws.microservices.firstmicroservices.entity.template.*;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @Entity
 @Table(name = "employee")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class EmployeeMapping {
 
     @Id
@@ -56,11 +60,21 @@ public class EmployeeMapping {
     private Team team;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "country_id", nullable = false)
+    private Country country;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "position_id", nullable = false)
     private Position position;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "agency_id", nullable = false)
     private Agency agency;
+
+    @Column(name = "is_can_has_account", nullable = false)
+    private Boolean isCanHasAccount = false;
+
+    @Column(name = "valid_to_account", nullable = false)
+    private LocalDateTime validToAccount;
 
 }

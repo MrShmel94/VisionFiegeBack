@@ -57,6 +57,7 @@ public class DownloadController {
 
                     List<List<String>> parsedFile = XlsxParserGDUtils.parserXlsxFile(eachFile.getInputStream(), onlyTableNames, 2, eachFile.getName());
                     performanceService.processFile(parsedFile, checkHeaders, onlyTableNames);
+                    performanceService.processFileClickHouse(parsedFile, checkHeaders, onlyTableNames);
 
                     result.add(eachFile.getOriginalFilename() + " - Successfully processed. Total rows: " + parsedFile.size());
 

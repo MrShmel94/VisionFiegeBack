@@ -24,14 +24,14 @@ public class AgencyServiceImpl implements AgencyService {
 
     @Override
     public void preloadToCache(RedisTemplate<String, Object> redisTemplate) {
-        List<AgencyDTO> agencies = findAllWithSite();
+        List<AgencyDTO> agencies = getAllFromDB();
         for (AgencyDTO agency : agencies) {
             redisTemplate.opsForValue().set("agency:" + agency.getId(), agency);
         }
     }
 
     @Override
-    public List<AgencyDTO> findAllWithSite() {
+    public List<AgencyDTO> getAllFromDB() {
         return agencyRepository.findAllWithSite().stream().map(eachObject -> AgencyDTO.builder()
                 .name(eachObject.getName())
                 .id(eachObject.getId())

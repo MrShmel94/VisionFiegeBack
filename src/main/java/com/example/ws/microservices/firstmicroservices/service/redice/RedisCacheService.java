@@ -1,15 +1,17 @@
 package com.example.ws.microservices.firstmicroservices.service.redice;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @AllArgsConstructor
@@ -35,9 +37,42 @@ public class RedisCacheService {
         redisTemplate.opsForValue().set(key, value);
     }
 
+    public void saveMapping(String userId, String expertis) {
+        redisTemplate.opsForHash().put("userMappings", userId, expertis);
+    }
+
+    public String getExpertisByUserId(String userId) {
+        return (String) redisTemplate.opsForHash().get("userMappings", userId);
+    }
+
+    public Map<Object, Object> getAllMappings() {
+        return redisTemplate.opsForHash().entries("userMappings");
+    }
+
     public <T> Optional<T> getFromCache(String key, Class<T> type) {
-        T value = (T) redisTemplate.opsForValue().get(key);
-        return Optional.ofNullable(value);
+        Object cachedValue = redisTemplate.opsForValue().get(key);
+        if (cachedValue == null) {
+            return Optional.empty();
+        }
+
+        if (type.isInstance(cachedValue)) {
+            return Optional.of(type.cast(cachedValue));
+        }
+
+        if (cachedValue instanceof LinkedHashMap) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+            try {
+                T value = mapper.convertValue(cachedValue, type);
+                return Optional.of(value);
+            } catch (IllegalArgumentException e) {
+                log.error("Error converting cached value to type {}: {}", type.getSimpleName(), e.getMessage());
+            }
+        }
+
+        return Optional.empty();
     }
 
     public <T> void saveToCacheWithTTL(String key, T value, Duration ttl) {
@@ -78,9 +113,33 @@ public class RedisCacheService {
             return Collections.emptyList();
         }
 
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
         return rawValues.stream()
-                .filter(type::isInstance)
-                .map(type::cast)
+                .filter(Objects::nonNull)
+                .map(rawValue -> mapper.convertValue(rawValue, type))
                 .toList();
+    }
+
+    public <T> Map<String, T> getMultiFromCacheAsMap(List<String> keys, Class<T> type) {
+        List<Object> values = redisTemplate.opsForValue().multiGet(
+                keys.stream().map(key -> "employee:" + key).toList()
+        );
+
+        if (values == null) {
+            log.warn("No values found in Redis for keys: {}", keys);
+            return Collections.emptyMap();
+        }
+
+        return IntStream.range(0, Math.min(keys.size(), values.size()))
+                .filter(i -> type.isInstance(values.get(i)))
+                .boxed()
+                .collect(Collectors.toMap(
+                        keys::get,
+                        i -> type.cast(values.get(i)),
+                        (v1, v2) -> v1
+                ));
     }
 }

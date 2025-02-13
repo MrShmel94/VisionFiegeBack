@@ -12,10 +12,13 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -75,7 +78,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, errors.toString());
     }
 
+//    @ExceptionHandler(MissingServletRequestParameterException.class)
+//    public ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex) {
+//        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Missing parameter: " + ex.getParameterName());
+//    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
+        String message = String.format("Invalid value for parameter '%s': '%s'. Expected type: %s",
+                ex.getName(), ex.getValue(), Objects.requireNonNull(ex.getRequiredType()).getSimpleName());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, message);
+    }
+
     private ResponseEntity<Object> buildErrorResponse(HttpStatus status, String message) {
-        return ResponseEntity.status(status).body("{\"error\": \"" + message + "\"}");
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("status", status.value());
+        errorResponse.put("error", status.getReasonPhrase());
+        errorResponse.put("message", message);
+        errorResponse.put("timestamp", LocalDateTime.now());
+        return ResponseEntity.status(status).body(errorResponse);
     }
 }

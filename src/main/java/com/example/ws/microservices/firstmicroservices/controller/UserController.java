@@ -10,7 +10,9 @@ import com.example.ws.microservices.firstmicroservices.repository.UserRepository
 import com.example.ws.microservices.firstmicroservices.request.UserDetailsRequestModel;
 import com.example.ws.microservices.firstmicroservices.response.UserRest;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
+import com.example.ws.microservices.firstmicroservices.service.AccessManagementService;
 import com.example.ws.microservices.firstmicroservices.service.UserLookupService;
+import com.example.ws.microservices.firstmicroservices.service.UserRoleService;
 import com.example.ws.microservices.firstmicroservices.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,15 +20,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * The UserController is a REST controller that handles requests for managing user accounts.
@@ -42,7 +49,8 @@ public class UserController {
 
     private final UserService userService;
     private final UserLookupService userLookupService;
-    private final UserRepository userRepository;
+    private final UserRoleService userRoleService;
+    private final AccessManagementService accessManagementService;
 
     @Operation(summary = "Get a user by ID or Email", description = "Returns the user details. For ID, it must contain at least one letter and be at least 30 characters long.")
     @ApiResponses(value = {
@@ -92,23 +100,17 @@ public class UserController {
     })
     @PostMapping("/sign-up")
     public ResponseEntity<String> createUser(@Valid @RequestBody UserDetailsRequestModel userDetails) {
-        try {
 
-            UserDto userDto = UserMapper.INSTANCE.toUserDto(userDetails);
-            userService.createUser(userDto);
+        UserDto userDto = UserMapper.INSTANCE.toUserDto(userDetails);
+        userService.createUser(userDto);
 
-            return ResponseEntity.ok("User created successfully. Please check your email for verification.");
-        } catch (UserAlreadyExistsException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            log.error("Unexpected error in createUser : ", e);
-            throw new RuntimeException("An unexpected error occurred.");
-        }
+        return ResponseEntity.ok("User created successfully. Please check your email for verification.");
+
     }
 
-    @PostMapping("/test/{expertis}")
+    @PostMapping("/user/{expertis}")
     public ResponseEntity<SupervisorAllInformationDTO> getSupervisorAllInformation(@PathVariable String expertis) {
-        return ResponseEntity.ok(userRepository.findByExpertis(expertis).orElse(null));
+        return ResponseEntity.ok(userService.getSupervisorAllInformation(expertis, null));
     }
 
     @Operation(summary = "Update a user by ID", description = "Updates the details of an existing user")
@@ -142,26 +144,52 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Invalid token or user", content = @Content),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @GetMapping("/verify/{token}")
+    @GetMapping("/verify-email/{token}")
     public ResponseEntity<?> verifyUser(@PathVariable String token) {
-        try {
-            if (token.length() != 36) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token format. Token must be exactly 30 characters long.");
-            }
 
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (!(authentication.getPrincipal() instanceof CustomUserDetails currentUser)) {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated.");
-            }
-
-            userService.verifyUser(token, currentUser);
-
-            return ResponseEntity.ok("Email verified successfully.");
-        } catch (CustomException ex) {
-            return ResponseEntity.status(ex.getStatus()).body(ex.getErrorMessage());
-        } catch (Exception e) {
-            log.error("Unexpected error during email verification", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
+        if (token.length() != 36) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token format. Token must be exactly 36 characters long.");
         }
+
+        userService.verifyUser(token);
+        return ResponseEntity.ok("Email verified successfully.");
+    }
+
+    @Operation(summary = "Verify account employee", description = "Verify user account via verification users")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully verified account", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid userId", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
+    @GetMapping("/verify-account/{userId}")
+    public ResponseEntity<?> verifyUserAccount(@PathVariable String userId) {
+
+        accessManagementService.verifyAccountAndAssignRole(userId);
+        return ResponseEntity.ok("Account verified successfully.");
+    }
+
+    @Operation(summary = "Assign role to a user",
+            description = "Assigns a specific role to a user by their ID. The role must exist in the system.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Role assigned successfully", content = @Content),
+            @ApiResponse(responseCode = "404", description = "User or role not found", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Invalid input data", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
+    })
+    @PostMapping("/assign-role")
+    public ResponseEntity<?> assignRoleToUser(
+            @RequestParam @NotBlank String userId,
+            @RequestParam @NotBlank String roleName,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime validFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime validTo) {
+
+            userRoleService.assignRoleToUser(userId, roleName, validFrom, validTo);
+            return ResponseEntity.ok("Role assigned successfully.");
+    }
+
+    @GetMapping("/not-verified")
+    public ResponseEntity<?> getAllUsersNotVerified(){
+        List<?> allEmployees = accessManagementService.getAllUsersNotVerified();
+        return ResponseEntity.status(HttpStatus.OK).body(allEmployees);
     }
 }

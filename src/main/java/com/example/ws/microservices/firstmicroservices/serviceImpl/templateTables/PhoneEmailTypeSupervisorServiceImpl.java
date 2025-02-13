@@ -27,7 +27,7 @@ public class PhoneEmailTypeSupervisorServiceImpl implements PhoneEmailTypeSuperv
     }
 
     @Override
-    public List<PhoneEmailTypeSupervisorDTO> findAllWithSite() {
+    public List<PhoneEmailTypeSupervisorDTO> getAllFromDB() {
         return phoneEmailTypeSupervisorRepository.getAllType();
     }
 

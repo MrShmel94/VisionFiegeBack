@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface AgencyService extends CachingService<AgencyDTO> {
     List<Agency> findAll();
-    List<AgencyDTO> findAllWithSite();
+    List<AgencyDTO> getAllFromDB();
     Optional<Agency> findById(Long id);
     Optional<Agency> findByAgencyName(String agencyName);
     Optional<Agency> findByAgencyCode(String agencyCode);

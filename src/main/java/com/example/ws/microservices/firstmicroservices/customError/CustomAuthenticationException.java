@@ -1,14 +1,11 @@
 package com.example.ws.microservices.firstmicroservices.customError;
 
-import org.springframework.security.core.AuthenticationException;
+import org.springframework.http.HttpStatus;
 
-public class CustomAuthenticationException extends AuthenticationException {
+public class CustomAuthenticationException extends CustomException {
 
-    public CustomAuthenticationException(String msg) {
-        super(msg);
-    }
+  public CustomAuthenticationException(String message, HttpStatus status) {
+    super(message, status);
+  }
 
-    public CustomAuthenticationException(String msg, Throwable cause) {
-        super(msg, cause);
-    }
 }

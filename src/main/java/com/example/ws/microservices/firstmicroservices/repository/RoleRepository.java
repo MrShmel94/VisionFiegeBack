@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RoleRepository extends JpaRepository<Role, Integer> {
+
     Optional<Role> findByName(String name);
 
     @Query("""
@@ -17,8 +18,8 @@ public interface RoleRepository extends JpaRepository<Role, Integer> {
             r.name, r.id, r.weight, COALESCE(ur.validFrom, CURRENT_TIMESTAMP), COALESCE(ur.validTo, CURRENT_TIMESTAMP)
         )
         FROM Role r
-        LEFT JOIN UserRole ur ON r.id = ur.role.id
-        WHERE ur.user.id = :userId
+        LEFT JOIN UserRole ur ON r.id = ur.id.roleId
+        WHERE ur.id.userId = :userId
         """)
     List<RoleDTO> findAllRolesByUserId(@Param("userId") Long userId);
 }

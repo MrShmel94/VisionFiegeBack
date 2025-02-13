@@ -11,5 +11,5 @@ import java.util.Optional;
 
 public interface CountryService extends CachingService<CountryDTO> {
     List<Country> findAll();
-    List<CountryDTO> findAllWithSite();
+    List<CountryDTO> getAllFromDB();
 }

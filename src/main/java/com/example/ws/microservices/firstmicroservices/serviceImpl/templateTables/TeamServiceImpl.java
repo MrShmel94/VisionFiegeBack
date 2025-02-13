@@ -1,12 +1,8 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.templateTables;
 
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.ShiftDTO;
 import com.example.ws.microservices.firstmicroservices.dto.templateTables.TeamDTO;
-import com.example.ws.microservices.firstmicroservices.entity.template.Shift;
 import com.example.ws.microservices.firstmicroservices.entity.template.Team;
-import com.example.ws.microservices.firstmicroservices.repository.templateTables.ShiftRepository;
 import com.example.ws.microservices.firstmicroservices.repository.templateTables.TeamRepository;
-import com.example.ws.microservices.firstmicroservices.service.templateTables.ShiftService;
 import com.example.ws.microservices.firstmicroservices.service.templateTables.TeamService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,14 +23,14 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public void preloadToCache(RedisTemplate<String, Object> redisTemplate) {
-        List<TeamDTO> teams = findAllWithSite();
+        List<TeamDTO> teams = getAllFromDB();
         for (TeamDTO team : teams) {
             redisTemplate.opsForValue().set("team:" + team.getId(), team);
         }
     }
 
     @Override
-    public List<TeamDTO> findAllWithSite() {
+    public List<TeamDTO> getAllFromDB() {
         return teamRepository.findAllWithSite().stream().map(eachObject -> TeamDTO.builder()
                 .name(eachObject.getName())
                 .id(eachObject.getId())

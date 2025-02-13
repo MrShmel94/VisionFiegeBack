@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface DepartmentService extends CachingService<DepartmentDTO> {
     List<Department> findAll();
-    List<DepartmentDTO> findAllWithSite();
+    List<DepartmentDTO> getAllFromDB();
 }

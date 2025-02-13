@@ -9,5 +9,5 @@ import java.util.List;
 
 public interface PositionService extends CachingService<PositionDTO> {
     List<Position> findAll();
-    List<PositionDTO> findAllWithSite();
+    List<PositionDTO> getAllFromDB();
 }

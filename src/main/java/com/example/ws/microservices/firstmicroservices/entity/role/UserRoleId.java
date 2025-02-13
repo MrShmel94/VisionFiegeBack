@@ -13,5 +13,5 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class UserRoleId implements Serializable {
     private Long userId;
-    private Long roleId;
+    private Integer roleId;
 }

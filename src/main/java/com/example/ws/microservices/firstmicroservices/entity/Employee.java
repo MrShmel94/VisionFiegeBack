@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,6 +41,12 @@ public class Employee {
     @Column(name = "is_work", nullable = false)
     private Boolean isWork = false;
 
+    @Column(name = "is_can_has_account", nullable = false)
+    private Boolean isCanHasAccount;
+
+    @Column(name = "valid_to_account", nullable = false)
+    private LocalDateTime validToAccount;
+
     @Column(name = "sex", nullable = false, length = 4)
     private String sex;
 
@@ -52,6 +59,9 @@ public class Employee {
     @Column(name = "department_id", nullable = false)
     private Long departmentId;
 
+    @Column(name = "country_id", nullable = false)
+    private Short countryId;
+
     @Column(name = "team_id", nullable = false)
     private Long teamId;
 
@@ -61,6 +71,6 @@ public class Employee {
     @Column(name = "agency_id", nullable = false)
     private Long agencyId;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserRole> userRoles = new HashSet<>();
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<UserRole> userRoles = new HashSet<>();
 }

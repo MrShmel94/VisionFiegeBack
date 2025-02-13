@@ -24,6 +24,6 @@ public class Role {
     @Column(name = "weight", nullable = false)
     private Integer weight;
 
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserRole> userRoles = new HashSet<>();
+//    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private Set<UserRole> userRoles = new HashSet<>();
 }

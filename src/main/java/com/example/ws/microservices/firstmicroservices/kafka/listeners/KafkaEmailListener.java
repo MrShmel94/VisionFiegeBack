@@ -30,7 +30,7 @@ public class KafkaEmailListener {
 
     private void sendEmail(String email, String token) {
         String subject = "Verify Your Email - Your Company Name";
-        String verifyURL = "http://localhost:8080/api/v1/users/verify?code=" + token;
+        String verifyURL = "http://localhost:8080/api/v1/users/verify-email/" + token;
 
         String mailContent = "<p>Dear User,</p>"
                 + "<p>Welcome to <strong>Your Company Name</strong>!</p>"
@@ -42,7 +42,7 @@ public class KafkaEmailListener {
                     .property(Emailv31.MESSAGES, new JSONArray()
                             .put(new JSONObject()
                                     .put(Emailv31.Message.FROM, new JSONObject()
-                                            .put("Email", "your-email@example.com")
+                                            .put("Email", "mrshmel94@gmail.com")
                                             .put("Name", "Your Company"))
                                     .put(Emailv31.Message.TO, new JSONArray()
                                             .put(new JSONObject().put("Email", email)))

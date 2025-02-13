@@ -1,13 +1,18 @@
 package com.example.ws.microservices.firstmicroservices.dto;
 
+import com.example.ws.microservices.firstmicroservices.secure.aspects.MaskField;
+import jakarta.persistence.Column;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class EmployeeDTO implements Serializable {
 
     @Serial
@@ -16,6 +21,7 @@ public class EmployeeDTO implements Serializable {
     private Long id;
     private String expertis;
     private Short zalosId;
+    @MaskField(minWeight = 30)
     private String brCode;
     private String firstName;
     private String lastName;
@@ -27,5 +33,7 @@ public class EmployeeDTO implements Serializable {
     private String teamName;
     private String positionName;
     private String agencyName;
+    private Boolean isCanHasAccount;
+    private LocalDateTime validToAccount;
 
 }
