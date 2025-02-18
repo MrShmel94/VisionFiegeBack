@@ -2,7 +2,6 @@ package com.example.ws.microservices.firstmicroservices.serviceImpl.performance_
 
 import com.example.ws.microservices.firstmicroservices.dto.PerformanceDTO;
 import com.example.ws.microservices.firstmicroservices.entity.performance_gd.*;
-import com.example.ws.microservices.firstmicroservices.repository.performance_gd.PerformanceRepository;
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.ActivityNameService;
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.FinalClusterService;
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.PerformanceService;
@@ -12,12 +11,16 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
+import java.sql.Connection;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -30,54 +33,15 @@ import java.util.stream.Stream;
 @Slf4j
 public class PerformanceServiceImpl implements PerformanceService {
 
-    @PersistenceContext
-    private EntityManager entityManager;
-
-    private PerformanceRepository performanceRepository;
     private ActivityNameService activityNameService;
     private FinalClusterService finalClusterService;
     private SpiClusterService spiClusterService;
+    private final JdbcTemplate jdbcTemplate;
 
-    private final ClickHousePerformanceServiceImpl clickHousePerformanceService;
-
-    @Transactional
-    public void processFileClickHouse(List<List<String>> allLineFiles, Map<String, String> checkHeaderList, List<String> headersName) {
-        Map<String, Integer> indexMap = IntStream.range(0, headersName.size())
-                .boxed()
-                .collect(Collectors.toMap(
-                        headersName::get,
-                        index -> index
-                ));
-
-        List<PerformanceDTO> allPerformanceToSave = IntStream.range(0, allLineFiles.size())
-                .mapToObj(index -> {
-                    List<String> row = allLineFiles.get(index);
-                    return new PerformanceDTO(
-                            parseDateToLocalDate(row.get(indexMap.get(checkHeaderList.get("date")))),
-                            row.get(indexMap.get(checkHeaderList.get("expertis"))),
-                            row.get(indexMap.get(checkHeaderList.get("activityName"))),
-                            row.get(indexMap.get(checkHeaderList.get("category"))),
-                            row.get(indexMap.get(checkHeaderList.get("finalCluster"))),
-                            parseDate(row.get(indexMap.get(checkHeaderList.get("startActivity")))),
-                            parseDate(row.get(indexMap.get(checkHeaderList.get("endActivity")))),
-                            safeParseBigDecimal(row.get(indexMap.get(checkHeaderList.get("duration")))),
-                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("ql")))),
-                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("qlBox")))),
-                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("qlHanging")))),
-                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("qlShoes")))),
-                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("qlBoots")))),
-                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("qlOther")))),
-                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("stowClarifications")))),
-                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("pickNos1")))),
-                            safeParseShort(row.get(indexMap.get(checkHeaderList.get("pickNos2"))))
-                    );
-                }).toList();
-
-        clickHousePerformanceService.savePerformances(allPerformanceToSave);
-    }
+    private static final DateTimeFormatter TIMESTAMP_FORMAT =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
-    @Transactional
     public void processFile(List<List<String>> allLineFiles, Map<String, String> checkHeaderList, List<String> headersName) {
         Map<String, Integer> indexMap = IntStream.range(0, headersName.size())
                 .boxed()
@@ -175,16 +139,14 @@ public class PerformanceServiceImpl implements PerformanceService {
             log.info("Added new FinalClusters: {}", newFinalClustersName);
         }
 
-        Long startId = performanceRepository.getNextSequenceId();
-
-        List<Performance> allPerformanceToSave = IntStream.range(0, allLineFiles.size())
+        List<PerformanceRow> allPerformanceToSave = IntStream.range(0, allLineFiles.size())
                                                           .mapToObj(index -> {
                                                               List<String> eachProcessLine = allLineFiles.get(index);
-            Performance performance = new Performance();
+            PerformanceRow performance = new PerformanceRow();
             performance.setExpertis(eachProcessLine.get(indexMap.get(checkHeaderList.get("expertis"))).replace(".0", ""));
-            performance.setActivityName(allActivityNames.stream().filter(eachElement -> eachElement.getName().equals(eachProcessLine.get(indexMap.get(checkHeaderList.get("activityName"))))).findFirst().get());
-            performance.setFinalCluster(allFinalClusters.stream().filter(eachElement -> eachElement.getName().equals(eachProcessLine.get(indexMap.get(checkHeaderList.get("finalCluster"))))).findFirst().get());
-            performance.setActivityCluster(allSpiClusters.stream().filter(eachElement -> eachElement.getNameTable().equals(eachProcessLine.get(indexMap.get(checkHeaderList.get("category"))))).findFirst().get());
+            performance.setActivityName(allActivityNames.stream().filter(eachElement -> eachElement.getName().equals(eachProcessLine.get(indexMap.get(checkHeaderList.get("activityName"))))).findFirst().orElseThrow());
+            performance.setFinalCluster(allFinalClusters.stream().filter(eachElement -> eachElement.getName().equals(eachProcessLine.get(indexMap.get(checkHeaderList.get("finalCluster"))))).findFirst().orElseThrow());
+            performance.setActivityCluster(allSpiClusters.stream().filter(eachElement -> eachElement.getNameTable().equals(eachProcessLine.get(indexMap.get(checkHeaderList.get("category"))))).findFirst().orElseThrow());
             performance.setStartActivity(parseDate(eachProcessLine.get(indexMap.get(checkHeaderList.get("startActivity")))));
             performance.setEndActivity(parseDate(eachProcessLine.get(indexMap.get(checkHeaderList.get("endActivity")))));
             performance.setDuration(safeParseBigDecimal(eachProcessLine.get(indexMap.get(checkHeaderList.get("duration")))));
@@ -212,26 +174,119 @@ public class PerformanceServiceImpl implements PerformanceService {
             );
 
             LocalDate date = parseDateToLocalDate(eachProcessLine.get(indexMap.get(checkHeaderList.get("date"))));
-            performance.setPerformanceId(new PerformanceId(startId + index, date));
+            performance.setDate(date);
 
             return performance;
         }).toList();
 
-        savePerformancesInBatch(allPerformanceToSave);
+        if (allPerformanceToSave.isEmpty()) {
+            log.info("No lines to process, skipping insertion.");
+            return;
+        }
+
+        LocalDate partitionDate = allPerformanceToSave.get(0).getDate();
+        ensurePartitionExists(partitionDate);
+
+        copyInsertPerformance(allPerformanceToSave);
     }
 
-    @Transactional
-    public void savePerformancesInBatch(List<Performance> performances) {
-        int batchSize = 10000;
-        for (int i = 0; i < performances.size(); i++) {
-            entityManager.persist(performances.get(i));
-            if (i > 0 && i % batchSize == 0) {
-                entityManager.flush();
-                entityManager.clear();
-            }
+    private void copyInsertPerformance(List<PerformanceRow> list) {
+        StringBuilder sb = new StringBuilder();
+
+        log.info("Start building CSV: list.size = {}", list.size());
+
+        log.info("Start processing StringBuilder : {}", LocalDateTime.now());
+
+        for (int i = 0; i < list.size(); i++) {
+            PerformanceRow p = list.get(i);
+
+            // -- 1) date
+            sb.append(p.getDate() == null ? "" : p.getDate()).append(';');
+            // -- 2) expertis
+            sb.append(escapeCsv(p.getExpertis())).append(';');
+            // -- 3) activity_name_id
+            sb.append(p.getActivityName().getId()).append(';');
+            // -- 4) final_cluster_id
+            sb.append(p.getFinalCluster().getId()).append(';');
+            // -- 5) activity_cluster_id
+            sb.append(p.getActivityCluster().getId()).append(';');
+
+            // -- 6) start_activity: форматируем
+            sb.append(formatTimestamp(p.getStartActivity())).append(';');
+            // -- 7) end_activity
+            sb.append(formatTimestamp(p.getEndActivity())).append(';');
+
+            // -- 8) duration
+            sb.append(p.getDuration() == null ? "0" : p.getDuration().toString()).append(';');
+
+            // -- 9) ql
+            sb.append(nullSafeShort(p.getQl())).append(';');
+            // 10) ql_box
+            sb.append(nullSafeShort(p.getQlBox())).append(';');
+            // 11) ql_hanging
+            sb.append(nullSafeShort(p.getQlHanging())).append(';');
+            // 12) ql_shoes
+            sb.append(nullSafeShort(p.getQlShoes())).append(';');
+            // 13) ql_boots
+            sb.append(nullSafeShort(p.getQlBoots())).append(';');
+            // 14) ql_other
+            sb.append(nullSafeShort(p.getQlOther())).append(';');
+            // 15) stow_clarifications
+            sb.append(nullSafeShort(p.getStowClarifications())).append(';');
+            // 16) pick_nos1
+            sb.append(nullSafeShort(p.getPickNos1())).append(';');
+            // 17) pick_nos2
+            sb.append(nullSafeShort(p.getPickNos2())).append('\n'); // ВАЖНО: \n в конце строки
         }
-        entityManager.flush();
-        entityManager.clear();
+
+        log.info("Finished building CSV. Total lines: {}", list.size());
+
+        log.info("End processing StringBuilder : {}", LocalDateTime.now());
+
+        byte[] csvData = sb.toString().getBytes();
+
+        log.info("CSV data size in bytes: {}", csvData.length);
+
+        ByteArrayInputStream bais = new ByteArrayInputStream(csvData);
+
+        try (Connection conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection()) {
+            var pgConn = conn.unwrap(org.postgresql.PGConnection.class);
+
+            String copySql = """
+                COPY performance_dg.performance (
+                   date, expertis, activity_name_id, final_cluster_id, activity_cluster_id,
+                   start_activity, end_activity, duration,
+                   ql, ql_box, ql_hanging, ql_shoes, ql_boots, ql_other,
+                   stow_clarifications, pick_nos1, pick_nos2
+                )
+                FROM STDIN
+                DELIMITER ';'
+                CSV
+            """;
+
+            log.info("Starting copyIn (expected columns: 17 per line) ... : {}", LocalDateTime.now());
+
+            long rowCount = pgConn.getCopyAPI().copyIn(copySql, bais);
+            log.info("COPY inserted {} rows into performance. : {}", rowCount, LocalDateTime.now());
+        } catch (Exception e) {
+            log.error("Error COPY inserting performance data", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String escapeCsv(String text) {
+        return (text == null) ? "" : text;
+    }
+
+    private short nullSafeShort(Short val) {
+        return (val == null) ? 0 : val;
+    }
+
+    private String formatTimestamp(Instant inst) {
+        if (inst == null) {
+            return "";
+        }
+        return TIMESTAMP_FORMAT.format(inst.atZone(java.time.ZoneOffset.UTC));
     }
 
     private LocalDate parseDateToLocalDate(String date) {
@@ -268,6 +323,42 @@ public class PerformanceServiceImpl implements PerformanceService {
             return new BigDecimal(str);
         } catch (NumberFormatException e) {
             return BigDecimal.ZERO;
+        }
+    }
+
+    @Transactional
+    public void ensurePartitionExists(LocalDate targetDate) {
+
+        if (targetDate == null) return;
+
+        LocalDate partitionStart = targetDate.withDayOfMonth(1);
+        LocalDate partitionEnd = partitionStart.plusMonths(1);
+        String partitionName = "performance_" + partitionStart.format(DateTimeFormatter.ofPattern("yyyy_MM"));
+
+        log.info("Checking partition {} for range {} to {}", partitionName, partitionStart, partitionEnd);
+
+        String checkQuery = "SELECT 1 FROM information_schema.tables WHERE table_schema = 'performance_dg' AND table_name = ?";
+        List<Integer> result = jdbcTemplate.query(checkQuery, (rs, rowNum) -> rs.getInt(1), partitionName);
+
+        if (result.isEmpty()) {
+            log.info("Partition {} does not exist. Creating partition...", partitionName);
+            String createPartitionSql = String.format(
+                    "CREATE TABLE performance_dg.%s PARTITION OF performance_dg.performance " +
+                            "FOR VALUES FROM ('%s'::date) TO ('%s'::date)",
+                    partitionName, partitionStart, partitionEnd
+            );
+
+            jdbcTemplate.execute(createPartitionSql);
+            jdbcTemplate.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_date ON performance_dg.%s (date)", partitionName, partitionName));
+            jdbcTemplate.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_expertis ON performance_dg.%s (expertis)", partitionName, partitionName));
+            jdbcTemplate.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_activity_name_id ON performance_dg.%s (activity_name_id)", partitionName, partitionName));
+            jdbcTemplate.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_final_cluster_id ON performance_dg.%s (final_cluster_id)", partitionName, partitionName));
+            jdbcTemplate.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_start_activity ON performance_dg.%s (start_activity)", partitionName, partitionName));
+            jdbcTemplate.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_end_activity ON performance_dg.%s (end_activity)", partitionName, partitionName));
+
+            log.info("Partition {} created successfully.", partitionName);
+        } else {
+            log.info("Partition {} already exists.", partitionName);
         }
     }
 }

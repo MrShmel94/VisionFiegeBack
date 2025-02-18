@@ -272,7 +272,7 @@ VALUES  ('date','Work Date Date'),
         ('volumescan', '# Items Volumescan');
 
 CREATE TABLE IF NOT EXISTS performance (
-    id BIGSERIAL,
+--     id BIGINT NOT NULL ,
     date DATE NOT NULL,
     expertis VARCHAR (64) NOT NULL,
     activity_name_id INT NOT NULL REFERENCES activity_name,
@@ -289,8 +289,8 @@ CREATE TABLE IF NOT EXISTS performance (
     ql_other SMALLINT DEFAULT 0,
     stow_clarifications SMALLINT DEFAULT 0,
     pick_nos1 SMALLINT DEFAULT 0,
-    pick_nos2 SMALLINT DEFAULT 0,
-    PRIMARY KEY (id, date)
+    pick_nos2 SMALLINT DEFAULT 0
+--     PRIMARY KEY (id, date)
 ) PARTITION BY RANGE (date);
 
 CREATE INDEX idx_performance_date ON performance (date);
@@ -300,60 +300,63 @@ CREATE INDEX idx_performance_final_cluster ON performance (final_cluster_id);
 CREATE INDEX idx_performance_start_activity ON performance (start_activity);
 CREATE INDEX idx_performance_end_activity ON performance (end_activity);
 
-CREATE SEQUENCE performance_seq START 1;
+-- CREATE SEQUENCE performance_seq START 1;
 
-CREATE OR REPLACE FUNCTION create_partition_if_not_exists()
-    RETURNS TRIGGER AS $$
-DECLARE
-    partition_name TEXT;
-    partition_start DATE;
-    partition_end DATE;
-BEGIN
-    partition_start := date_trunc('month', NEW.date);
-    partition_end := (partition_start + INTERVAL '1 month')::DATE;
-
-    partition_name := 'performance_' || to_char(partition_start, 'YYYY_MM');
-
-    RAISE NOTICE 'Attempting to create partition for % from % to %', partition_name, partition_start, partition_end;
-
-    IF NOT EXISTS (
-        SELECT 1
-        FROM information_schema.tables
-        WHERE table_name = partition_name
-          AND table_schema = 'performance_dg'
-    ) THEN
-        RAISE NOTICE 'Creating partition % for range % to %', partition_name, partition_start, partition_end;
-
-        EXECUTE format('
-            CREATE TABLE performance_dg.%I PARTITION OF performance
-            FOR VALUES FROM (''%s'') TO (''%s'');
-            CREATE INDEX ON performance_dg.%I (date);
-            CREATE INDEX ON performance_dg.%I (expertis);
-            CREATE INDEX ON performance_dg.%I (activity_name_id);
-            CREATE INDEX ON performance_dg.%I (final_cluster_id);
-            CREATE INDEX ON performance_dg.%I (start_activity);
-            CREATE INDEX ON performance_dg.%I (end_activity);
-            ',
-                       partition_name, partition_start, partition_end,
-                       partition_name, partition_name, partition_name, partition_name, partition_name, partition_name
-                );
-    ELSE
-        RAISE NOTICE 'Partition % already exists', partition_name;
-    END IF;
-
-    RETURN NEW;
-EXCEPTION
-    WHEN OTHERS THEN
-        RAISE NOTICE 'Error occurred: %', SQLERRM;
-        RETURN NULL;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TRIGGER create_partition_trigger
-    BEFORE INSERT ON performance
-    FOR EACH ROW EXECUTE FUNCTION create_partition_if_not_exists();
+-- CREATE OR REPLACE FUNCTION create_partition_if_not_exists()
+--     RETURNS TRIGGER AS $$
+-- DECLARE
+--     partition_name TEXT;
+--     partition_start DATE;
+--     partition_end DATE;
+-- BEGIN
+--     EXECUTE 'SET LOCAL plan_cache_mode = force_generic_plan';
+--
+--     partition_start := date_trunc('month', NEW.date)::DATE;
+--     partition_end := (partition_start + INTERVAL '1 month')::DATE;
+--     partition_name := 'performance_' || to_char(partition_start, 'YYYY_MM');
+--
+--     RAISE NOTICE 'Attempting to create partition for % from % to %', partition_name, partition_start, partition_end;
+--
+--     IF NOT EXISTS (
+--         SELECT 1
+--         FROM information_schema.tables
+--         WHERE table_name = partition_name
+--           AND table_schema = 'performance_dg'
+--     ) THEN
+--         RAISE NOTICE 'Creating partition % for range % to %', partition_name, partition_start, partition_end;
+--
+--         EXECUTE format('
+--             CREATE TABLE performance_dg.%I PARTITION OF performance
+--             FOR VALUES FROM (''%s'') TO (''%s'')',
+--                        partition_name, partition_start, partition_end
+--                 );
+--         EXECUTE format('CREATE INDEX ON performance_dg.%I (date)', partition_name);
+--         EXECUTE format('CREATE INDEX ON performance_dg.%I (expertis)', partition_name);
+--         EXECUTE format('CREATE INDEX ON performance_dg.%I (activity_name_id)', partition_name);
+--         EXECUTE format('CREATE INDEX ON performance_dg.%I (final_cluster_id)', partition_name);
+--         EXECUTE format('CREATE INDEX ON performance_dg.%I (start_activity)', partition_name);
+--         EXECUTE format('CREATE INDEX ON performance_dg.%I (end_activity)', partition_name);
+--     ELSE
+--         RAISE NOTICE 'Partition % already exists', partition_name;
+--     END IF;
+--
+--     RETURN NEW;
+-- EXCEPTION
+--     WHEN OTHERS THEN
+--         RAISE NOTICE 'Error occurred: %', SQLERRM;
+--         RETURN NULL;
+-- END;
+-- $$ LANGUAGE plpgsql;
+--
+--
+-- CREATE TRIGGER create_partition_trigger
+--     BEFORE INSERT ON performance
+--     FOR EACH ROW EXECUTE FUNCTION create_partition_if_not_exists();
 
 CREATE TABLE IF NOT EXISTS check_name_file(
     id BIGSERIAL PRIMARY KEY ,
-    date DATE NOT NULL UNIQUE
+    date DATE NOT NULL,
+    id_user_loaded VARCHAR(256) NOT NULL,
+    name_file VARCHAR(256) NOT NULL UNIQUE,
+    process VARCHAR(64) NOT NULL
 );

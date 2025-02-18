@@ -8,5 +8,4 @@ import java.util.Map;
 
 public interface PerformanceService {
     void processFile(List<List<String>> allLineFiles, Map<String, String> checkHeaderList, List<String> tablesNameInIndex);
-    void processFileClickHouse(List<List<String>> allLineFiles, Map<String, String> checkHeaderList, List<String> tablesNameInIndex);
 }

@@ -21,4 +21,6 @@ public interface EmployeeService {
 
     PaginatedResponse<EmployeeFullInformationDTO> getEmployeesByExpertisList(
             List<String> expertisList, Pageable pageable);
+
+    List<EmployeeDTO> getListEmployeeWithoutSupervisor();
 }

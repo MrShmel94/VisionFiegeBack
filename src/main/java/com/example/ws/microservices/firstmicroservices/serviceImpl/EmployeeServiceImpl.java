@@ -111,6 +111,11 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .build();
     }
 
+    @Override
+    public List<EmployeeDTO> getListEmployeeWithoutSupervisor() {
+        return List.of();
+    }
+
     public Map<String, EmployeeFullInformationDTO> getEmployeeRedisEmployeeFullInformationDTO(List<String> expertisList) {
         Map<String, EmployeeFullInformationDTO> multiFromCacheAsMap = redisCacheService.getMultiFromCacheAsMap(expertisList, EmployeeFullInformationDTO.class);
 

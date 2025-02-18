@@ -38,7 +38,6 @@ public class DownloadController {
         List<String> result = new ArrayList<>();
 
         if (files.size() > fileUploadConfig.getMaxFileCount()) {
-            log.info("");
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(List.of("Too many files uploaded. Maximum allowed: " + fileUploadConfig.getMaxFileCount()));
         }
@@ -57,7 +56,6 @@ public class DownloadController {
 
                     List<List<String>> parsedFile = XlsxParserGDUtils.parserXlsxFile(eachFile.getInputStream(), onlyTableNames, 2, eachFile.getName());
                     performanceService.processFile(parsedFile, checkHeaders, onlyTableNames);
-                    performanceService.processFileClickHouse(parsedFile, checkHeaders, onlyTableNames);
 
                     result.add(eachFile.getOriginalFilename() + " - Successfully processed. Total rows: " + parsedFile.size());
 
@@ -66,6 +64,7 @@ public class DownloadController {
                 } catch (IOException e) {
                     result.add(eachFile.getOriginalFilename() + " - Error: Unable to read the file.");
                 } catch (Exception e) {
+                    log.info(e.getMessage());
                     result.add(eachFile.getOriginalFilename() + " - Error: Unexpected error occurred during processing.");
                 }
             });

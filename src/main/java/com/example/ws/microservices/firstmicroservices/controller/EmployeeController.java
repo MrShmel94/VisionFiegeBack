@@ -89,4 +89,9 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping(path = "/getEmployeeWithoutSupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<EmployeeDTO> getListEmployeesWithoutSupervisor(){
+        return employeeServices.getListEmployeeWithoutSupervisor();
+    }
+
 }

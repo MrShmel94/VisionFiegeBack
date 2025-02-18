@@ -7,15 +7,23 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 
 @Getter
 @Setter
-@Entity
-@Table(name = "performance", schema = "performance_dg")
+//@Entity
+//@Table(name = "performance", schema = "performance_dg")
+//@IdClass(PerformanceId.class)
 public class Performance {
 
-    @EmbeddedId
-    private PerformanceId performanceId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "performance_seq_gen")
+    @SequenceGenerator(name = "performance_seq_gen", sequenceName = "performance_seq", allocationSize = 1, schema = "performance_dg")
+    @Column(name = "id", nullable = false)
+    private Long id;
+
+    @Column(name = "date", nullable = false)
+    private LocalDate date;
 
     @Column(name = "expertis", nullable = false, length = 64)
     private String expertis;

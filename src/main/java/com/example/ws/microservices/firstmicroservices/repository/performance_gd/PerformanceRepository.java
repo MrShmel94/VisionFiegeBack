@@ -4,8 +4,8 @@ import com.example.ws.microservices.firstmicroservices.entity.performance_gd.Per
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface PerformanceRepository extends JpaRepository<Performance, Long> {
-
-    @Query(value = "SELECT nextval('performance_dg.performance_seq');", nativeQuery = true)
-    Long getNextSequenceId();
-}
+//public interface PerformanceRepository extends JpaRepository<Performance, Long> {
+//
+//    @Query(value = "SELECT nextval('performance_dg.performance_seq');", nativeQuery = true)
+//    Long getNextSequenceId();
+//}
