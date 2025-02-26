@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
 import java.math.BigDecimal;
-import java.sql.Connection;
+import java.sql.*;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,7 +42,7 @@ public class PerformanceServiceImpl implements PerformanceService {
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
-    public void processFile(List<List<String>> allLineFiles, Map<String, String> checkHeaderList, List<String> headersName) {
+    public void processFile(Connection conn, List<List<String>> allLineFiles, Map<String, String> checkHeaderList, List<String> headersName) {
         Map<String, Integer> indexMap = IntStream.range(0, headersName.size())
                 .boxed()
                 .collect(Collectors.toMap(
@@ -185,58 +185,35 @@ public class PerformanceServiceImpl implements PerformanceService {
         }
 
         LocalDate partitionDate = allPerformanceToSave.get(0).getDate();
-        ensurePartitionExists(partitionDate);
 
-        copyInsertPerformance(allPerformanceToSave);
+        ensurePartitionExistsWithConnection(conn, partitionDate);
+        copyInsertPerformance(conn, allPerformanceToSave);
     }
 
-    private void copyInsertPerformance(List<PerformanceRow> list) {
+    private void copyInsertPerformance(Connection conn,  List<PerformanceRow> list) {
         StringBuilder sb = new StringBuilder();
 
         log.info("Start building CSV: list.size = {}", list.size());
-
         log.info("Start processing StringBuilder : {}", LocalDateTime.now());
 
-        for (int i = 0; i < list.size(); i++) {
-            PerformanceRow p = list.get(i);
-
-            // -- 1) date
+        for (PerformanceRow p : list) {
             sb.append(p.getDate() == null ? "" : p.getDate()).append(';');
-            // -- 2) expertis
             sb.append(escapeCsv(p.getExpertis())).append(';');
-            // -- 3) activity_name_id
             sb.append(p.getActivityName().getId()).append(';');
-            // -- 4) final_cluster_id
             sb.append(p.getFinalCluster().getId()).append(';');
-            // -- 5) activity_cluster_id
             sb.append(p.getActivityCluster().getId()).append(';');
-
-            // -- 6) start_activity: форматируем
             sb.append(formatTimestamp(p.getStartActivity())).append(';');
-            // -- 7) end_activity
             sb.append(formatTimestamp(p.getEndActivity())).append(';');
-
-            // -- 8) duration
             sb.append(p.getDuration() == null ? "0" : p.getDuration().toString()).append(';');
-
-            // -- 9) ql
             sb.append(nullSafeShort(p.getQl())).append(';');
-            // 10) ql_box
             sb.append(nullSafeShort(p.getQlBox())).append(';');
-            // 11) ql_hanging
             sb.append(nullSafeShort(p.getQlHanging())).append(';');
-            // 12) ql_shoes
             sb.append(nullSafeShort(p.getQlShoes())).append(';');
-            // 13) ql_boots
             sb.append(nullSafeShort(p.getQlBoots())).append(';');
-            // 14) ql_other
             sb.append(nullSafeShort(p.getQlOther())).append(';');
-            // 15) stow_clarifications
             sb.append(nullSafeShort(p.getStowClarifications())).append(';');
-            // 16) pick_nos1
             sb.append(nullSafeShort(p.getPickNos1())).append(';');
-            // 17) pick_nos2
-            sb.append(nullSafeShort(p.getPickNos2())).append('\n'); // ВАЖНО: \n в конце строки
+            sb.append(nullSafeShort(p.getPickNos2())).append('\n');
         }
 
         log.info("Finished building CSV. Total lines: {}", list.size());
@@ -249,7 +226,7 @@ public class PerformanceServiceImpl implements PerformanceService {
 
         ByteArrayInputStream bais = new ByteArrayInputStream(csvData);
 
-        try (Connection conn = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection()) {
+        try {
             var pgConn = conn.unwrap(org.postgresql.PGConnection.class);
 
             String copySql = """
@@ -326,39 +303,43 @@ public class PerformanceServiceImpl implements PerformanceService {
         }
     }
 
-    @Transactional
-    public void ensurePartitionExists(LocalDate targetDate) {
-
+    private void ensurePartitionExistsWithConnection(Connection conn, LocalDate targetDate) {
         if (targetDate == null) return;
 
         LocalDate partitionStart = targetDate.withDayOfMonth(1);
         LocalDate partitionEnd = partitionStart.plusMonths(1);
         String partitionName = "performance_" + partitionStart.format(DateTimeFormatter.ofPattern("yyyy_MM"));
 
-        log.info("Checking partition {} for range {} to {}", partitionName, partitionStart, partitionEnd);
+        log.info("Проверяем наличие partition {} для диапазона {} до {}", partitionName, partitionStart, partitionEnd);
 
-        String checkQuery = "SELECT 1 FROM information_schema.tables WHERE table_schema = 'performance_dg' AND table_name = ?";
-        List<Integer> result = jdbcTemplate.query(checkQuery, (rs, rowNum) -> rs.getInt(1), partitionName);
-
-        if (result.isEmpty()) {
-            log.info("Partition {} does not exist. Creating partition...", partitionName);
-            String createPartitionSql = String.format(
-                    "CREATE TABLE performance_dg.%s PARTITION OF performance_dg.performance " +
-                            "FOR VALUES FROM ('%s'::date) TO ('%s'::date)",
-                    partitionName, partitionStart, partitionEnd
-            );
-
-            jdbcTemplate.execute(createPartitionSql);
-            jdbcTemplate.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_date ON performance_dg.%s (date)", partitionName, partitionName));
-            jdbcTemplate.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_expertis ON performance_dg.%s (expertis)", partitionName, partitionName));
-            jdbcTemplate.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_activity_name_id ON performance_dg.%s (activity_name_id)", partitionName, partitionName));
-            jdbcTemplate.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_final_cluster_id ON performance_dg.%s (final_cluster_id)", partitionName, partitionName));
-            jdbcTemplate.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_start_activity ON performance_dg.%s (start_activity)", partitionName, partitionName));
-            jdbcTemplate.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_end_activity ON performance_dg.%s (end_activity)", partitionName, partitionName));
-
-            log.info("Partition {} created successfully.", partitionName);
-        } else {
-            log.info("Partition {} already exists.", partitionName);
+        try (PreparedStatement ps = conn.prepareStatement(
+                "SELECT 1 FROM information_schema.tables WHERE table_schema = 'performance_dg' AND table_name = ?")) {
+            ps.setString(1, partitionName);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) {
+                    log.info("Partition {} не существует. Создаём...", partitionName);
+                    try (Statement stmt = conn.createStatement()) {
+                        String createPartitionSql = String.format(
+                                "CREATE TABLE performance_dg.%s PARTITION OF performance_dg.performance " +
+                                        "FOR VALUES FROM ('%s'::date) TO ('%s'::date)",
+                                partitionName, partitionStart, partitionEnd
+                        );
+                        stmt.execute(createPartitionSql);
+                        stmt.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_date ON performance_dg.%s (date)", partitionName, partitionName));
+                        stmt.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_expertis ON performance_dg.%s (expertis)", partitionName, partitionName));
+                        stmt.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_activity_name_id ON performance_dg.%s (activity_name_id)", partitionName, partitionName));
+                        stmt.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_final_cluster_id ON performance_dg.%s (final_cluster_id)", partitionName, partitionName));
+                        stmt.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_start_activity ON performance_dg.%s (start_activity)", partitionName, partitionName));
+                        stmt.execute(String.format("CREATE INDEX IF NOT EXISTS idx_%s_end_activity ON performance_dg.%s (end_activity)", partitionName, partitionName));
+                    }
+                    log.info("Partition {} успешно создан.", partitionName);
+                } else {
+                    log.info("Partition {} уже существует.", partitionName);
+                }
+            }
+        } catch (SQLException e) {
+            log.error("Ошибка при создании partition", e);
+            throw new RuntimeException(e);
         }
     }
 }

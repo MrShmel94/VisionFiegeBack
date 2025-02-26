@@ -4,7 +4,10 @@ import com.example.ws.microservices.firstmicroservices.configuration.FileUploadC
 import com.example.ws.microservices.firstmicroservices.customError.MissingHeadersException;
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.CheckHeaderService;
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.PerformanceService;
+import com.example.ws.microservices.firstmicroservices.serviceImpl.performance_gd.FileUploadService;
 import com.example.ws.microservices.firstmicroservices.utils.XlsxParserGDUtils;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -26,54 +29,46 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DownloadController {
 
-    private final CheckHeaderService checkHeaderService;
-    private final PerformanceService performanceService;
+
+    private final FileUploadService fileUploadService;
     private final FileUploadConfig fileUploadConfig;
 
 
+    /**
+     * Upload multiple files for performance data processing.
+     *
+     * @param files a list of uploaded files
+     * @return a list of results (success or error messages)
+     */
+    @Operation(summary = "Upload performance files", description = "Receives one or more files to parse and store via COPY.")
     @PostMapping("/uploadPerformanceGD")
-    public ResponseEntity<List<String>>  uploadFile(@RequestParam("file") List<MultipartFile> files) {
-
-
-        List<String> result = new ArrayList<>();
-
+    public ResponseEntity<List<String>> uploadFile(
+            @Parameter(description = "List of files to upload")
+            @RequestParam("file") List<MultipartFile> files
+    ) {
         if (files.size() > fileUploadConfig.getMaxFileCount()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            return ResponseEntity.badRequest()
                     .body(List.of("Too many files uploaded. Maximum allowed: " + fileUploadConfig.getMaxFileCount()));
         }
 
-        try {
-            Map<String, String> checkHeaders = checkHeaderService.getAllCheckHeaders();
-            List<String> onlyTableNames = checkHeaders.values().stream().toList();
+        List<String> results = new ArrayList<>();
 
-            files.forEach(eachFile -> {
-                try {
+        for (MultipartFile file : files) {
+            if (file.getSize() > fileUploadConfig.getMaxFileSize()) {
+                results.add(file.getOriginalFilename() + " - Error: File size exceeds limit of "
+                        + (fileUploadConfig.getMaxFileSize() / (1024 * 1024)) + " MB");
+                 continue;
+            }
 
-                    if (eachFile.getSize() > fileUploadConfig.getMaxFileSize()) {
-                        result.add(eachFile.getOriginalFilename() + " - Error: File size exceeds the limit of " + (fileUploadConfig.getMaxFileSize() / (1024 * 1024)) + "MB.");
-                        return;
-                    }
-
-                    List<List<String>> parsedFile = XlsxParserGDUtils.parserXlsxFile(eachFile.getInputStream(), onlyTableNames, 2, eachFile.getName());
-                    performanceService.processFile(parsedFile, checkHeaders, onlyTableNames);
-
-                    result.add(eachFile.getOriginalFilename() + " - Successfully processed. Total rows: " + parsedFile.size());
-
-                } catch (MissingHeadersException e) {
-                    result.add(eachFile.getOriginalFilename() + " - Error: Missing required headers.");
-                } catch (IOException e) {
-                    result.add(eachFile.getOriginalFilename() + " - Error: Unable to read the file.");
-                } catch (Exception e) {
-                    log.info(e.getMessage());
-                    result.add(eachFile.getOriginalFilename() + " - Error: Unexpected error occurred during processing.");
-                }
-            });
-
-            return ResponseEntity.ok().body(result);
-
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(List.of("An error occurred while processing the request. Please try again later."));
+            try {
+                fileUploadService.handleUpload(file);
+                results.add(file.getOriginalFilename() + " - Successfully processed.");
+            } catch (Exception e) {
+                log.error("Failed to process file {} : {}", file.getOriginalFilename(), e.getMessage());
+                results.add(file.getOriginalFilename() + " - Error: " + e.getMessage());
+            }
         }
+
+        return ResponseEntity.ok(results);
     }
 }

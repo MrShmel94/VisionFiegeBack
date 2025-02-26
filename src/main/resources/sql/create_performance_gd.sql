@@ -358,5 +358,5 @@ CREATE TABLE IF NOT EXISTS check_name_file(
     date DATE NOT NULL,
     id_user_loaded VARCHAR(256) NOT NULL,
     name_file VARCHAR(256) NOT NULL UNIQUE,
-    process VARCHAR(64) NOT NULL
+    status VARCHAR(64) NOT NULL
 );

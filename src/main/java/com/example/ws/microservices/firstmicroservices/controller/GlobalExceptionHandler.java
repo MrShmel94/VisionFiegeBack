@@ -15,6 +15,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -83,21 +84,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
     }
 
+    @ExceptionHandler(SQLException.class)
+    public ResponseEntity<String> handleSqlException(SQLException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+    }
+
     @Override
     protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex,
                                                                   HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         return buildErrorResponse((HttpStatus)status, "Invalid input format. Please check the request body.");
     }
-
-//    @Override
-//    protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,
-//                                                                  HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-//        Map<String, String> errors = new HashMap<>();
-//        ex.getBindingResult().getFieldErrors().forEach(error ->
-//                errors.put(error.getField(), error.getDefaultMessage())
-//        );
-//        return buildErrorResponse((HttpStatus)status, errors.toString());
-//    }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex) {
@@ -107,11 +103,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
         return buildErrorResponse(HttpStatus.BAD_REQUEST, errors.toString());
     }
-
-//    @ExceptionHandler(MissingServletRequestParameterException.class)
-//    public ResponseEntity<Object> handleMissingServletRequestParameter(MissingServletRequestParameterException ex) {
-//        return buildErrorResponse(HttpStatus.BAD_REQUEST, "Missing parameter: " + ex.getParameterName());
-//    }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Object> handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException ex) {
