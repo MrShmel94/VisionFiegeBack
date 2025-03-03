@@ -272,7 +272,6 @@ VALUES  ('date','Work Date Date'),
         ('volumescan', '# Items Volumescan');
 
 CREATE TABLE IF NOT EXISTS performance (
---     id BIGINT NOT NULL ,
     date DATE NOT NULL,
     expertis VARCHAR (64) NOT NULL,
     activity_name_id INT NOT NULL REFERENCES activity_name,
@@ -280,17 +279,16 @@ CREATE TABLE IF NOT EXISTS performance (
     activity_cluster_id INT NOT NULL REFERENCES spi_cluster,
     start_activity TIMESTAMP NOT NULL ,
     end_activity TIMESTAMP NOT NULL,
-    duration NUMERIC(10, 3) NOT NULL,
-    ql SMALLINT DEFAULT 0,
-    ql_box SMALLINT DEFAULT 0,
-    ql_hanging SMALLINT DEFAULT 0,
-    ql_shoes SMALLINT DEFAULT 0,
-    ql_boots SMALLINT DEFAULT 0,
-    ql_other SMALLINT DEFAULT 0,
-    stow_clarifications SMALLINT DEFAULT 0,
-    pick_nos1 SMALLINT DEFAULT 0,
-    pick_nos2 SMALLINT DEFAULT 0
---     PRIMARY KEY (id, date)
+    duration DOUBLE PRECISION NOT NULL,
+    ql INT DEFAULT 0,
+    ql_box INT DEFAULT 0,
+    ql_hanging INT DEFAULT 0,
+    ql_shoes INT DEFAULT 0,
+    ql_boots INT DEFAULT 0,
+    ql_other INT DEFAULT 0,
+    stow_clarifications INT DEFAULT 0,
+    pick_nos1 INT DEFAULT 0,
+    pick_nos2 INT DEFAULT 0
 ) PARTITION BY RANGE (date);
 
 CREATE INDEX idx_performance_date ON performance (date);
@@ -360,3 +358,233 @@ CREATE TABLE IF NOT EXISTS check_name_file(
     name_file VARCHAR(256) NOT NULL UNIQUE,
     status VARCHAR(64) NOT NULL
 );
+
+CREATE SEQUENCE clear_performance_employee_id_seq
+    INCREMENT 100
+    START WITH 1;
+
+CREATE TABLE IF NOT EXISTS clear_performance_employee(
+    id BIGINT PRIMARY KEY DEFAULT nextval('clear_performance_employee_id_seq'),
+    date DATE NOT NULL ,
+    expertis VARCHAR(64) NOT NULL ,
+    --PACK PROCESSING
+    ql_opt INT DEFAULT 0,
+    time_opt DOUBLE PRECISION DEFAULT 0,
+    support_opt DOUBLE PRECISION DEFAULT 0,
+    ntt_opt DOUBLE PRECISION DEFAULT 0,
+    ql_multi INT DEFAULT 0,
+    time_multi DOUBLE PRECISION DEFAULT 0,
+    ntt_multi DOUBLE PRECISION DEFAULT 0,
+    ql_single INT DEFAULT 0,
+    time_single DOUBLE PRECISION DEFAULT 0,
+    ntt_single DOUBLE PRECISION DEFAULT 0,
+    support_pack DOUBLE PRECISION DEFAULT 0,
+    ntt_pack DOUBLE PRECISION DEFAULT 0,
+    ql_sort INT DEFAULT 0,
+    time_sort DOUBLE PRECISION DEFAULT 0,
+    support_sort DOUBLE PRECISION DEFAULT 0,
+    ntt_sort DOUBLE PRECISION DEFAULT 0,
+    ql_wmo INT DEFAULT 0,
+    time_wmo DOUBLE PRECISION DEFAULT 0,
+    support_wmo DOUBLE PRECISION DEFAULT 0,
+    ntt_wmo DOUBLE PRECISION DEFAULT 0,
+    ql_nco INT DEFAULT 0,
+    time_nco DOUBLE PRECISION DEFAULT 0,
+    support_nco DOUBLE PRECISION DEFAULT 0,
+    ntt_nco DOUBLE PRECISION DEFAULT 0,
+    --PICK PROCESSING
+    ql_stow INT DEFAULT 0,
+    time_stow DOUBLE PRECISION DEFAULT 0,
+    support_stow DOUBLE PRECISION DEFAULT 0,
+    ntt_stow DOUBLE PRECISION DEFAULT 0,
+    ql_pick INT DEFAULT 0,
+    time_pick DOUBLE PRECISION DEFAULT 0,
+    support_pick DOUBLE PRECISION DEFAULT 0,
+    ntt_pick DOUBLE PRECISION DEFAULT 0,
+    --SHIPPING PROCESSING
+    support_shipping DOUBLE PRECISION DEFAULT 0,
+    ntt_shipping DOUBLE PRECISION DEFAULT 0,
+    --RETURN PROCESSING
+    ql_return INT DEFAULT 0,
+    time_return DOUBLE PRECISION DEFAULT 0,
+    support_return DOUBLE PRECISION DEFAULT 0,
+    ntt_return DOUBLE PRECISION DEFAULT 0,
+    --RECEIVE PROCESSING
+    ql_fast INT DEFAULT 0,
+    time_fast DOUBLE PRECISION DEFAULT 0,
+    ntt_fast DOUBLE PRECISION DEFAULT 0,
+    ql_repack INT DEFAULT 0,
+    time_repack DOUBLE PRECISION DEFAULT 0,
+    support_repack DOUBLE PRECISION DEFAULT 0,
+    ql_repl INT DEFAULT 0,
+    time_repl DOUBLE PRECISION DEFAULT 0,
+    ql_core INT DEFAULT 0,
+    ql_core_boxed INT DEFAULT 0,
+    ql_core_hanging INT DEFAULT 0,
+    ql_core_shoes INT DEFAULT 0,
+    ql_core_boots INT DEFAULT 0,
+    ql_core_other INT DEFAULT 0,
+    time_core DOUBLE PRECISION DEFAULT 0,
+    support_core DOUBLE PRECISION DEFAULT 0,
+    ntt_core DOUBLE PRECISION DEFAULT 0,
+    --UNLOADING PROCESSING
+    support_goods DOUBLE PRECISION DEFAULT 0,
+    ntt_goods DOUBLE PRECISION DEFAULT 0
+);
+
+CREATE INDEX idx_performance_clear_date ON clear_performance_employee (date);
+CREATE INDEX idx_performance_clear_expertis ON clear_performance_employee (expertis);
+
+CREATE TABLE IF NOT EXISTS clear_performance_employee_without_ntt_tatig(
+    id BIGSERIAL PRIMARY KEY,
+    date DATE NOT NULL ,
+    expertis VARCHAR(64) NOT NULL ,
+    --PACK PROCESSING
+    ql_opt INT DEFAULT 0,
+    time_opt DOUBLE PRECISION DEFAULT 0,
+    support_opt DOUBLE PRECISION DEFAULT 0,
+    ntt_opt DOUBLE PRECISION DEFAULT 0,
+    ql_multi INT DEFAULT 0,
+    time_multi DOUBLE PRECISION DEFAULT 0,
+    support_multi DOUBLE PRECISION DEFAULT 0,
+    ntt_multi DOUBLE PRECISION DEFAULT 0,
+    ql_single INT DEFAULT 0,
+    time_single DOUBLE PRECISION DEFAULT 0,
+    support_pack DOUBLE PRECISION DEFAULT 0,
+    ntt_pack DOUBLE PRECISION DEFAULT 0,
+    ql_sort INT DEFAULT 0,
+    time_sort DOUBLE PRECISION DEFAULT 0,
+    support_sort DOUBLE PRECISION DEFAULT 0,
+    ntt_sort DOUBLE PRECISION DEFAULT 0,
+    ql_wmo INT DEFAULT 0,
+    time_wmo DOUBLE PRECISION DEFAULT 0,
+    support_wmo DOUBLE PRECISION DEFAULT 0,
+    ntt_wmo DOUBLE PRECISION DEFAULT 0,
+    ql_nco INT DEFAULT 0,
+    time_nco DOUBLE PRECISION DEFAULT 0,
+    support_nco DOUBLE PRECISION DEFAULT 0,
+    ntt_nco DOUBLE PRECISION DEFAULT 0,
+    --PICK PROCESSING
+    ql_stow INT DEFAULT 0,
+    time_stow DOUBLE PRECISION DEFAULT 0,
+    support_stow DOUBLE PRECISION DEFAULT 0,
+    ntt_stow DOUBLE PRECISION DEFAULT 0,
+    ql_pick INT DEFAULT 0,
+    time_pick DOUBLE PRECISION DEFAULT 0,
+    support_pick DOUBLE PRECISION DEFAULT 0,
+    ntt_pick DOUBLE PRECISION DEFAULT 0,
+    --SHIPPING PROCESSING
+    support_shipping DOUBLE PRECISION DEFAULT 0,
+    ntt_shipping DOUBLE PRECISION DEFAULT 0,
+    --RETURN PROCESSING
+    ql_return INT DEFAULT 0,
+    time_return DOUBLE PRECISION DEFAULT 0,
+    support_return DOUBLE PRECISION DEFAULT 0,
+    ntt_return DOUBLE PRECISION DEFAULT 0,
+    --RECEIVE PROCESSING
+    ql_fast INT DEFAULT 0,
+    time_fast DOUBLE PRECISION DEFAULT 0,
+    ntt_fast DOUBLE PRECISION DEFAULT 0,
+    ql_repack INT DEFAULT 0,
+    time_repack DOUBLE PRECISION DEFAULT 0,
+    support_repack DOUBLE PRECISION DEFAULT 0,
+    ql_repl INT DEFAULT 0,
+    time_repl DOUBLE PRECISION DEFAULT 0,
+    ql_core INT DEFAULT 0,
+    ql_core_boxed INT DEFAULT 0,
+    ql_core_hanging INT DEFAULT 0,
+    ql_core_shoes INT DEFAULT 0,
+    ql_core_boots INT DEFAULT 0,
+    ql_core_other INT DEFAULT 0,
+    time_core DOUBLE PRECISION DEFAULT 0,
+    support_core DOUBLE PRECISION DEFAULT 0,
+    ntt_core DOUBLE PRECISION DEFAULT 0,
+    --UNLOADING PROCESSING
+    support_goods DOUBLE PRECISION DEFAULT 0,
+    ntt_goods DOUBLE PRECISION DEFAULT 0
+);
+
+CREATE INDEX idx_performance_clear_date_without_ntt ON clear_performance_employee_without_ntt_tatig (date);
+CREATE INDEX idx_performance_clear_expertis_without_ntt ON clear_performance_employee_without_ntt_tatig (expertis);
+
+CREATE TABLE IF NOT EXISTS spi_gd(
+    id BIGSERIAL PRIMARY KEY,
+    date DATE NOT NULL UNIQUE,
+    --CORE RECEIVE
+    spi_I_core DOUBLE PRECISION DEFAULT 0,
+    spi_II_core DOUBLE PRECISION DEFAULT 0,
+    spi_III_core DOUBLE PRECISION DEFAULT 0,
+    core_total_ql INT DEFAULT 0,
+    core_total_time DOUBLE PRECISION DEFAULT 0,
+    --REPACK RECEIVE
+    spi_I_repack DOUBLE PRECISION DEFAULT 0,
+    spi_III_repack DOUBLE PRECISION DEFAULT 0,
+    repack_total_ql INT DEFAULT 0,
+    repack_total_time DOUBLE PRECISION DEFAULT 0,
+    --FASTLINE RECEIVE
+    spi_I_fast DOUBLE PRECISION DEFAULT 0,
+    spi_II_fast DOUBLE PRECISION DEFAULT 0,
+    spi_III_fast DOUBLE PRECISION DEFAULT 0,
+    fast_total_ql INT DEFAULT 0,
+    fast_total_time DOUBLE PRECISION DEFAULT 0,
+    --GOODS
+    spi_II_goods DOUBLE PRECISION DEFAULT 0,
+    spi_III_goods DOUBLE PRECISION DEFAULT 0,
+    goods_total_ql INT DEFAULT 0,
+    goods_total_time DOUBLE PRECISION DEFAULT 0,
+    --SHIPPING
+    spi_II_shipping DOUBLE PRECISION DEFAULT 0,
+    spi_III_shipping DOUBLE PRECISION DEFAULT 0,
+    shipping_total_ql INT DEFAULT 0,
+    shipping_total_time DOUBLE PRECISION DEFAULT 0,
+    --STOW
+    spi_I_stow DOUBLE PRECISION DEFAULT 0,
+    spi_II_stow DOUBLE PRECISION DEFAULT 0,
+    spi_III_stow DOUBLE PRECISION DEFAULT 0,
+    stow_total_ql INT DEFAULT 0,
+    stow_total_time DOUBLE PRECISION DEFAULT 0,
+    --PICK
+    spi_I_pick DOUBLE PRECISION DEFAULT 0,
+    spi_II_pick DOUBLE PRECISION DEFAULT 0,
+    spi_III_pick DOUBLE PRECISION DEFAULT 0,
+    pick_total_ql INT DEFAULT 0,
+    pick_total_time DOUBLE PRECISION DEFAULT 0,
+    --SORT
+    spi_I_sort DOUBLE PRECISION DEFAULT 0,
+    spi_II_sort DOUBLE PRECISION DEFAULT 0,
+    spi_III_sort DOUBLE PRECISION DEFAULT 0,
+    sort_total_ql INT DEFAULT 0,
+    sort_total_time DOUBLE PRECISION DEFAULT 0,
+    --SINGLE
+    spi_I_single DOUBLE PRECISION DEFAULT 0,
+    spi_II_single DOUBLE PRECISION DEFAULT 0,
+    spi_III_single DOUBLE PRECISION DEFAULT 0,
+    single_total_ql INT DEFAULT 0,
+    single_total_time DOUBLE PRECISION DEFAULT 0,
+    --MULTI
+    spi_I_multi DOUBLE PRECISION DEFAULT 0,
+    spi_II_multi DOUBLE PRECISION DEFAULT 0,
+    spi_III_multi DOUBLE PRECISION DEFAULT 0,
+    multi_total_ql INT DEFAULT 0,
+    multi_total_time DOUBLE PRECISION DEFAULT 0,
+    --LINESORTPACK
+    spi_I_opt DOUBLE PRECISION DEFAULT 0,
+    spi_II_opt DOUBLE PRECISION DEFAULT 0,
+    spi_III_opt DOUBLE PRECISION DEFAULT 0,
+    opt_total_ql INT DEFAULT 0,
+    opt_total_time DOUBLE PRECISION DEFAULT 0,
+    --INTERNAL ORDERS SHIPPING
+    spi_I_wmo DOUBLE PRECISION DEFAULT 0,
+    spi_II_wmo DOUBLE PRECISION DEFAULT 0,
+    spi_III_wmo DOUBLE PRECISION DEFAULT 0,
+    wmo_total_ql INT DEFAULT 0,
+    wmo_total_time DOUBLE PRECISION DEFAULT 0,
+    --REFURBISHMENT
+    spi_I_return DOUBLE PRECISION DEFAULT 0,
+    spi_II_return DOUBLE PRECISION DEFAULT 0,
+    spi_III_return DOUBLE PRECISION DEFAULT 0,
+    return_total_ql INT DEFAULT 0,
+    return_total_time DOUBLE PRECISION DEFAULT 0
+);
+
+CREATE INDEX idx_spi_gd ON spi_gd (date);

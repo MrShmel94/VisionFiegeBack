@@ -36,7 +36,6 @@ dependencies {
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
     implementation 'com.clickhouse:clickhouse-jdbc:0.8.0'
 
-
     implementation 'org.mapstruct:mapstruct:1.6.2'
 
     implementation 'com.mailjet:mailjet-client:5.2.5'
@@ -49,7 +48,6 @@ dependencies {
 
     implementation 'org.apache.poi:poi:5.3.0'
     implementation 'org.apache.poi:poi-ooxml:5.3.0'
-
 
     annotationProcessor 'org.projectlombok:lombok'
     annotationProcessor 'org.mapstruct:mapstruct-processor:1.6.2'

@@ -1,22 +1,23 @@
-package com.example.ws.microservices.firstmicroservices.entity.performance_gd;
+package com.example.ws.microservices.firstmicroservices.dto.performance.gd;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDate;
 
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class PerformanceRow {
-
+public class PerformanceRowDTO {
     private LocalDate date;
     private String expertis;
-    private ActivityName activityName;
-    private FinalCluster finalCluster;
-    private SpiCluster activityCluster;
+    private String activityName;
+    private String finalCluster;
+    private String activityCluster;
 
     private Instant startActivity;
     private Instant endActivity;
@@ -31,6 +32,4 @@ public class PerformanceRow {
     private int stowClarifications;
     private int pickNos1;
     private int pickNos2;
-
-
 }

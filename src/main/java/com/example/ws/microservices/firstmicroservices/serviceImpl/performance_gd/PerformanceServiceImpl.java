@@ -1,22 +1,18 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.performance_gd;
 
-import com.example.ws.microservices.firstmicroservices.dto.PerformanceDTO;
+import com.example.ws.microservices.firstmicroservices.dto.performance.gd.PerformanceRowDTO;
+import com.example.ws.microservices.firstmicroservices.entity.EmployeeMapping;
 import com.example.ws.microservices.firstmicroservices.entity.performance_gd.*;
-import com.example.ws.microservices.firstmicroservices.service.performance_gd.ActivityNameService;
-import com.example.ws.microservices.firstmicroservices.service.performance_gd.FinalClusterService;
-import com.example.ws.microservices.firstmicroservices.service.performance_gd.PerformanceService;
-import com.example.ws.microservices.firstmicroservices.service.performance_gd.SpiClusterService;
-import com.example.ws.microservices.firstmicroservices.serviceImpl.ClickHousePerformanceServiceImpl;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import com.example.ws.microservices.firstmicroservices.mapper.EmployeeMapper;
+import com.example.ws.microservices.firstmicroservices.mapper.PerformanceMapper;
+import com.example.ws.microservices.firstmicroservices.repository.performance_gd.PerformanceRowDTOJdbcRepository;
+import com.example.ws.microservices.firstmicroservices.service.performance_gd.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.postgresql.PGConnection;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.ByteArrayInputStream;
-import java.math.BigDecimal;
 import java.sql.*;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -24,6 +20,8 @@ import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -36,13 +34,20 @@ public class PerformanceServiceImpl implements PerformanceService {
     private ActivityNameService activityNameService;
     private FinalClusterService finalClusterService;
     private SpiClusterService spiClusterService;
-    private final JdbcTemplate jdbcTemplate;
+    private final PerformanceRowDTOJdbcRepository performanceRowDTOJdbcRepository;
+    private final ClearPerformanceEmployeeService clearPerformanceEmployeeService;
+    private final SpiGdService spiGdService;
 
     private static final DateTimeFormatter TIMESTAMP_FORMAT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+    public List<PerformanceRowDTO> getPerformanceData(LocalDate start, LocalDate end) {
+        return performanceRowDTOJdbcRepository.getAllByDateBetween(start, end);
+    }
+
     @Override
     public void processFile(Connection conn, List<List<String>> allLineFiles, Map<String, String> checkHeaderList, List<String> headersName) {
+
         Map<String, Integer> indexMap = IntStream.range(0, headersName.size())
                 .boxed()
                 .collect(Collectors.toMap(
@@ -149,15 +154,15 @@ public class PerformanceServiceImpl implements PerformanceService {
             performance.setActivityCluster(allSpiClusters.stream().filter(eachElement -> eachElement.getNameTable().equals(eachProcessLine.get(indexMap.get(checkHeaderList.get("category"))))).findFirst().orElseThrow());
             performance.setStartActivity(parseDate(eachProcessLine.get(indexMap.get(checkHeaderList.get("startActivity")))));
             performance.setEndActivity(parseDate(eachProcessLine.get(indexMap.get(checkHeaderList.get("endActivity")))));
-            performance.setDuration(safeParseBigDecimal(eachProcessLine.get(indexMap.get(checkHeaderList.get("duration")))));
-            performance.setQlBox(safeParseShort(eachProcessLine.get(indexMap.get(checkHeaderList.get("qlBox")))));
-            performance.setQlHanging(safeParseShort(eachProcessLine.get(indexMap.get(checkHeaderList.get("qlHanging")))));
-            performance.setQlShoes(safeParseShort(eachProcessLine.get(indexMap.get(checkHeaderList.get("qlShoes")))));
-            performance.setQlBoots(safeParseShort(eachProcessLine.get(indexMap.get(checkHeaderList.get("qlBoots")))));
-            performance.setQlOther(safeParseShort(eachProcessLine.get(indexMap.get(checkHeaderList.get("qlOther")))));
-            performance.setStowClarifications(safeParseShort(eachProcessLine.get(indexMap.get(checkHeaderList.get("stowClarifications")))));
-            performance.setPickNos1(safeParseShort(eachProcessLine.get(indexMap.get(checkHeaderList.get("pickNos1")))));
-            performance.setPickNos2(safeParseShort(eachProcessLine.get(indexMap.get(checkHeaderList.get("pickNos2")))));
+            performance.setDuration(safeParseDouble(eachProcessLine.get(indexMap.get(checkHeaderList.get("duration")))));
+            performance.setQlBox(safeParseInteger(eachProcessLine.get(indexMap.get(checkHeaderList.get("qlBox")))));
+            performance.setQlHanging(safeParseInteger(eachProcessLine.get(indexMap.get(checkHeaderList.get("qlHanging")))));
+            performance.setQlShoes(safeParseInteger(eachProcessLine.get(indexMap.get(checkHeaderList.get("qlShoes")))));
+            performance.setQlBoots(safeParseInteger(eachProcessLine.get(indexMap.get(checkHeaderList.get("qlBoots")))));
+            performance.setQlOther(safeParseInteger(eachProcessLine.get(indexMap.get(checkHeaderList.get("qlOther")))));
+            performance.setStowClarifications(safeParseInteger(eachProcessLine.get(indexMap.get(checkHeaderList.get("stowClarifications")))));
+            performance.setPickNos1(safeParseInteger(eachProcessLine.get(indexMap.get(checkHeaderList.get("pickNos1")))));
+            performance.setPickNos2(safeParseInteger(eachProcessLine.get(indexMap.get(checkHeaderList.get("pickNos2")))));
 
             performance.setQl(
                     Stream.of("ql", "qlReturn", "sortReturn", "qlWmo", "cartrunner", "relocation", "stocktaking", "volumescan")
@@ -170,7 +175,7 @@ public class PerformanceServiceImpl implements PerformanceService {
                                     return 0;
                                 }
                             })
-                            .reduce(0, Integer::sum).shortValue()
+                            .reduce(0, Integer::sum)
             );
 
             LocalDate date = parseDateToLocalDate(eachProcessLine.get(indexMap.get(checkHeaderList.get("date"))));
@@ -188,6 +193,234 @@ public class PerformanceServiceImpl implements PerformanceService {
 
         ensurePartitionExistsWithConnection(conn, partitionDate);
         copyInsertPerformance(conn, allPerformanceToSave);
+
+
+
+        Map<String, List<PerformanceRowDTO>> mapAllPerformance = allPerformanceToSave
+                .stream()
+                .map(PerformanceMapper.INSTANCE::toPerformanceRowDto)
+                .collect(Collectors.groupingBy(PerformanceRowDTO::getExpertis));
+
+        processingClearPerformance(mapAllPerformance);
+    }
+
+    private void processingClearPerformance(Map<String, List<PerformanceRowDTO>> mapAllPerformance) {
+        SpiGd spiGd = new SpiGd();
+        double totalTimePack = 0d;
+        Map<String, ClearPerformanceEmployee> clearPerformance = new HashMap<>();
+        for(Entry<String, List<PerformanceRowDTO>> entry : mapAllPerformance.entrySet()){
+            ClearPerformanceEmployee clearPerformanceEmployee = new ClearPerformanceEmployee();
+            clearPerformanceEmployee.setDate(entry.getValue().getFirst().getDate());
+            clearPerformanceEmployee.setExpertis(entry.getValue().getFirst().getExpertis());
+
+            for (PerformanceRowDTO eachObj : entry.getValue()) {
+                if (eachObj.getActivityName().equalsIgnoreCase("LINESORTPACK")) {
+                    clearPerformanceEmployee.setQlOpt(clearPerformanceEmployee.getQlOpt() + eachObj.getQl());
+                    clearPerformanceEmployee.setTimeOpt(clearPerformanceEmployee.getTimeOpt() + eachObj.getDuration());
+
+                    spiGd.setOptTotalQl(spiGd.getOptTotalQl() + eachObj.getQl());
+                    spiGd.setShippingTotalQl(spiGd.getShippingTotalQl() + eachObj.getQl());
+                    spiGd.setOptTotalTime(spiGd.getOptTotalTime() + eachObj.getDuration());
+                } else if (eachObj.getActivityName().equalsIgnoreCase("PACK_MULTI")) {
+                    clearPerformanceEmployee.setQlMulti(clearPerformanceEmployee.getQlMulti() + eachObj.getQl());
+                    clearPerformanceEmployee.setTimeMulti(clearPerformanceEmployee.getTimeMulti() + eachObj.getDuration());
+
+                    spiGd.setMultiTotalQl(spiGd.getMultiTotalQl() + eachObj.getQl());
+                    spiGd.setShippingTotalQl(spiGd.getShippingTotalQl() + eachObj.getQl());
+                    spiGd.setMultiTotalTime(spiGd.getMultiTotalTime() + eachObj.getDuration());
+                } else if (eachObj.getActivityName().equalsIgnoreCase("PACK_SINGLE")) {
+                    clearPerformanceEmployee.setQlSingle(clearPerformanceEmployee.getQlSingle() + eachObj.getQl());
+                    clearPerformanceEmployee.setTimeSingle(clearPerformanceEmployee.getTimeSingle() + eachObj.getDuration());
+
+                    spiGd.setSingleTotalQl(spiGd.getSingleTotalQl() + eachObj.getQl());
+                    spiGd.setShippingTotalQl(spiGd.getShippingTotalQl() + eachObj.getQl());
+                    spiGd.setSingleTotalTime(spiGd.getSingleTotalTime() + eachObj.getDuration());
+                } else if (eachObj.getActivityName().equalsIgnoreCase("SORT")) {
+                    clearPerformanceEmployee.setQlSort(clearPerformanceEmployee.getQlSort() + eachObj.getQl());
+                    clearPerformanceEmployee.setTimeSort(clearPerformanceEmployee.getTimeSort() + eachObj.getDuration());
+
+                    spiGd.setSortTotalQl(spiGd.getSortTotalQl() + eachObj.getQl());
+                    spiGd.setSortTotalTime(spiGd.getSortTotalTime() + eachObj.getDuration());
+                } else if (eachObj.getActivityName().equalsIgnoreCase("WMO_Outbound_Repacking")) {
+                    clearPerformanceEmployee.setQlWmo(clearPerformanceEmployee.getQlWmo() + eachObj.getQl());
+                    clearPerformanceEmployee.setTimeWmo(clearPerformanceEmployee.getTimeWmo() + eachObj.getDuration());
+
+                    spiGd.setWmoTotalQl(spiGd.getWmoTotalQl() + eachObj.getQl());
+                    spiGd.setWmoTotalTime(spiGd.getWmoTotalTime() + eachObj.getDuration());
+                } else if (eachObj.getActivityName().equalsIgnoreCase("NCO PACK direct")) {
+                    clearPerformanceEmployee.setQlNco(clearPerformanceEmployee.getQlNco() + eachObj.getQl());
+                    clearPerformanceEmployee.setTimeNco(clearPerformanceEmployee.getTimeNco() + eachObj.getDuration());
+                } else if (eachObj.getActivityName().equalsIgnoreCase("PICK")) {
+                    clearPerformanceEmployee.setQlPick(clearPerformanceEmployee.getQlPick() + eachObj.getQl());
+                    clearPerformanceEmployee.setTimePick(clearPerformanceEmployee.getTimePick() + eachObj.getDuration());
+
+                    spiGd.setPickTotalQl(spiGd.getPickTotalQl() + eachObj.getQl());
+                    spiGd.setPickTotalTime(spiGd.getPickTotalTime() + eachObj.getDuration());
+                } else if (eachObj.getActivityName().equalsIgnoreCase("STOW")) {
+                    clearPerformanceEmployee.setQlStow(clearPerformanceEmployee.getQlStow() + eachObj.getQl());
+                    clearPerformanceEmployee.setTimeStow(clearPerformanceEmployee.getTimeStow() + eachObj.getDuration());
+
+                    spiGd.setStowTotalQl(spiGd.getStowTotalQl() + eachObj.getQl());
+                    spiGd.setStowTotalTime(spiGd.getStowTotalTime() + eachObj.getDuration());
+                } else if (eachObj.getActivityName().equalsIgnoreCase("DEFECT ITEM - CATEGORIZATION")) {
+                    clearPerformanceEmployee.setQlReturn(clearPerformanceEmployee.getQlReturn() + eachObj.getQl());
+                    clearPerformanceEmployee.setTimeReturn(clearPerformanceEmployee.getTimeReturn() + eachObj.getDuration());
+
+                    spiGd.setReturnTotalQl(spiGd.getReturnTotalQl() + eachObj.getQl());
+                    spiGd.setReturnTotalTime(spiGd.getReturnTotalTime() + eachObj.getDuration());
+                } else if (eachObj.getActivityName().equalsIgnoreCase("FASTLANE RECEIVE")) {
+                    clearPerformanceEmployee.setQlFast(clearPerformanceEmployee.getQlFast() + eachObj.getQl());
+                    clearPerformanceEmployee.setTimeFast(clearPerformanceEmployee.getTimeFast() + eachObj.getDuration());
+
+                    spiGd.setFastTotalQl(spiGd.getFastTotalQl() + eachObj.getQl());
+                    spiGd.setGoodsTotalQl(spiGd.getGoodsTotalQl() + eachObj.getQl());
+                    spiGd.setFastTotalTime(spiGd.getFastTotalTime() + eachObj.getDuration());
+                } else if (eachObj.getActivityName().equalsIgnoreCase("REPACKRECEIVE")) {
+                    clearPerformanceEmployee.setQlRepack(clearPerformanceEmployee.getQlRepack() + eachObj.getQl());
+                    clearPerformanceEmployee.setTimeRepack(clearPerformanceEmployee.getTimeRepack() + eachObj.getDuration());
+
+                    spiGd.setOptTotalQl(spiGd.getOptTotalQl() + eachObj.getQl());
+                    spiGd.setGoodsTotalQl(spiGd.getGoodsTotalQl() + eachObj.getQl());
+                    spiGd.setOptTotalTime(spiGd.getOptTotalTime() + eachObj.getDuration());
+                } else if (eachObj.getActivityName().equalsIgnoreCase("REREPLENISHMENT")) {
+                    clearPerformanceEmployee.setQlRepl(clearPerformanceEmployee.getQlRepl() + eachObj.getQl());
+                    clearPerformanceEmployee.setTimeRepl(clearPerformanceEmployee.getTimeRepl() + eachObj.getDuration());
+                } else if (eachObj.getActivityName().equalsIgnoreCase("RECEIVE")) {
+                    clearPerformanceEmployee.setQlCore(clearPerformanceEmployee.getQlCore() + eachObj.getQl());
+                    clearPerformanceEmployee.setQlCoreBoxed(clearPerformanceEmployee.getQlCoreBoxed() + eachObj.getQlBox());
+                    clearPerformanceEmployee.setQlCoreHanging(clearPerformanceEmployee.getQlCoreHanging() + eachObj.getQlHanging());
+                    clearPerformanceEmployee.setQlCoreShoes(clearPerformanceEmployee.getQlCoreShoes() + eachObj.getQlShoes());
+                    clearPerformanceEmployee.setQlCoreBoots(clearPerformanceEmployee.getQlCoreBoots() + eachObj.getQlBoots());
+                    clearPerformanceEmployee.setQlCoreOther(clearPerformanceEmployee.getQlCoreOther() + eachObj.getQlOther());
+                    clearPerformanceEmployee.setTimeCore(clearPerformanceEmployee.getTimeCore() + eachObj.getDuration());
+
+                    spiGd.setCoreTotalQl(spiGd.getCoreTotalQl() + eachObj.getQl());
+                    spiGd.setGoodsTotalQl(spiGd.getGoodsTotalQl() + eachObj.getQl());
+                    spiGd.setCoreTotalTime(spiGd.getCoreTotalTime() + eachObj.getDuration());
+                    spiGd.setSpiICoreTime(spiGd.getSpiICoreTime() + eachObj.getDuration());
+                }
+
+                if (eachObj.getActivityCluster().equalsIgnoreCase("spi_II")) {
+                    if (eachObj.getFinalCluster().equalsIgnoreCase("Linesorter Pack")) {
+                        clearPerformanceEmployee.setNttOpt(clearPerformanceEmployee.getNttOpt() + eachObj.getDuration());
+
+                        spiGd.setOptTotalTime(spiGd.getOptTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Standard Pack Multi")) {
+                        clearPerformanceEmployee.setNttMulti(clearPerformanceEmployee.getNttMulti() + eachObj.getDuration());
+
+                        spiGd.setMultiTotalTime(spiGd.getMultiTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Standard Pack Single")) {
+                        clearPerformanceEmployee.setNttSingle(clearPerformanceEmployee.getNttSingle() + eachObj.getDuration());
+
+                        spiGd.setSingleTotalTime(spiGd.getSingleTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Pack")) {
+                        clearPerformanceEmployee.setNttPack(clearPerformanceEmployee.getNttPack() + eachObj.getDuration());
+
+                        totalTimePack += eachObj.getDuration();
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Manual Sort")) {
+                        clearPerformanceEmployee.setNttSort(clearPerformanceEmployee.getNttSort() + eachObj.getDuration());
+
+                        spiGd.setSortTotalTime(spiGd.getSortTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Internal Orders Shipping")) {
+                        clearPerformanceEmployee.setNttWmo(clearPerformanceEmployee.getNttWmo() + eachObj.getDuration());
+
+                        spiGd.setWmoTotalTime(spiGd.getWmoTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("NCO Shipping")) {
+                        clearPerformanceEmployee.setNttNco(clearPerformanceEmployee.getNttNco() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Core Stow")) {
+                        clearPerformanceEmployee.setNttStow(clearPerformanceEmployee.getNttStow() + eachObj.getDuration());
+
+                        spiGd.setStowTotalTime(spiGd.getStowTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Pick")) {
+                        clearPerformanceEmployee.setNttPick(clearPerformanceEmployee.getNttPick() + eachObj.getDuration());
+
+                        spiGd.setPickTotalTime(spiGd.getPickTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Shipping")) {
+                        clearPerformanceEmployee.setNttShipping(clearPerformanceEmployee.getNttShipping() + eachObj.getDuration());
+
+                        spiGd.setShippingTotalTime(spiGd.getShippingTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Core Retoure") || eachObj.getFinalCluster().equalsIgnoreCase("Refurbishment")) {
+                        clearPerformanceEmployee.setNttReturn(clearPerformanceEmployee.getNttReturn() + eachObj.getDuration());
+
+                        spiGd.setReturnTotalTime(spiGd.getReturnTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Fastlane Receive")) {
+                        clearPerformanceEmployee.setNttFast(clearPerformanceEmployee.getNttFast() + eachObj.getDuration());
+
+                        spiGd.setFastTotalTime(spiGd.getFastTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Core Receive")) {
+                        clearPerformanceEmployee.setNttCore(clearPerformanceEmployee.getNttCore() + eachObj.getDuration());
+
+                        spiGd.setCoreTotalTime(spiGd.getCoreTotalTime() + eachObj.getDuration());
+                        spiGd.setSpiIiCoreTime(spiGd.getSpiIiCoreTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Goodsreceive")) {
+                        clearPerformanceEmployee.setNttGoods(clearPerformanceEmployee.getNttGoods() + eachObj.getDuration());
+
+                        spiGd.setGoodsTotalTime(spiGd.getGoodsTotalTime() + eachObj.getDuration());
+                    }
+                } else if (eachObj.getActivityCluster().equalsIgnoreCase("spi_III")) {
+                    if (eachObj.getFinalCluster().equalsIgnoreCase("Linesorter Pack")) {
+                        clearPerformanceEmployee.setSupportOpt(clearPerformanceEmployee.getSupportOpt() + eachObj.getDuration());
+
+                        spiGd.setOptTotalTime(spiGd.getOptTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Pack")) {
+                        clearPerformanceEmployee.setSupportPack(clearPerformanceEmployee.getSupportPack() + eachObj.getDuration());
+
+                        totalTimePack += eachObj.getDuration();
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Manual Sort")) {
+                        clearPerformanceEmployee.setSupportSort(clearPerformanceEmployee.getSupportSort() + eachObj.getDuration());
+
+                        spiGd.setSortTotalTime(spiGd.getSortTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Internal Orders Shipping")) {
+                        clearPerformanceEmployee.setSupportWmo(clearPerformanceEmployee.getSupportWmo() + eachObj.getDuration());
+
+                        spiGd.setWmoTotalTime(spiGd.getWmoTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("NCO Shipping")) {
+                        clearPerformanceEmployee.setSupportNco(clearPerformanceEmployee.getSupportNco() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Core Stow")) {
+                        clearPerformanceEmployee.setSupportStow(clearPerformanceEmployee.getSupportStow() + eachObj.getDuration());
+
+                        spiGd.setStowTotalTime(spiGd.getStowTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Pick")) {
+                        clearPerformanceEmployee.setSupportPick(clearPerformanceEmployee.getSupportPick() + eachObj.getDuration());
+
+                        spiGd.setPickTotalTime(spiGd.getPickTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Shipping")) {
+                        clearPerformanceEmployee.setSupportShipping(clearPerformanceEmployee.getSupportShipping() + eachObj.getDuration());
+
+                        spiGd.setShippingTotalTime(spiGd.getShippingTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Refurbishment")) {
+                        clearPerformanceEmployee.setSupportReturn(clearPerformanceEmployee.getSupportReturn() + eachObj.getDuration());
+
+                        spiGd.setReturnTotalTime(spiGd.getReturnTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Repackreceive")) {
+                        clearPerformanceEmployee.setSupportRepack(clearPerformanceEmployee.getSupportRepack() + eachObj.getDuration());
+
+                        spiGd.setRepackTotalTime(spiGd.getRepackTotalTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Core Receive")) {
+                        clearPerformanceEmployee.setSupportCore(clearPerformanceEmployee.getSupportCore() + eachObj.getDuration());
+
+                        spiGd.setCoreTotalTime(spiGd.getCoreTotalTime() + eachObj.getDuration());
+                        spiGd.setSpiIiiCoreTime(spiGd.getSpiIiiCoreTime() + eachObj.getDuration());
+                    } else if (eachObj.getFinalCluster().equalsIgnoreCase("Goodsreceive")) {
+                        clearPerformanceEmployee.setSupportGoods(clearPerformanceEmployee.getSupportGoods() + eachObj.getDuration());
+
+                        spiGd.setGoodsTotalTime(spiGd.getGoodsTotalTime() + eachObj.getDuration());
+                    }
+                }
+            }
+
+            clearPerformance.put(entry.getKey(), clearPerformanceEmployee);
+        }
+
+        double singleTimeAdditional = totalTimePack * spiGd.getSingleTotalQl() / (spiGd.getSingleTotalQl() + spiGd.getMultiTotalQl());
+
+        spiGd.setSingleTotalTime(spiGd.getSingleTotalTime() + singleTimeAdditional);
+        spiGd.setMultiTotalTime(spiGd.getMultiTotalTime() + (totalTimePack - singleTimeAdditional));
+
+
+
+        clearPerformanceEmployeeService.saveAllPerformanceEmployee(clearPerformance.values().stream().toList());
+        spiGdService.saveSpi(spiGd);
     }
 
     private void copyInsertPerformance(Connection conn,  List<PerformanceRow> list) {
@@ -204,16 +437,16 @@ public class PerformanceServiceImpl implements PerformanceService {
             sb.append(p.getActivityCluster().getId()).append(';');
             sb.append(formatTimestamp(p.getStartActivity())).append(';');
             sb.append(formatTimestamp(p.getEndActivity())).append(';');
-            sb.append(p.getDuration() == null ? "0" : p.getDuration().toString()).append(';');
-            sb.append(nullSafeShort(p.getQl())).append(';');
-            sb.append(nullSafeShort(p.getQlBox())).append(';');
-            sb.append(nullSafeShort(p.getQlHanging())).append(';');
-            sb.append(nullSafeShort(p.getQlShoes())).append(';');
-            sb.append(nullSafeShort(p.getQlBoots())).append(';');
-            sb.append(nullSafeShort(p.getQlOther())).append(';');
-            sb.append(nullSafeShort(p.getStowClarifications())).append(';');
-            sb.append(nullSafeShort(p.getPickNos1())).append(';');
-            sb.append(nullSafeShort(p.getPickNos2())).append('\n');
+            sb.append(p.getDuration()).append(';');
+            sb.append(p.getQl()).append(';');
+            sb.append(p.getQlBox()).append(';');
+            sb.append(p.getQlHanging()).append(';');
+            sb.append(p.getQlShoes()).append(';');
+            sb.append(p.getQlBoots()).append(';');
+            sb.append(p.getQlOther()).append(';');
+            sb.append(p.getStowClarifications()).append(';');
+            sb.append(p.getPickNos1()).append(';');
+            sb.append(p.getPickNos2()).append('\n');
         }
 
         log.info("Finished building CSV. Total lines: {}", list.size());
@@ -227,7 +460,7 @@ public class PerformanceServiceImpl implements PerformanceService {
         ByteArrayInputStream bais = new ByteArrayInputStream(csvData);
 
         try {
-            var pgConn = conn.unwrap(org.postgresql.PGConnection.class);
+            PGConnection pgConn = conn.unwrap(org.postgresql.PGConnection.class);
 
             String copySql = """
                 COPY performance_dg.performance (
@@ -255,9 +488,6 @@ public class PerformanceServiceImpl implements PerformanceService {
         return (text == null) ? "" : text;
     }
 
-    private short nullSafeShort(Short val) {
-        return (val == null) ? 0 : val;
-    }
 
     private String formatTimestamp(Instant inst) {
         if (inst == null) {
@@ -278,28 +508,28 @@ public class PerformanceServiceImpl implements PerformanceService {
         return zonedDateTime.toInstant();
     }
 
-    private Short safeParseShort(String str) {
+    private int safeParseInteger(String str) {
         if (str == null || str.trim().isEmpty()) {
             return 0;
         }
 
         try {
-            double value = Double.parseDouble(str);
-            if (value == 0.0) {
-                return 0;
-            }
-            return (short) value;
+            return Integer.parseInt(str);
         } catch (NumberFormatException e) {
             return 0;
         }
     }
 
 
-    private BigDecimal safeParseBigDecimal(String str) {
+    private double safeParseDouble(String str) {
+        if (str == null || str.trim().isEmpty()) {
+            return 0.0;
+        }
+
         try {
-            return new BigDecimal(str);
+            return Double.parseDouble(str);
         } catch (NumberFormatException e) {
-            return BigDecimal.ZERO;
+            return 0.0;
         }
     }
 
