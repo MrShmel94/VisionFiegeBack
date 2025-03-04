@@ -2,12 +2,16 @@ package com.example.ws.microservices.firstmicroservices.controller;
 
 import com.example.ws.microservices.firstmicroservices.configuration.FileUploadConfig;
 import com.example.ws.microservices.firstmicroservices.customError.MissingHeadersException;
+import com.example.ws.microservices.firstmicroservices.dto.performance.gd.ClearPerformanceGDDto;
 import com.example.ws.microservices.firstmicroservices.dto.performance.gd.PerformanceRowDTO;
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.CheckHeaderService;
+import com.example.ws.microservices.firstmicroservices.service.performance_gd.ClearPerformanceEmployeeService;
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.PerformanceService;
+import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
 import com.example.ws.microservices.firstmicroservices.serviceImpl.performance_gd.FileUploadService;
 import com.example.ws.microservices.firstmicroservices.serviceImpl.performance_gd.PerformanceServiceImpl;
 import com.example.ws.microservices.firstmicroservices.utils.XlsxParserGDUtils;
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
@@ -18,11 +22,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @Slf4j
@@ -34,11 +37,30 @@ public class DownloadController {
     private final FileUploadService fileUploadService;
     private final FileUploadConfig fileUploadConfig;
     private final PerformanceServiceImpl performanceService;
+    private final ClearPerformanceEmployeeService clearPerformanceEmployeeService;
+    private final RedisCacheService redisCacheService;
 
     @GetMapping("/getPerformance")
     public List<PerformanceRowDTO> getGet(@RequestParam("start") LocalDate start,
                                           @RequestParam("end") LocalDate end){
         return performanceService.getPerformanceData(start, end);
+    }
+
+    @GetMapping("/getClearPerformance")
+    public Map<String, List<ClearPerformanceGDDto>> getGetGet(@RequestParam("start") LocalDate start,
+                                                           @RequestParam("end") LocalDate end){
+        var test = clearPerformanceEmployeeService.getAllPerformanceEmployee(start, end);
+        for(Map.Entry<String, List<ClearPerformanceGDDto>> entry : test.entrySet()){
+            redisCacheService.saveToCacheWithTTL("Performance" + entry.getKey(), entry.getValue(), Duration.ofMinutes(10));
+        }
+
+        //redisCacheService.saveToCacheWithTTL("PerformanceNon" + "304917", test.get("304917"), Duration.ofMinutes(30));
+        Optional<List<ClearPerformanceGDDto>> optList = redisCacheService.getFromCache(
+                "PerformanceNon304917",
+                new TypeReference<List<ClearPerformanceGDDto>>() {}
+        );
+        List<ClearPerformanceGDDto> list = optList.orElse(Collections.emptyList());
+        return test;
     }
 
 

@@ -1,5 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.configuration;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.Nulls;
@@ -32,6 +33,7 @@ public class RedisConfig {
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         mapper.setDefaultSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY));
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
 
 //        mapper.activateDefaultTyping(
 //                LaissezFaireSubTypeValidator.instance,

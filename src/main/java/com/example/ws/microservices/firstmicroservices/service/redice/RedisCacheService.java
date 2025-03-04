@@ -1,5 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.service.redice;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -47,6 +48,24 @@ public class RedisCacheService {
 
     public Map<Object, Object> getAllMappings() {
         return redisTemplate.opsForHash().entries("userMappings");
+    }
+
+    public <T> Optional<T> getFromCache(String key, TypeReference<T> typeReference) {
+        Object cachedValue = redisTemplate.opsForValue().get(key);
+        if (cachedValue == null) {
+            return Optional.empty();
+        }
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            T value = mapper.convertValue(cachedValue, typeReference);
+            return Optional.of(value);
+        } catch (IllegalArgumentException e) {
+            log.error("Error converting cached value: {}", e.getMessage());
+            return Optional.empty();
+        }
     }
 
     public <T> Optional<T> getFromCache(String key, Class<T> type) {

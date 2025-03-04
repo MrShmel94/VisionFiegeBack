@@ -42,7 +42,9 @@ public class PerformanceServiceImpl implements PerformanceService {
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public List<PerformanceRowDTO> getPerformanceData(LocalDate start, LocalDate end) {
-        return performanceRowDTOJdbcRepository.getAllByDateBetween(start, end);
+        List<PerformanceRowDTO> allPerformance = performanceRowDTOJdbcRepository.getAllByDateBetween(start, end);
+        Map<String, List<PerformanceRowDTO>> performanceByEmployee = allPerformance.stream().collect(Collectors.groupingBy(PerformanceRowDTO::getExpertis));
+        return new ArrayList<>();
     }
 
     @Override
