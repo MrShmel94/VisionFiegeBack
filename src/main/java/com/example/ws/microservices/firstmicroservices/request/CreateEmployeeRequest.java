@@ -59,7 +59,8 @@ public class CreateEmployeeRequest {
 
     private Boolean isCanHasAccount = false;
 
-    private LocalDateTime validToAccount = LocalDateTime.now();
+    private LocalDateTime validToAccount = LocalDateTime.now().minusSeconds(1);
+    private LocalDateTime validFromAccount = LocalDateTime.now();
 
     private String note = "";
 

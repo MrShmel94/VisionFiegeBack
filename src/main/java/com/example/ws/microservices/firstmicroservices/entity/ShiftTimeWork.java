@@ -4,9 +4,7 @@ import com.example.ws.microservices.firstmicroservices.entity.template.Site;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.data.annotation.Reference;
 
-import java.time.Instant;
 import java.time.LocalTime;
 
 @Entity

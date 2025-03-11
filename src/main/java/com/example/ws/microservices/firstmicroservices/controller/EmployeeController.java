@@ -1,6 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.controller;
 
 import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO;
 import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.request.CreateEmployeeRequest;
 import com.example.ws.microservices.firstmicroservices.request.CreateEmployeeRequestList;
@@ -48,9 +49,7 @@ public class EmployeeController {
 
     @GetMapping(path = "/{expertis}")
     public EmployeeDTO getUser(@PathVariable String expertis){
-
-        Optional<EmployeeDTO> getUser = employeeServices.getUsersByExpertis(expertis);
-        return getUser.orElse(null);
+        return employeeServices.getUsersByExpertis(expertis);
     }
 
     @Operation(summary = "Get configuration for registration",
@@ -129,6 +128,11 @@ public class EmployeeController {
     @GetMapping(path = "/getSupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<PreviewEmployeeDTO> getListSupervisor(){
         return employeeServices.getSupervisors("GD");
+    }
+
+    @GetMapping(path = "/getEmployeeBySupervisor/{expertis}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<EmployeeFullInformationDTO> getListEmployeeBySupervisor(@PathVariable("expertis") String expertis){
+        return employeeSupervisorService.getAllEmployeeBySupervisor(expertis);
     }
 
     @PostMapping(path = "/setEmployeeToSupervisor", produces = MediaType.APPLICATION_JSON_VALUE)

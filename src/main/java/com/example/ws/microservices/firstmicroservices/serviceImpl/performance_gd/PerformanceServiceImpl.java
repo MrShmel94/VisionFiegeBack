@@ -14,11 +14,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.sql.*;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
@@ -423,6 +421,56 @@ public class PerformanceServiceImpl implements PerformanceService {
 
         clearPerformanceEmployeeService.saveAllPerformanceEmployee(clearPerformance.values().stream().toList());
         spiGdService.saveSpi(spiGd);
+    }
+
+    public static String determineMainShift(Map<String, LocalTime[]> shifts,
+                                            List<PerformanceRowDTO> performanceRows,
+                                            ZoneId zone) {
+
+        Map<String, Long> shiftDurations = new HashMap<>();
+        for (String shiftName : shifts.keySet()) {
+            shiftDurations.put(shiftName, 0L);
+        }
+
+        for (PerformanceRowDTO row : performanceRows) {
+            ZonedDateTime activityStart = row.getStartActivity().atZone(zone);
+            ZonedDateTime activityEnd = row.getEndActivity().atZone(zone);
+            LocalDate startDate = activityStart.toLocalDate();
+            LocalDate endDate = activityEnd.toLocalDate();
+            for (LocalDate date = startDate; !date.isAfter(endDate.plusDays(1)); date = date.plusDays(1)) {
+                for (Map.Entry<String, LocalTime[]> entry : shifts.entrySet()) {
+                    String shiftName = entry.getKey();
+                    LocalTime shiftStartTime = entry.getValue()[0];
+                    LocalTime shiftEndTime = entry.getValue()[1];
+                    ZonedDateTime shiftStart;
+                    ZonedDateTime shiftEnd;
+
+                    if (shiftStartTime.isBefore(shiftEndTime)) {
+                        shiftStart = date.atTime(shiftStartTime).atZone(zone);
+                        shiftEnd = date.atTime(shiftEndTime).atZone(zone);
+                    } else {
+                        shiftStart = date.atTime(shiftStartTime).atZone(zone);
+                        shiftEnd = date.plusDays(1).atTime(shiftEndTime).atZone(zone);
+                    }
+                    long overlap = overlapSeconds(activityStart, activityEnd, shiftStart, shiftEnd);
+                    shiftDurations.put(shiftName, shiftDurations.get(shiftName) + overlap);
+                }
+            }
+        }
+
+        return shiftDurations.entrySet()
+                .stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("Unknown");
+    }
+
+    private static long overlapSeconds(ZonedDateTime intervalStart, ZonedDateTime intervalEnd,
+                                       ZonedDateTime periodStart, ZonedDateTime periodEnd) {
+        ZonedDateTime latestStart = intervalStart.isAfter(periodStart) ? intervalStart : periodStart;
+        ZonedDateTime earliestEnd = intervalEnd.isBefore(periodEnd) ? intervalEnd : periodEnd;
+        long overlap = ChronoUnit.SECONDS.between(latestStart, earliestEnd);
+        return overlap > 0 ? overlap : 0;
     }
 
     private void copyInsertPerformance(Connection conn,  List<PerformanceRow> list) {

@@ -28,12 +28,6 @@ public class RedisCacheService {
         log.info("Updated Redis for supervisor {} with employees: {}", supervisorExpertis, employeeExpertis);
     }
 
-    public void removeExpiredAccess(String supervisorExpertis, String employeeExpertis) {
-        String key = "supervisor:" + supervisorExpertis;
-        redisTemplate.opsForList().remove(key, 1, employeeExpertis);
-        log.info("Removed expired access for supervisor {} and employee {}", supervisorExpertis, employeeExpertis);
-    }
-
     public <T> void saveToCache(String key, T value) {
         redisTemplate.opsForValue().set(key, value);
     }
@@ -42,12 +36,83 @@ public class RedisCacheService {
         redisTemplate.opsForHash().put("userMappings", userId, expertis);
     }
 
-    public String getExpertisByUserId(String userId) {
-        return (String) redisTemplate.opsForHash().get("userMappings", userId);
+    public <T> void saveMapping(String mapping, String expertis, T object) {
+        redisTemplate.opsForHash().put(mapping, expertis, object);
     }
 
-    public Map<Object, Object> getAllMappings() {
-        return redisTemplate.opsForHash().entries("userMappings");
+    public <T>Optional<T> getValueFromMapping(String mapping, String expertis, TypeReference<T> typeReference) {
+        Object cachedValue = redisTemplate.opsForHash().get(mapping, expertis);
+        if (cachedValue == null) {
+            return Optional.empty();
+        }
+
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            T value = mapper.convertValue(cachedValue, typeReference);
+            return Optional.of(value);
+        } catch (IllegalArgumentException e) {
+            log.error("Error converting cached value: {}", e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    public <T>Optional<T> getValueFromMapping(String mapping, String expertis, Class<T> type) {
+        Object cachedValue = redisTemplate.opsForHash().get(mapping, expertis);
+
+        if (cachedValue == null) {
+            return Optional.empty();
+        }
+
+        if (type.isInstance(cachedValue)) {
+            return Optional.of(type.cast(cachedValue));
+        }
+
+        if (cachedValue instanceof LinkedHashMap) {
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+            try {
+                T value = mapper.convertValue(cachedValue, type);
+                return Optional.of(value);
+            } catch (IllegalArgumentException e) {
+                log.error("Error converting cached value to type {}: {}", type.getSimpleName(), e.getMessage());
+            }
+        }
+        return Optional.empty();
+    }
+
+    public <T> Map<String, T> getEmployeeFullMapping(Collection<String> expertisList, Class<T> clazz){
+        List<Object> cachedValues = redisTemplate.opsForHash().multiGet("userFullMapping", new ArrayList<>(expertisList));
+
+        Map<String, T> result = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        int i = 0;
+        for (String expertis : expertisList) {
+            Object cachedValue = cachedValues.get(i++);
+            if (cachedValue != null) {
+                if (clazz.isInstance(cachedValue)) {
+                    result.put(expertis, clazz.cast(cachedValue));
+                } else if (cachedValue instanceof LinkedHashMap) {
+                    try {
+                        T value = mapper.convertValue(cachedValue, clazz);
+                        result.put(expertis, value);
+                    } catch (IllegalArgumentException e) {
+                        log.error("Error converting cached value for {}: {}", expertis, e.getMessage());
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public String getExpertisByUserId(String userId) {
+        return (String) redisTemplate.opsForHash().get("userMappings", userId);
     }
 
     public <T> Optional<T> getFromCache(String key, TypeReference<T> typeReference) {

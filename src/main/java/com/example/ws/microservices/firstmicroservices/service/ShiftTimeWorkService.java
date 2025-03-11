@@ -5,5 +5,6 @@ import com.example.ws.microservices.firstmicroservices.dto.ShiftTimeWorkDTO;
 import java.util.List;
 
 public interface ShiftTimeWorkService {
-    List<ShiftTimeWorkDTO> getShiftTimeWorkBySiteName(String siteName);
+
+    List<ShiftTimeWorkDTO> getShiftTimeWorkByNameSite(String siteName);
 }

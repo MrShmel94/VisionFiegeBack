@@ -362,7 +362,7 @@ VALUES ('Admin', 10),
        ('User', 1);
 
 CREATE TABLE user_role (
-    user_id BIGINT REFERENCES user_registration(id),
+    user_id BIGINT REFERENCES employee(id),
     role_id INT REFERENCES role(id),
     valid_from TIMESTAMP DEFAULT NOW() NOT NULL,
     valid_to TIMESTAMP DEFAULT '9999-12-31 23:59:59' NOT NULL,
@@ -402,7 +402,7 @@ CREATE OR REPLACE FUNCTION employee_audit_trigger()
 AS $$
 BEGIN
     IF (TG_OP = 'INSERT') THEN
-        INSERT INTO employee_history (
+        INSERT INTO vision.employee_history (
             employee_id, expertis, zalos_id, br_code, first_name, last_name,
             sex, is_work, team_id, site_id, shift_id, country_id, department_id, position_id,
             is_supervisor, agency_id, valid_from, valid_to,
@@ -418,7 +418,7 @@ BEGIN
         RETURN NEW;
 
     ELSIF (TG_OP = 'UPDATE') THEN
-        INSERT INTO employee_history (
+        INSERT INTO vision.employee_history (
             employee_id, expertis, zalos_id, br_code, first_name, last_name,
             sex, is_work, team_id, site_id, shift_id, country_id, department_id, position_id,
             is_supervisor, agency_id, valid_from, valid_to,

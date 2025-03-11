@@ -17,6 +17,6 @@ public class DateRequest {
     private LocalDateTime validFrom = LocalDateTime.now();
 
     @Builder.Default
-    private LocalDateTime validTo = LocalDateTime.now().minusSeconds(1);
+    private LocalDateTime validTo = null;
 
 }

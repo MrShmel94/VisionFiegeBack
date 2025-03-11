@@ -34,6 +34,7 @@ public class EmployeeDTO implements Serializable {
     private String positionName;
     private String agencyName;
     private Boolean isCanHasAccount;
+    private Boolean isSupervisor;
     private LocalDateTime validToAccount;
     private LocalDateTime validFromAccount;
 

@@ -1,5 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.dto;
 
+import com.example.ws.microservices.firstmicroservices.secure.aspects.MaskField;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +21,7 @@ public class EmployeeFullInformationDTO {
     private Long id;
     private String expertis;
     private Short zalosId;
+    @MaskField(minWeight = 30)
     private String brCode;
     private String firstName;
     private String lastName;
@@ -29,7 +32,9 @@ public class EmployeeFullInformationDTO {
     private String countryName;
     private String departmentName;
     private String positionName;
+    @JsonInclude()
     private Boolean isSupervisor;
+    @JsonInclude()
     private Boolean isCanHasAccount;
     private LocalDateTime validToAccount;
     private LocalDateTime validFromAccount;

@@ -260,4 +260,7 @@ public class ClearPerformanceEmployee {
     @Column(name = "ntt_goods")
     private double nttGoods;
 
+
+    private String shiftName;
+
 }

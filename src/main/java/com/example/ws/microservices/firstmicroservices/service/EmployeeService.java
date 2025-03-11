@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface EmployeeService {
 
-    Optional<EmployeeDTO> getUsersByExpertis(String expertis);
+    EmployeeDTO getUsersByExpertis(String expertis);
 
     Optional<EmployeeDTO> getUsersByExpertisForRegistration(String expertis);
 

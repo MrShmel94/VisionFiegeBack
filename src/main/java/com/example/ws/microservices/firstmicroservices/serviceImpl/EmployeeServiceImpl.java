@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -34,8 +35,14 @@ public class EmployeeServiceImpl implements EmployeeService {
             minWeight = 35
     )
     @MaskField
-    public Optional<EmployeeDTO> getUsersByExpertis(String expertis) {
-        return employeeRepository.findEmployeeByExpertis(expertis);
+    public EmployeeDTO getUsersByExpertis(String expertis) {
+        Optional<EmployeeDTO> dto = employeeRepository.findEmployeeByExpertis(expertis);
+        if(dto.isPresent()) {
+            return dto.get();
+        }else{
+            throw new UsernameNotFoundException(
+                    String.format("User %s not found", expertis));
+        }
     }
 
     @Override

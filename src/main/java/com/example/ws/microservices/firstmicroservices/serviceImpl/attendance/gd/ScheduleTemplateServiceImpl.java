@@ -39,7 +39,7 @@ public class ScheduleTemplateServiceImpl implements ScheduleTemplateService {
     @Override
     public ResponseScheduleTemplate getScheduleTemplate() {
         List<AttendanceStatusDTO> attendanceStatus = attendanceStatusService.getAttendanceStatuses();
-        List<ShiftTimeWorkDTO> shiftTimeWork = shiftTimeWorkService.getShiftTimeWorkBySiteName("GD");
+        List<ShiftTimeWorkDTO> shiftTimeWork = shiftTimeWorkService.getShiftTimeWorkByNameSite("GD");
 
         return ResponseScheduleTemplate.builder()
                 .attendanceStatus(attendanceStatus)
