@@ -21,7 +21,7 @@ public class CreateEmployeeRequest {
 
     private Short zalosId = null;
 
-    @Pattern(regexp = "BR\\d+", message = "BR code must start with 'BR' followed by digits")
+    @Pattern(regexp = "BR-\\d+", message = "BR code must start with 'BR' followed by digits")
     private String brCode = null;
 
     @NotBlank(message = "First name is required")
@@ -73,5 +73,6 @@ public class CreateEmployeeRequest {
     private LocalDate dateBhpFuture = null;
     private LocalDate dateAdrNow = null;
     private LocalDate dateAdrFuture = null;
+    private Double fte = 1D;
 
 }

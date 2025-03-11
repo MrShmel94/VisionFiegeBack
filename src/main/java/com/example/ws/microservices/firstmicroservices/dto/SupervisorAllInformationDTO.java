@@ -35,7 +35,9 @@ public class SupervisorAllInformationDTO {
     private Boolean isVerified;
     private Boolean emailVerificationStatus;
     private Boolean isCanHasAccount;
+    private Boolean isSupervisor;
     private LocalDateTime validToAccount;
+    private LocalDateTime validFromAccount;
     private String note;
     private LocalDate dateStartContract;
     private LocalDate dateFinishContract;
@@ -58,7 +60,7 @@ public class SupervisorAllInformationDTO {
             Long id, String expertis, Short zalosId, String brCode, String firstName, String lastName, Boolean isWork,
             String sex, String siteName, String shiftName, String departmentName, String teamName,
             String positionName, String agencyName, String userId, String email, Boolean isVerified,
-            Boolean emailVerificationStatus, Boolean isCanHasAccount, LocalDateTime validToAccount, String note, LocalDate dateStartContract, LocalDate dateFinishContract,
+            Boolean emailVerificationStatus, Boolean isCanHasAccount, Boolean isSupervisor, LocalDateTime validToAccount, LocalDateTime validFromAccount, String note, LocalDate dateStartContract, LocalDate dateFinishContract,
             LocalDate dateBhpNow, LocalDate dateBhpFuture, LocalDate dateAdrNow, LocalDate dateAdrFuture, String encryptedPassword
     ) {
         this.id = id;
@@ -77,10 +79,12 @@ public class SupervisorAllInformationDTO {
         this.agencyName = agencyName;
         this.userId = userId;
         this.email = email;
+        this.isSupervisor = isSupervisor;
         this.isVerified = isVerified;
         this.emailVerificationStatus = emailVerificationStatus;
         this.isCanHasAccount = isCanHasAccount;
         this.validToAccount = validToAccount;
+        this.validFromAccount = validFromAccount;
         this.note = note;
         this.dateStartContract = dateStartContract;
         this.dateFinishContract = dateFinishContract;

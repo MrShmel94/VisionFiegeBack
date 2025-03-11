@@ -2,6 +2,7 @@ package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
 import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO;
+import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.repository.EmployeeRepository;
 import com.example.ws.microservices.firstmicroservices.response.PaginatedResponse;
 import com.example.ws.microservices.firstmicroservices.secure.aspects.AccessControl;
@@ -112,8 +113,13 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeDTO> getListEmployeeWithoutSupervisor() {
-        return List.of();
+    public List<PreviewEmployeeDTO> getEmployeeWithoutSupervisors(String siteName) {
+        return employeeRepository.getEmployeeWithoutSupervisor(siteName);
+    }
+
+    @Override
+    public List<PreviewEmployeeDTO> getSupervisors(String siteName) {
+        return employeeRepository.getSupervisors(siteName);
     }
 
     public Map<String, EmployeeFullInformationDTO> getEmployeeRedisEmployeeFullInformationDTO(List<String> expertisList) {

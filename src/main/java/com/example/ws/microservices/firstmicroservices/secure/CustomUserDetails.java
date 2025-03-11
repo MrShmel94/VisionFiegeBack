@@ -26,6 +26,7 @@ public class CustomUserDetails implements UserDetails {
     private final boolean isCanHasAccount;
     private final String password;
     private final LocalDateTime validToAccount;
+    private final LocalDateTime validFromAccount;
 
     @Builder.Default
     private final List<RoleDTO> roles = new ArrayList<>();
@@ -49,7 +50,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return isVerified && isVerifiedEmail && isCanHasAccount && validToAccount.isAfter(LocalDateTime.now());
+        return isVerified && isVerifiedEmail && isCanHasAccount && (validToAccount.isAfter(LocalDateTime.now()) && validFromAccount.isBefore(LocalDateTime.now()));
     }
 
 }

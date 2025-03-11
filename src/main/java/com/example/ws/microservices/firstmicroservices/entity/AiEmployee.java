@@ -38,6 +38,10 @@ public class AiEmployee {
     @Column(name = "date_adr_future", nullable = false)
     private LocalDate dateAdrFuture;
 
+    @ColumnDefault("0")
+    @Column(name = "fte", nullable = false)
+    private Double fte;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "employee_id", nullable = false)
     private EmployeeMapping employee;

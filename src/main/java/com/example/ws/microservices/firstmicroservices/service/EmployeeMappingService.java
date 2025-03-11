@@ -5,9 +5,11 @@ import com.example.ws.microservices.firstmicroservices.request.CreateEmployeeReq
 import com.example.ws.microservices.firstmicroservices.response.CreateEmployeeResponse;
 import jakarta.validation.Valid;
 
+import java.io.InputStream;
 import java.util.List;
 import java.util.Optional;
 
 public interface EmployeeMappingService {
     CreateEmployeeResponse createEmployees(@Valid List<CreateEmployeeRequest> createEmployeeRequests);
+    List<CreateEmployeeRequest> parse(InputStream inputStream);
 }

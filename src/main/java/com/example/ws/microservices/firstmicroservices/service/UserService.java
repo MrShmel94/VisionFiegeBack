@@ -1,10 +1,13 @@
 package com.example.ws.microservices.firstmicroservices.service;
 
+import com.example.ws.microservices.firstmicroservices.dto.SmallInformationSupervisorDTO;
 import com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.dto.UserDto;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
 import jakarta.annotation.Nullable;
 import org.springframework.security.core.userdetails.UserDetailsService;
+
+import java.util.Optional;
 
 public interface UserService extends UserDetailsService {
     void createUser(UserDto user);
@@ -12,4 +15,5 @@ public interface UserService extends UserDetailsService {
     UserDto updateUser(String id, UserDto userDto);
     void verifyUserAccount(String userId);
     SupervisorAllInformationDTO getSupervisorAllInformation(@Nullable String expertis, @Nullable String UserId);
+    Optional<SmallInformationSupervisorDTO> getSmallInformationSupervisor(@Nullable String UserId);
 }

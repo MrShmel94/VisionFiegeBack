@@ -41,11 +41,18 @@ public class Employee {
     @Column(name = "is_work", nullable = false)
     private Boolean isWork = false;
 
+    @ColumnDefault("false")
+    @Column(name = "is_supervisor", nullable = false)
+    private Boolean isSupervisor = false;
+
     @Column(name = "is_can_has_account", nullable = false)
     private Boolean isCanHasAccount;
 
-    @Column(name = "valid_to_account", nullable = false)
+    @Column(name = "valid_to", nullable = false)
     private LocalDateTime validToAccount;
+
+    @Column(name = "valid_from", nullable = false)
+    private LocalDateTime validFromAccount;
 
     @Column(name = "sex", nullable = false, length = 4)
     private String sex;

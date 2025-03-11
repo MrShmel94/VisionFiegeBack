@@ -74,7 +74,10 @@ public class EmployeeMapping {
     @Column(name = "is_can_has_account", nullable = false)
     private Boolean isCanHasAccount = false;
 
-    @Column(name = "valid_to_account", nullable = false)
+    @Column(name = "valid_to", nullable = false)
     private LocalDateTime validToAccount;
+
+    @Column(name = "valid_from", nullable = false)
+    private LocalDateTime validFromAccount;
 
 }

@@ -1,5 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.repository;
 
+import com.example.ws.microservices.firstmicroservices.dto.SmallInformationSupervisorDTO;
 import com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.entity.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,14 +13,15 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
+
     Optional<UserEntity> findByEmail(String email);
     Optional<UserEntity> findByUserId(String userId);
 
     @Query("""
         SELECT new com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformationDTO(
-            ur.id, ur.expertis, e.zalosId, e.brCode, e.firstName, e.lastName, e.isWork, e.sex,
+            e.id, ur.expertis, e.zalosId, e.brCode, e.firstName, e.lastName, e.isWork, e.sex,
             s.name, sh.name, d.name, t.name, p.name, a.name, ur.userId, ur.email, ur.isVerified, ur.emailVerificationStatus,
-            e.isCanHasAccount, e.validToAccount, ai.note, ai.dateStartContract, ai.dateFinishContract, ai.dateBhpNow, ai.dateBhpFuture,
+            e.isCanHasAccount, e.isSupervisor,  e.validToAccount, e.validFromAccount, ai.note, ai.dateStartContract, ai.dateFinishContract, ai.dateBhpNow, ai.dateBhpFuture,
             ai.dateAdrNow, ai.dateAdrFuture, ur.encryptedPassword
         )
         FROM UserEntity ur
@@ -43,4 +45,20 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Modifying
     @Query("UPDATE UserEntity u SET u.isVerified = true WHERE u.userId = :userId")
     void setVerified(String userId);
+
+//    @Query(value = """
+//           SELECT e.first_name AS firstName, e.last_name AS lastName, e.expertis
+//           FROM vision.employee e
+//           JOIN vision.user_registration ur ON e.expertis = ur.expertis
+//           WHERE ur.user_id = :userId
+//           """, nativeQuery = true)
+    @Query("""
+           SELECT new com.example.ws.microservices.firstmicroservices.dto.SmallInformationSupervisorDTO(
+            e.firstName, e.lastName
+            )
+            FROM UserEntity ue
+            JOIN ue.employee e
+            WHERE ue.userId = :userId
+           """)
+    Optional<SmallInformationSupervisorDTO> findSmallInformationSupervisorDTOByUserId(@Param("userId") String userId);
 }

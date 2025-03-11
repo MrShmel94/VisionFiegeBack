@@ -21,6 +21,16 @@ CREATE TABLE IF NOT EXISTS shift
     UNIQUE(name, site_id)
 );
 
+CREATE TABLE IF NOT EXISTS shift_time_work
+(
+    id SMALLSERIAL PRIMARY KEY,
+    name VARCHAR(64) NOT NULL,
+    shift_code VARCHAR(64) NOT NULL ,
+    start_shift TIME NOT NULL,
+    end_shift TIME NOT NULL,
+    site_id INTEGER NOT NULL REFERENCES site(id)
+);
+
 CREATE TABLE IF NOT EXISTS team
 (
     id SMALLSERIAL PRIMARY KEY,
@@ -92,6 +102,9 @@ DO $$
                ('R', gd_id),
                ('J', gd_id),
                ('N', gd_id),
+               ('QA', gd_id),
+               ('QB', gd_id),
+               ('FL', gd_id),
                ('ADM', gd_id),
                ('A', gda_id),
                ('B', gda_id),
@@ -108,9 +121,11 @@ DO $$
                ('Shipping', gd_id),
                ('Receive', gd_id),
                ('Pick/Stow', gd_id),
+               ('Parents', gd_id),
                ('Sort/Pack', gd_id),
                ('Return', gd_id),
                ('Quality', gd_id),
+               ('Workflow', gd_id),
                ('Administration', gd_id),
                ('Unloading', gda_id),
                ('Shipping', gda_id),
@@ -121,6 +136,14 @@ DO $$
                ('Quality', gda_id),
                ('Administration', gda_id);
 
+        INSERT INTO shift_time_work(name, shift_code, start_shift, end_shift, site_id)
+        VALUES ('First', 'I','05:45:00','14:00:00', gd_id),
+               ('Second','II','14:00:00','22:15:00', gd_id),
+               ('Night','III','21:30:00','05:45:00', gd_id),
+               ('Parent','R','08:00:00', '16:00:00', gd_id),
+               ('Day off','W','00:00:00', '00:00:00', gd_id);
+
+
         INSERT INTO position(name, site_id)
         VALUES ('Warehouseman', gd_id),
                ('Quality Specialist', gd_id),
@@ -130,7 +153,9 @@ DO $$
                ('Problem Solver', gd_id),
                ('Senior Problem Solver', gd_id),
                ('Team Leader', gd_id),
+               ('First Level Support', gd_id),
                ('Area Managers', gd_id),
+               ('Workflow', gd_id),
                ('Administration Specialist', gd_id),
                ('Senior Controlling Specialist', gd_id),
                ('Independent Accountant', gd_id),
@@ -166,7 +191,9 @@ DO $$
                ('Problem Solver', gda_id),
                ('Senior Problem Solver', gda_id),
                ('Team Leader', gda_id),
+               ('First Level Support', gda_id),
                ('Area Managers', gda_id),
+               ('Workflow', gda_id),
                ('Administration Specialist', gda_id),
                ('Senior Controlling Specialist', gda_id),
                ('Independent Accountant', gda_id),
@@ -255,11 +282,15 @@ CREATE TABLE IF NOT EXISTS employee
     position_id SMALLINT NOT NULL REFERENCES position,
     is_supervisor BOOLEAN DEFAULT FALSE,
     is_can_has_account BOOLEAN DEFAULT FALSE,
-    valid_to_account TIMESTAMP DEFAULT '1999-12-31 23:59:59'::TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     agency_id SMALLINT NOT NULL REFERENCES agency,
     valid_from TIMESTAMP DEFAULT NOW() NOT NULL,
-    valid_to TIMESTAMP DEFAULT '9999-12-31 23:59:59'::TIMESTAMP WITHOUT TIME ZONE NOT NULL
+    valid_to TIMESTAMP DEFAULT (NOW() - INTERVAL '1 second')  NOT NULL
 );
+
+CREATE INDEX idx_employee_expertis ON employee (expertis);
+CREATE INDEX idx_employee_site_dept_shift_team ON employee (site_id, department_id, shift_id, team_id);
+CREATE INDEX idx_employee_last_first ON employee (last_name, first_name);
+CREATE INDEX idx_employee_active ON employee (id) WHERE is_work;
 
 CREATE TABLE IF NOT EXISTS employee_supervisors (
     id BIGSERIAL PRIMARY KEY,
@@ -269,9 +300,24 @@ CREATE TABLE IF NOT EXISTS employee_supervisors (
     valid_to TIMESTAMP DEFAULT '9999-12-31 23:59:59'::TIMESTAMP WITHOUT TIME ZONE NOT NULL
 );
 
+CREATE INDEX idx_employee_supervisors_supervisor_id ON employee_supervisors(supervisor_id);
+CREATE INDEX idx_employee_supervisors_active ON employee_supervisors(supervisor_id)
+    WHERE valid_to = '9999-12-31 23:59:59';
 
-CREATE INDEX idx_employee_expertis ON employee (expertis);
-CREATE INDEX idx_employee_site_dept_shift_team ON employee (site_id, department_id, shift_id, team_id);
+CREATE TABLE IF NOT EXISTS ai_employee
+(
+    id BIGSERIAL PRIMARY KEY,
+    note VARCHAR(1028),
+    date_start_contract DATE NOT NULL,
+    date_finish_contract DATE NOT NULL,
+    date_BHP_now DATE,
+    date_BHP_future DATE,
+    date_ADR_now DATE,
+    date_ADR_future DATE,
+    fte DOUBLE PRECISION DEFAULT 1,
+    employee_id BIGINT NOT NULL REFERENCES employee
+);
+
 
 CREATE TABLE IF NOT EXISTS phone_email_type_supervisor (
     id SERIAL PRIMARY KEY,
@@ -323,19 +369,6 @@ CREATE TABLE user_role (
     PRIMARY KEY (user_id, role_id)
 );
 
-CREATE TABLE IF NOT EXISTS ai_employee
-(
-    id BIGSERIAL PRIMARY KEY,
-    note VARCHAR(1028),
-    date_start_contract DATE NOT NULL,
-    date_finish_contract DATE NOT NULL,
-    date_BHP_now DATE,
-    date_BHP_future DATE,
-    date_ADR_now DATE,
-    date_ADR_future DATE,
-    employee_id BIGINT NOT NULL REFERENCES employee
-);
-
 CREATE TABLE IF NOT EXISTS employee_history
 (
     audit_id BIGSERIAL PRIMARY KEY,
@@ -359,7 +392,7 @@ CREATE TABLE IF NOT EXISTS employee_history
     valid_from TIMESTAMP NOT NULL,
     valid_to TIMESTAMP NOT NULL,
     operation VARCHAR(10) NOT NULL,
-    changed_by BIGINT NOT NULL,
+    changed_by VARCHAR(256) NOT NULL,
     changed_at TIMESTAMP DEFAULT NOW() NOT NULL
 );
 
@@ -378,7 +411,9 @@ BEGIN
                      NEW.id, NEW.expertis, NEW.zalos_id, NEW.br_code, NEW.first_name, NEW.last_name,
                      NEW.sex, NEW.is_work, NEW.team_id, NEW.site_id, NEW.shift_id, NEW.country_id, NEW.department_id, NEW.position_id,
                      NEW.is_supervisor, NEW.agency_id, NEW.valid_from, NEW.valid_to,
-                     'INSERT', current_setting('app.current_user_id')::BIGINT, NOW()
+                     'INSERT',
+                     COALESCE(current_setting('app.current_user_id', true), 'System'),
+                     NOW()
                  );
         RETURN NEW;
 
@@ -390,9 +425,11 @@ BEGIN
             operation, changed_by, changed_at
         ) VALUES (
                      NEW.id, NEW.expertis, NEW.zalos_id, NEW.br_code, NEW.first_name, NEW.last_name,
-                     NEW.sex, NEW.is_work,NEW.team_id, NEW.site_id, NEW.shift_id, NEW.country_id, NEW.department_id, NEW.position_id,
+                     NEW.sex, NEW.is_work, NEW.team_id, NEW.site_id, NEW.shift_id, NEW.country_id, NEW.department_id, NEW.position_id,
                      NEW.is_supervisor, NEW.agency_id, NEW.valid_from, NEW.valid_to,
-                     'UPDATE', current_setting('app.current_user_id')::BIGINT, NOW()
+                     'UPDATE',
+                     COALESCE(current_setting('app.current_user_id', true), 'System'),
+                     NOW()
                  );
         RETURN NEW;
     END IF;
@@ -407,7 +444,7 @@ EXECUTE PROCEDURE employee_audit_trigger();
 
 CREATE TABLE refresh_tokens (
     id SERIAL PRIMARY KEY,
-    user_id VARCHAR(256) NOT NULL,
+    user_id VARCHAR(512) NOT NULL,
     token VARCHAR(512) NOT NULL,
     expiration TIMESTAMP NOT NULL,
     revoked BOOLEAN DEFAULT FALSE,

@@ -177,6 +177,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Optional<SmallInformationSupervisorDTO> getSmallInformationSupervisor(@org.jetbrains.annotations.Nullable String userId) {
+        return userRepository.findSmallInformationSupervisorDTOByUserId(userId);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         SupervisorAllInformationDTO entity = getSupervisorAllInformation(null, username);
@@ -199,6 +204,7 @@ public class UserServiceImpl implements UserService {
                 entity.getIsCanHasAccount(),
                 encryptedPassword,
                 entity.getValidToAccount(),
+                entity.getValidFromAccount(),
                 roles
         );
     }

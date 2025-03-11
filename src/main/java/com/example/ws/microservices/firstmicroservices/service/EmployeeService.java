@@ -2,7 +2,7 @@ package com.example.ws.microservices.firstmicroservices.service;
 
 import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO;
-import com.example.ws.microservices.firstmicroservices.request.SiteRequestModel;
+import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.response.PaginatedResponse;
 import org.springframework.data.domain.Pageable;
 
@@ -22,5 +22,6 @@ public interface EmployeeService {
     PaginatedResponse<EmployeeFullInformationDTO> getEmployeesByExpertisList(
             List<String> expertisList, Pageable pageable);
 
-    List<EmployeeDTO> getListEmployeeWithoutSupervisor();
+    List<PreviewEmployeeDTO> getEmployeeWithoutSupervisors(String siteName);
+    List<PreviewEmployeeDTO> getSupervisors(String siteName);
 }

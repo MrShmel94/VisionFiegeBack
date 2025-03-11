@@ -34,11 +34,6 @@ public class RedisConfig {
 
         mapper.setDefaultSetterInfo(JsonSetter.Value.forValueNulls(Nulls.AS_EMPTY));
         mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT);
-
-//        mapper.activateDefaultTyping(
-//                LaissezFaireSubTypeValidator.instance,
-//                ObjectMapper.DefaultTyping.NON_FINAL
-//        );
         return mapper;
     }
 

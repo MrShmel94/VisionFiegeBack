@@ -16,9 +16,15 @@ import com.example.ws.microservices.firstmicroservices.serviceImpl.config.Config
 import jakarta.persistence.EntityManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -32,6 +38,14 @@ public class EmployeeMappingServiceImpl implements EmployeeMappingService {
     private final AiEmployeeService aiEmployeeService;
     private final EntityManager entityManager;
     private final SiteService siteService;
+
+    private final List<String> EXPECTED_HEADERS = List.of(
+            "expertis", "firstname", "lastname",
+            "sex", "site", "shift", "department", "team", "country",
+            "position", "agency", "datestartcontract", "datefinishcontract"
+    );
+
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
     /**
      * Creates new employees based on the provided requests.
@@ -237,4 +251,111 @@ public class EmployeeMappingServiceImpl implements EmployeeMappingService {
 
         return new CreateEmployeeResponse(total, success, failed, errorMessages);
     }
+
+    @Override
+    public List<CreateEmployeeRequest> parse(InputStream inputStream) {
+        List<CreateEmployeeRequest> employees = new ArrayList<>();
+        Workbook workbook = null;
+        try {
+            workbook = new XSSFWorkbook(inputStream);
+        } catch (IOException e) {
+            throw new RuntimeException("No workbook create in the Excel file.");
+        }
+        Sheet sheet = workbook.getSheetAt(0);
+        if (sheet == null) {
+            throw new IllegalArgumentException("No sheet found in the Excel file.");
+        }
+
+        Row headerRow = sheet.getRow(0);
+        if (headerRow == null) {
+            throw new IllegalArgumentException("No header row found in the Excel file.");
+        }
+
+        Map<Integer, String> headers = new HashMap<>();
+        for (Cell cell : headerRow) {
+            headers.put(cell.getColumnIndex(), cell.getStringCellValue().trim().toLowerCase());
+        }
+
+        List<String> missingHeaders = new ArrayList<>();
+
+        for (String expected : EXPECTED_HEADERS) {
+            if (!headers.containsValue(expected)) {
+                missingHeaders.add(expected);
+            }
+        }
+        if (!missingHeaders.isEmpty()) {
+            throw new IllegalArgumentException("Missing expected headers: " + missingHeaders);
+        }
+
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (row == null) continue;
+
+            CreateEmployeeRequest request = new CreateEmployeeRequest();
+            for (Cell cell : row) {
+                String header = headers.get(cell.getColumnIndex());
+                DataFormatter dataFormatter = new DataFormatter();
+                String value = dataFormatter.formatCellValue(cell).trim();
+
+                switch (header) {
+                    case "expertis":
+                        request.setExpertis(value);
+                        break;
+                    case "zalosid":
+                        request.setZalosId(value.isEmpty() ? null : Short.valueOf(value));
+                        break;
+                    case "brcode":
+                        request.setBrCode(value);
+                        break;
+                    case "firstname":
+                        request.setFirstName(value);
+                        break;
+                    case "lastname":
+                        request.setLastName(value);
+                        break;
+                    case "sex":
+                        request.setSex(value);
+                        break;
+                    case "site":
+                        request.setSite(value);
+                        break;
+                    case "shift":
+                        request.setShift(value);
+                        break;
+                    case "department":
+                        request.setDepartment(value);
+                        break;
+                    case "team":
+                        request.setTeam(value);
+                        break;
+                    case "country":
+                        request.setCountry(value);
+                        break;
+                    case "position":
+                        request.setPosition(value);
+                        break;
+                    case "agency":
+                        request.setAgency(value);
+                        break;
+                    case "datestartcontract":
+                        request.setDateStartContract(LocalDate.parse(value, formatter));
+                        break;
+                    case "datefinishcontract":
+                        request.setDateFinishContract(LocalDate.parse(value, formatter));
+                        break;
+                    default:
+                        break;
+                }
+            }
+            employees.add(request);
+        }
+        try {
+            workbook.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return employees;
+    }
 }
+
+

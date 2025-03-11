@@ -22,7 +22,6 @@ public class EmployeeFullInformationDTO {
     private String brCode;
     private String firstName;
     private String lastName;
-    private Boolean isWork;
     private String sex;
     private String teamName;
     private String siteName;
@@ -30,6 +29,10 @@ public class EmployeeFullInformationDTO {
     private String countryName;
     private String departmentName;
     private String positionName;
+    private Boolean isSupervisor;
+    private Boolean isCanHasAccount;
+    private LocalDateTime validToAccount;
+    private LocalDateTime validFromAccount;
     private String agencyName;
     private String note;
     private LocalDate dateStartContract;
@@ -38,5 +41,6 @@ public class EmployeeFullInformationDTO {
     private LocalDate dateBhpFuture;
     private LocalDate dateAdrNow;
     private LocalDate dateAdrFuture;
+    private Double fte;
 
 }

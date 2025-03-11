@@ -1,13 +1,16 @@
 package com.example.ws.microservices.firstmicroservices.controller;
 
 import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.request.CreateEmployeeRequest;
 import com.example.ws.microservices.firstmicroservices.request.CreateEmployeeRequestList;
+import com.example.ws.microservices.firstmicroservices.request.RequestSetEmployeeToSupervisor;
 import com.example.ws.microservices.firstmicroservices.request.SiteRequestModel;
 import com.example.ws.microservices.firstmicroservices.response.ConfigurationRegistrationDTO;
 import com.example.ws.microservices.firstmicroservices.response.CreateEmployeeResponse;
 import com.example.ws.microservices.firstmicroservices.service.EmployeeMappingService;
 import com.example.ws.microservices.firstmicroservices.service.EmployeeService;
+import com.example.ws.microservices.firstmicroservices.service.EmployeeSupervisorService;
 import com.example.ws.microservices.firstmicroservices.service.SiteService;
 import com.example.ws.microservices.firstmicroservices.serviceImpl.config.ConfigurationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,16 +19,18 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/employee")
@@ -34,9 +39,11 @@ import java.util.Optional;
 public class EmployeeController {
 
     private final EmployeeService employeeServices;
+    private final EmployeeSupervisorService employeeSupervisorService;
     private final EmployeeMappingService employeeMappingService;
     private final SiteService siteService;
     private final ConfigurationService configurationService;
+    private final Validator validator;
 
 
     @GetMapping(path = "/{expertis}")
@@ -83,15 +90,50 @@ public class EmployeeController {
         return siteService.findEmployeesByDynamicFilters(siteRequestModel);
     }
 
-    @PostMapping(path = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/createEmployees", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<CreateEmployeeResponse> createEmployees(@Valid @RequestBody CreateEmployeeRequestList createEmployeeRequests){
         CreateEmployeeResponse response = employeeMappingService.createEmployees(createEmployeeRequests.getEmployees());
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping(path = "/uploadEmployees", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> uploadEmployees(@RequestParam("file") MultipartFile file) {
+        List<CreateEmployeeRequest> employeeRequests;
+        try {
+            employeeRequests = employeeMappingService.parse(file.getInputStream());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error parsing Excel file: " + e.getMessage());
+        }
+
+        CreateEmployeeRequestList requestList = new CreateEmployeeRequestList();
+        requestList.setEmployees(employeeRequests);
+
+        Set<ConstraintViolation<CreateEmployeeRequestList>> violations = validator.validate(requestList);
+        if (!violations.isEmpty()) {
+            Map<String, String> errors = new HashMap<>();
+            for (ConstraintViolation<CreateEmployeeRequestList> violation : violations) {
+                errors.put(violation.getPropertyPath().toString(), violation.getMessage());
+            }
+            return ResponseEntity.badRequest().body(errors);
+        }
+
+        CreateEmployeeResponse response = employeeMappingService.createEmployees(employeeRequests);
+        return ResponseEntity.ok(response);
+    }
+
     @GetMapping(path = "/getEmployeeWithoutSupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<EmployeeDTO> getListEmployeesWithoutSupervisor(){
-        return employeeServices.getListEmployeeWithoutSupervisor();
+    public List<PreviewEmployeeDTO> getListEmployeesWithoutSupervisor(){
+        return employeeServices.getEmployeeWithoutSupervisors("GD");
+    }
+
+    @GetMapping(path = "/getSupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<PreviewEmployeeDTO> getListSupervisor(){
+        return employeeServices.getSupervisors("GD");
+    }
+
+    @PostMapping(path = "/setEmployeeToSupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> setEmployeeToSupervisor(@RequestBody List<RequestSetEmployeeToSupervisor> setEmployeeToSupervisor){
+        return ResponseEntity.ok(employeeSupervisorService.addAccess(setEmployeeToSupervisor));
     }
 
 }
