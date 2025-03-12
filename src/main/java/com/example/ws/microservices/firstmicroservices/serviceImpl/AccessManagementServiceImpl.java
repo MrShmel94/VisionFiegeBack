@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,21 +27,11 @@ public class AccessManagementServiceImpl implements AccessManagementService {
     private final UserService userService;
     private final UserRoleService userRoleService;
 
-    @Override
-    public void grantTemporaryAccess(Long employeeId, String supervisorExpertis, LocalDateTime validTo) {
-        supervisorService.addAccess(employeeId, supervisorExpertis, validTo);
-        redisCacheService.updateSupervisorAccess(supervisorExpertis, List.of(employeeId.toString()));
-    }
-
-    @Override
-    public void grantAccountCreatingAccess(Long employeeId, String supervisorExpertis, LocalDateTime validTo) {
-
-    }
 
     @Scheduled(cron = "0 0 * * * ?")
     @Override
     public void cleanupExpiredAccess() {
-        List<EmployeeSupervisor> expiredAccesses = supervisorService.getExpiredAccesses();
+        //List<EmployeeSupervisor> expiredAccesses = supervisorService.getExpiredAccesses();
 
 //        for (EmployeeSupervisor access : expiredAccesses) {
 //            supervisorService.revokeAccess(access.getEmployeeId(), access.getSupervisorExpertis());

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -49,10 +50,10 @@ public class Employee {
     private Boolean isCanHasAccount;
 
     @Column(name = "valid_to", nullable = false)
-    private LocalDateTime validToAccount;
+    private LocalDate validToAccount;
 
     @Column(name = "valid_from", nullable = false)
-    private LocalDateTime validFromAccount;
+    private LocalDate validFromAccount;
 
     @Column(name = "sex", nullable = false, length = 4)
     private String sex;

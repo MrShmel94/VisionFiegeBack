@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -14,9 +15,9 @@ import java.time.LocalDateTime;
 public class DateRequest {
 
     @Builder.Default
-    private LocalDateTime validFrom = LocalDateTime.now();
+    private LocalDate validFrom = LocalDate.now();
 
     @Builder.Default
-    private LocalDateTime validTo = null;
+    private LocalDate validTo = null;
 
 }

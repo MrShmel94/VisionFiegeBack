@@ -16,15 +16,8 @@ public interface EmployeeService {
 
     Optional<EmployeeDTO> getUsersByExpertisForRegistration(String expertis);
 
-    List<EmployeeDTO> findEmployeesByExpertisList(List<String> expertisList);
-
-    Optional<EmployeeFullInformationDTO> findEmployeesFullInformationByExpertis(String expertis);
-
     PaginatedResponse<EmployeeFullInformationDTO> getEmployeesByExpertisList(
             List<String> expertisList, Pageable pageable);
-
-    List<PreviewEmployeeDTO> getEmployeeWithoutSupervisors(String siteName);
-    List<PreviewEmployeeDTO> getSupervisors(String siteName);
 
     Map<String, EmployeeFullInformationDTO> getEmployeeFullDTO(List<String> expertis);
 }

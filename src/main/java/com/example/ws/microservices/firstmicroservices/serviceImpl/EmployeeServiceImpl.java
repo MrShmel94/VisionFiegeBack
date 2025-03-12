@@ -51,16 +51,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeDTO> findEmployeesByExpertisList(List<String> expertisList) {
-        return employeeRepository.findEmployeesByExpertisList(expertisList);
-    }
-
-    @Override
-    public Optional<EmployeeFullInformationDTO> findEmployeesFullInformationByExpertis(String expertis) {
-        return Optional.empty();
-    }
-
-    @Override
     public PaginatedResponse<EmployeeFullInformationDTO> getEmployeesByExpertisList(List<String> expertisList, Pageable pageable) {
 
         Pageable adjustedPageable = pageable.getPageSize() > PAGE_SIZE_MAX
@@ -117,16 +107,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .currentPage(adjustedPageable.getPageNumber())
                 .pageSize(adjustedPageable.getPageSize())
                 .build();
-    }
-
-    @Override
-    public List<PreviewEmployeeDTO> getEmployeeWithoutSupervisors(String siteName) {
-        return employeeRepository.getEmployeeWithoutSupervisor(siteName);
-    }
-
-    @Override
-    public List<PreviewEmployeeDTO> getSupervisors(String siteName) {
-        return employeeRepository.getSupervisors(siteName);
     }
 
     @Override

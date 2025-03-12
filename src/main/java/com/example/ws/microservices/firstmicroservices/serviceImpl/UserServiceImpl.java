@@ -24,6 +24,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -65,7 +66,7 @@ public class UserServiceImpl implements UserService {
             throw new VerificationException("The provided BR-code does not match the employee's BR-code.");
         }
 
-        if(!employeeEntity.getIsCanHasAccount() || employeeEntity.getValidToAccount().isBefore(LocalDateTime.now())){
+        if(!employeeEntity.getIsCanHasAccount() || employeeEntity.getValidToAccount().isBefore(LocalDate.now())){
             throw new VerificationException("The employee is not eligible to create an account, or the account validity period has expired.");
         }
 

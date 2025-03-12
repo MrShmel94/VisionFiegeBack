@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -35,7 +36,7 @@ public class EmployeeDTO implements Serializable {
     private String agencyName;
     private Boolean isCanHasAccount;
     private Boolean isSupervisor;
-    private LocalDateTime validToAccount;
-    private LocalDateTime validFromAccount;
+    private LocalDate validToAccount;
+    private LocalDate validFromAccount;
 
 }

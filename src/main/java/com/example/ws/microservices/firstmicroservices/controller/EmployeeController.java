@@ -120,24 +120,112 @@ public class EmployeeController {
         return ResponseEntity.ok(response);
     }
 
+    /**
+     * Retrieves a list of employees without a supervisor for the current user's site.
+     *
+     * @return ResponseEntity with a list of PreviewEmployeeDTO representing employees without supervisors.
+     */
+    @Operation(summary = "Get Employees Without Supervisor",
+            description = "Retrieves the list of employees who do not have a supervisor assigned for the current user's site.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved list",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = PreviewEmployeeDTO.class)))),
+            @ApiResponse(responseCode = "403", description = "Access denied")
+    })
     @GetMapping(path = "/getEmployeeWithoutSupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PreviewEmployeeDTO> getListEmployeesWithoutSupervisor(){
-        return employeeServices.getEmployeeWithoutSupervisors("GD");
+    public ResponseEntity<List<PreviewEmployeeDTO>> getListEmployeesWithoutSupervisor(){
+        log.info("Controller: Fetching employees without supervisor.");
+        List<PreviewEmployeeDTO> employees = employeeSupervisorService.getEmployeeWithoutSupervisors();
+        log.info("Controller: Found {} employees without supervisor.", employees.size());
+        return ResponseEntity.ok(employees);
     }
 
+    /**
+     * Retrieves a list of supervisors for the current user's site.
+     *
+     * @return ResponseEntity with a list of PreviewEmployeeDTO representing supervisors.
+     */
+    @Operation(summary = "Get Supervisors",
+            description = "Retrieves the list of supervisors for the current user's site.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved supervisors",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = PreviewEmployeeDTO.class)))),
+            @ApiResponse(responseCode = "403", description = "Access denied")
+    })
     @GetMapping(path = "/getSupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<PreviewEmployeeDTO> getListSupervisor(){
-        return employeeServices.getSupervisors("GD");
+    public ResponseEntity<List<PreviewEmployeeDTO>> getListSupervisor() {
+        log.info("Controller: Fetching supervisors.");
+        List<PreviewEmployeeDTO> supervisors = employeeSupervisorService.getSupervisors();
+        log.info("Controller: Found {} supervisors.", supervisors.size());
+        return ResponseEntity.ok(supervisors);
     }
 
+    /**
+     * Retrieves full employee information for a given supervisor.
+     *
+     * @param expertis The supervisor's expertis.
+     * @return ResponseEntity with a list of EmployeeFullInformationDTO for the given supervisor.
+     */
+    @Operation(summary = "Get Employees By Supervisor",
+            description = "Retrieves the full employee information for employees under the supervisor identified by expertis.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved employee details",
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = EmployeeFullInformationDTO.class)))),
+            @ApiResponse(responseCode = "403", description = "Access denied")
+    })
     @GetMapping(path = "/getEmployeeBySupervisor/{expertis}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<EmployeeFullInformationDTO> getListEmployeeBySupervisor(@PathVariable("expertis") String expertis){
-        return employeeSupervisorService.getAllEmployeeBySupervisor(expertis);
+    public ResponseEntity<List<EmployeeFullInformationDTO>> getListEmployeeBySupervisor(
+            @PathVariable("expertis") String expertis) {
+        log.info("Controller: Fetching employees for supervisor with expertis: {}", expertis);
+        List<EmployeeFullInformationDTO> employees = employeeSupervisorService.getAllEmployeeBySupervisor(expertis);
+        log.info("Controller: Found {} employees for supervisor {}.", employees.size(), expertis);
+        return ResponseEntity.ok(employees);
     }
 
+    /**
+     * Assigns employees to a supervisor.
+     *
+     * @param setEmployeeToSupervisor List of mapping requests containing supervisor and employee expertis with validity dates.
+     * @return ResponseEntity containing a list of employee expertis that were successfully added.
+     */
+    @Operation(summary = "Assign Employees to Supervisor",
+            description = "Assigns a set of employees to a supervisor using the provided mapping requests.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully assigned employees",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = List.class))),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
     @PostMapping(path = "/setEmployeeToSupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> setEmployeeToSupervisor(@RequestBody List<RequestSetEmployeeToSupervisor> setEmployeeToSupervisor){
-        return ResponseEntity.ok(employeeSupervisorService.addAccess(setEmployeeToSupervisor));
+    public ResponseEntity<List<String>> setEmployeeToSupervisor(
+            @RequestBody List<RequestSetEmployeeToSupervisor> setEmployeeToSupervisor) {
+        log.info("Controller: Assigning employees to supervisor.");
+        List<String> result = employeeSupervisorService.addEmployeeAccessForSupervisor(setEmployeeToSupervisor);
+        log.info("Controller: Successfully assigned {} employee(s).", result.size());
+        return ResponseEntity.ok(result);
+    }
+
+    /**
+     * Removes employee assignments from a supervisor.
+     *
+     * @param setEmployeeToSupervisor List of mapping requests for employees to remove from a supervisor.
+     * @return ResponseEntity with HTTP status OK if deletion is successful.
+     */
+    @Operation(summary = "Remove Employees from Supervisor",
+            description = "Deletes the mapping between employees and a supervisor based on the provided mapping requests.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully removed employee access"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
+    @PostMapping(path = "/deleteEmployeeToSupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> deleteEmployeeToSupervisor(
+            @RequestBody List<RequestSetEmployeeToSupervisor> setEmployeeToSupervisor) {
+        log.info("Controller: Deleting employees from supervisor.");
+        employeeSupervisorService.deleteEmployeeAccessForSupervisor(setEmployeeToSupervisor);
+        log.info("Controller: Employee removal completed.");
+        return ResponseEntity.ok().build();
     }
 
 }

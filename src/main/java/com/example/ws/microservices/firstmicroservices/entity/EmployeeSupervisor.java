@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -26,8 +27,8 @@ public class EmployeeSupervisor {
     private Long supervisorId;
 
     @Column(name = "valid_from", nullable = false)
-    private LocalDateTime validFrom;
+    private LocalDate validFrom;
 
     @Column(name = "valid_to", nullable = false)
-    private LocalDateTime validTo;
+    private LocalDate validTo;
 }

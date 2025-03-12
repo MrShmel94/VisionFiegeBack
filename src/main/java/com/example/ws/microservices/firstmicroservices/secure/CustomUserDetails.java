@@ -9,6 +9,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,8 +26,8 @@ public class CustomUserDetails implements UserDetails {
     private final boolean isVerifiedEmail;
     private final boolean isCanHasAccount;
     private final String password;
-    private final LocalDateTime validToAccount;
-    private final LocalDateTime validFromAccount;
+    private final LocalDate validToAccount;
+    private final LocalDate validFromAccount;
 
     @Builder.Default
     private final List<RoleDTO> roles = new ArrayList<>();
@@ -50,7 +51,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return isVerified && isVerifiedEmail && isCanHasAccount && (validToAccount.isAfter(LocalDateTime.now()) && validFromAccount.isBefore(LocalDateTime.now()));
+        return isVerified && isVerifiedEmail && isCanHasAccount && (validToAccount.isAfter(LocalDate.now()) && validFromAccount.isBefore(LocalDate.now()));
     }
 
 }

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -75,9 +76,9 @@ public class EmployeeMapping {
     private Boolean isCanHasAccount = false;
 
     @Column(name = "valid_to", nullable = false)
-    private LocalDateTime validToAccount;
+    private LocalDate validToAccount;
 
     @Column(name = "valid_from", nullable = false)
-    private LocalDateTime validFromAccount;
+    private LocalDate validFromAccount;
 
 }

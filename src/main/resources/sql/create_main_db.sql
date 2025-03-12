@@ -364,8 +364,8 @@ VALUES ('Admin', 10),
 CREATE TABLE user_role (
     user_id BIGINT REFERENCES employee(id),
     role_id INT REFERENCES role(id),
-    valid_from TIMESTAMP DEFAULT NOW() NOT NULL,
-    valid_to TIMESTAMP DEFAULT '9999-12-31 23:59:59' NOT NULL,
+    valid_from DATE DEFAULT NOW() NOT NULL,
+    valid_to DATE DEFAULT '9999-12-31' NOT NULL,
     PRIMARY KEY (user_id, role_id)
 );
 

@@ -36,8 +36,8 @@ public class EmployeeFullInformationDTO {
     private Boolean isSupervisor;
     @JsonInclude()
     private Boolean isCanHasAccount;
-    private LocalDateTime validToAccount;
-    private LocalDateTime validFromAccount;
+    private LocalDate validToAccount;
+    private LocalDate validFromAccount;
     private String agencyName;
     private String note;
     private LocalDate dateStartContract;

@@ -2,6 +2,7 @@ package com.example.ws.microservices.firstmicroservices.repository;
 
 import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO;
+import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.entity.EmployeeSupervisor;
 import com.example.ws.microservices.firstmicroservices.entity.EmployeeSupervisorId;
 import jakarta.transaction.Transactional;
@@ -10,25 +11,34 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EmployeeSupervisorRepository extends JpaRepository<EmployeeSupervisor, EmployeeSupervisorId> {
 
-    @Query("SELECT es FROM EmployeeSupervisor es WHERE es.validTo > :currentDate")
-    List<EmployeeSupervisor> findActiveAccesses(@Param("currentDate") LocalDateTime currentDate);
-
-    @Query("SELECT es FROM EmployeeSupervisor es WHERE es.validTo < :currentDate")
-    List<EmployeeSupervisor> findExpiredAccesses(@Param("currentDate") LocalDateTime currentDate);
+    @Query(value = """
+            WITH deleted AS (
+                DELETE FROM vision.employee_supervisors
+                WHERE valid_to < now()
+                RETURNING employee_id, supervisor_id
+            )
+            SELECT sup.expertis AS supervisor_expertis,
+                   emp.expertis AS employee_expertis,
+                   emp.id AS employee_id
+            FROM deleted d
+            JOIN vision.employee emp ON d.employee_id = emp.id
+            JOIN vision.employee sup ON d.supervisor_id = sup.id;
+            """, nativeQuery = true)
+    List<Object[]> findExpiredAccessesAndDeleteThem();
 
     @Modifying
-    @Transactional
     @Query(value = """
     WITH input_data AS (
       SELECT
         unnest(?::varchar[]) AS expertis,
-        unnest(?::timestamp[]) AS valid_from,
-        unnest(?::timestamp[]) AS valid_to
+        unnest(?::date[]) AS valid_from,
+        unnest(?::date[]) AS valid_to
     ),
     supervisor AS (
       SELECT id AS supervisor_id
@@ -40,7 +50,7 @@ public interface EmployeeSupervisorRepository extends JpaRepository<EmployeeSupe
              e.expertis,
              s.supervisor_id,
              COALESCE(i.valid_from, NOW()) AS valid_from,
-             COALESCE(i.valid_to, '9999-12-31 23:59:59'::timestamp) AS valid_to
+             COALESCE(i.valid_to, '9999-12-31'::DATE) AS valid_to
       FROM input_data i
       JOIN vision.employee e ON e.expertis = i.expertis
       CROSS JOIN supervisor s
@@ -59,9 +69,38 @@ public interface EmployeeSupervisorRepository extends JpaRepository<EmployeeSupe
             nativeQuery = true)
     List<String> insertEmployeeSupervisors(
             String[] expertis,
-            LocalDateTime[] validFrom,
-            LocalDateTime[] validTo,
+            LocalDate[] validFrom,
+            LocalDate[] validTo,
             Long supervisorId
+    );
+
+    @Modifying
+    @Query(value = """
+    WITH input_data AS (
+      SELECT unnest(?::varchar[]) AS employee_expertis
+    ),
+    supervisor AS (
+      SELECT id AS supervisor_id
+      FROM vision.employee
+      WHERE expertis = ?
+    ),
+    employees_to_delete AS (
+      SELECT e.id AS employee_id,
+             e.expertis AS employee_expertis,
+             s.supervisor_id
+      FROM input_data i
+      JOIN vision.employee e ON e.expertis = i.employee_expertis
+      CROSS JOIN supervisor s
+    )
+    DELETE FROM vision.employee_supervisors es
+    USING employees_to_delete etd
+    WHERE es.employee_id = etd.employee_id
+      AND es.supervisor_id = etd.supervisor_id
+    RETURNING etd.employee_expertis;
+    """, nativeQuery = true)
+    List<String> deleteEmployeesForSupervisor(
+            String[] employeeExpertis,
+            String supervisorExpertis
     );
 
     @Query("""
@@ -92,4 +131,30 @@ public interface EmployeeSupervisorRepository extends JpaRepository<EmployeeSupe
             WHERE em.expertis = :expertis
             """, nativeQuery = true)
     List<String> getAllExpertisEmployeeBySupervisor(@Param("expertis") String expertis);
+
+    @Query("""
+           SELECT new com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO(
+           e.expertis, e.firstName, e.lastName, d.name, t.name
+           ) FROM Employee e
+           JOIN Department d ON e.departmentId = d.id
+           JOIN Team t ON e.teamId = t.id
+           JOIN Site s ON e.siteId = s.id
+           WHERE e.isWork = true
+           AND s.name = :siteName
+           AND e.id NOT IN (SELECT es.employeeId FROM EmployeeSupervisor es)
+           """)
+    List<PreviewEmployeeDTO> getEmployeeWithoutSupervisor(@Param("siteName") String siteName);
+
+    @Query("""
+           SELECT new com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO(
+           e.expertis, e.firstName, e.lastName, d.name, t.name
+           ) FROM Employee e
+           JOIN Department d ON e.departmentId = d.id
+           JOIN Team t ON e.teamId = t.id
+           JOIN Site s ON e.siteId = s.id
+           WHERE e.isWork = true
+           AND s.name = :siteName
+           AND e.isSupervisor = true
+           """)
+    List<PreviewEmployeeDTO> getSupervisors(@Param("siteName") String siteName);
 }
