@@ -129,22 +129,19 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employeeRepository.getSupervisors(siteName);
     }
 
-    public Map<String, EmployeeFullInformationDTO> getEmployeeRedisEmployeeFullInformationDTO(List<String> expertisList) {
-        Map<String, EmployeeFullInformationDTO> multiFromCacheAsMap = redisCacheService.getMultiFromCacheAsMap(expertisList, EmployeeFullInformationDTO.class);
+    @Override
+    public Map<String, EmployeeFullInformationDTO> getEmployeeFullDTO(List<String> expertis){
+        Map<String, EmployeeFullInformationDTO> map = redisCacheService.getEmployeeFullMapping(expertis, EmployeeFullInformationDTO.class);
+        if(expertis.size() != map.size()){
+            List<String> notContainExpertis = expertis.stream().filter(exp -> !map.containsKey(exp)).toList();
+            List<EmployeeFullInformationDTO> restEmployee = employeeRepository.findEmployeeFullInformationByExpertisList(notContainExpertis);
+            restEmployee.forEach(employee -> {
+                redisCacheService.saveMapping("userFullMapping", employee.getExpertis(), employee);
+                map.put(employee.getExpertis(), employee);
+            });
 
-        if(multiFromCacheAsMap.size() != expertisList.size()){
-            List<String> filterExpertis = expertisList.stream().filter(expertis -> !multiFromCacheAsMap.containsKey(expertis)).toList();
-            List<EmployeeFullInformationDTO> anotherEmployee = employeeRepository.findEmployeeFullInformationByExpertisList(filterExpertis);
-
-            if(!anotherEmployee.isEmpty()){
-                anotherEmployee.forEach(eachEmployee -> {
-                    redisCacheService.saveToCache("employee:" + eachEmployee.getExpertis(), eachEmployee);
-                    multiFromCacheAsMap.put(eachEmployee.getExpertis(), eachEmployee);
-                });
-            }
         }
-
-        return multiFromCacheAsMap;
+        return map;
     }
 
 }

@@ -21,9 +21,6 @@ public interface EmployeeSupervisorRepository extends JpaRepository<EmployeeSupe
     @Query("SELECT es FROM EmployeeSupervisor es WHERE es.validTo < :currentDate")
     List<EmployeeSupervisor> findExpiredAccesses(@Param("currentDate") LocalDateTime currentDate);
 
-    @Query("SELECT es FROM EmployeeSupervisor es WHERE es.employeeId = :employeeId")
-    List<EmployeeSupervisor> findByEmployeeId(@Param("employeeId") Long employeeId);
-
     @Modifying
     @Transactional
     @Query(value = """
@@ -86,4 +83,13 @@ public interface EmployeeSupervisorRepository extends JpaRepository<EmployeeSupe
             WHERE em.expertis = :expertis
             """)
     List<EmployeeFullInformationDTO> getAllEmployeeBySupervisor(@Param("expertis") String expertis);
+
+    @Query(value = """
+            SELECT e.expertis
+            FROM vision.employee e
+            JOIN vision.employee_supervisors es ON es.employee_id = e.id
+            JOIN vision.employee em ON em.id = es.supervisor_id
+            WHERE em.expertis = :expertis
+            """, nativeQuery = true)
+    List<String> getAllExpertisEmployeeBySupervisor(@Param("expertis") String expertis);
 }

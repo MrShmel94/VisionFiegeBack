@@ -26,7 +26,6 @@ public class EmployeeSupervisorServiceImpl implements EmployeeSupervisorService 
 
     private final EmployeeSupervisorRepository repository;
     private final EmployeeService employeeService;
-    private final UserService userService;
     private final RedisCacheService redisCacheService;
 
     public void addAccess(Long employeeId, String supervisorExpertis, LocalDateTime validTo) {
@@ -78,10 +77,6 @@ public class EmployeeSupervisorServiceImpl implements EmployeeSupervisorService 
         return repository.findExpiredAccesses(LocalDateTime.now());
     }
 
-    public List<EmployeeSupervisor> findByEmployeeId(Long employeeId) {
-        return repository.findByEmployeeId(employeeId);
-    }
-
     @Override
     public List<EmployeeFullInformationDTO> getAllEmployeeBySupervisor(String expertis) {
         List<String> employeeExpertis = redisCacheService.getValueFromMapping("supervisorExpertisEmployee", expertis, new TypeReference<List<String>>(){}).orElse(new ArrayList<>());
@@ -96,14 +91,7 @@ public class EmployeeSupervisorServiceImpl implements EmployeeSupervisorService 
             redisCacheService.saveMapping("supervisorExpertisEmployee", expertis, fullExpertis);
             return fullEmployee;
         }else{
-            Map<String, EmployeeFullInformationDTO> map = redisCacheService.getEmployeeFullMapping(employeeExpertis, EmployeeFullInformationDTO.class);
-            List<EmployeeFullInformationDTO> fullEmployee = new ArrayList<>(map.values());
-
-            if(employeeExpertis.size() != map.keySet().size()){
-
-            }
-
-            return fullEmployee;
+            return employeeService.getEmployeeFullDTO(employeeExpertis).values().stream().toList();
         }
     }
 }

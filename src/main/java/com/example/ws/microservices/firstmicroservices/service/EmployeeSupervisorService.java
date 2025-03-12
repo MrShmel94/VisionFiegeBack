@@ -13,8 +13,6 @@ public interface EmployeeSupervisorService {
     void addAccess(Long employeeId, String supervisorExpertis, LocalDateTime validTo);
     List<String> addAccess(List<RequestSetEmployeeToSupervisor> employees);
     void revokeAccess(Long employeeId, String supervisorExpertis);
-    List<EmployeeSupervisor> getActiveAccesses();
     List<EmployeeSupervisor> getExpiredAccesses();
-    List<EmployeeSupervisor> findByEmployeeId(Long employeeId);
     List<EmployeeFullInformationDTO> getAllEmployeeBySupervisor(String expertis);
 }
