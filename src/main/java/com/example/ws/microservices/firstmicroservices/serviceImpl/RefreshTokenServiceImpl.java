@@ -1,25 +1,19 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
-import com.example.ws.microservices.firstmicroservices.entity.RefreshToken;
+import com.example.ws.microservices.firstmicroservices.entity.vision.RefreshToken;
 import com.example.ws.microservices.firstmicroservices.repository.RefreshTokenRepository;
-import com.example.ws.microservices.firstmicroservices.secure.SecretKeyProvider;
 import com.example.ws.microservices.firstmicroservices.secure.SecurityConstants;
 import com.example.ws.microservices.firstmicroservices.service.RefreshTokenService;
 import com.example.ws.microservices.firstmicroservices.utils.Utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.SecretKey;
-import java.time.Instant;
 import java.util.Date;
 import java.util.Optional;
-import java.util.UUID;
 
 @Service
 @AllArgsConstructor

@@ -1,16 +1,15 @@
 package com.example.ws.microservices.firstmicroservices.secure.aspects;
 
-import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.dto.RoleDTO;
+import com.example.ws.microservices.firstmicroservices.dto.UserRoleDTO;
 import com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
+import com.example.ws.microservices.firstmicroservices.service.UserService;
 import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,7 +25,7 @@ import java.util.Optional;
 @Slf4j
 public class MaskingAspect {
 
-    private final RedisCacheService redisCacheService;
+    private final UserService userService;
     private final MaskFieldCache maskFieldCache;
 
     /**
@@ -43,14 +42,10 @@ public class MaskingAspect {
             throw new AccessDeniedException("Invalid authentication.");
         }
 
-        String expertisEmployee =  redisCacheService.getExpertisByUserId(userDetails.getUsername());
-
-        SupervisorAllInformationDTO userInfo = redisCacheService
-                .getFromCache("userDetails:" + expertisEmployee, SupervisorAllInformationDTO.class)
-                .orElseThrow(() -> new AccessDeniedException("User data not found."));
+        SupervisorAllInformationDTO userInfo = userService.getSupervisorAllInformation(null, userDetails.getUsername());
 
         int maxWeight = userInfo.getRoles().stream()
-                .mapToInt(RoleDTO::getWeight)
+                .mapToInt(UserRoleDTO::getWeight)
                 .max()
                 .orElse(0);
 

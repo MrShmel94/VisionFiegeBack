@@ -10,6 +10,7 @@ import java.util.List;
 @Builder
 public class ConfigurationRegistrationDTO {
 
+    private String siteName;
     private List<AgencyDTO> agencies;
     private List<CountryDTO> countries;
     private List<DepartmentDTO> departments;

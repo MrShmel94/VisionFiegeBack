@@ -6,10 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
 public interface PerformanceService {
-    void processFile(Connection conn, List<List<String>> allLineFiles, Map<String, String> checkHeaderList, List<String> tablesNameInIndex);
+    void processFile(Connection conn, List<List<String>> allLineFiles, Map<String, String> checkHeaderList, List<String> tablesNameInIndex) throws SQLException;
 }

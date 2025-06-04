@@ -9,5 +9,5 @@ import java.util.Map;
 
 public interface ClearPerformanceEmployeeService {
     void saveAllPerformanceEmployee(List<ClearPerformanceEmployee> employeeList);
-    Map<String, List<ClearPerformanceGDDto>> getAllPerformanceEmployee(LocalDate start, LocalDate end);
+    Map<String, ClearPerformanceGDDto> getAllPerformanceEmployee(LocalDate start, LocalDate end);
 }

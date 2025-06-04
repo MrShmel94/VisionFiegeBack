@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -19,9 +20,11 @@ public class PerformanceRowDTO {
     private String finalCluster;
     private String activityCluster;
 
-    private Instant startActivity;
-    private Instant endActivity;
+    private LocalDateTime startActivity;
+    private LocalDateTime endActivity;
     private double duration;
+    private double durationIdle;
+    private int idleCount;
 
     private int ql;
     private int qlBox;

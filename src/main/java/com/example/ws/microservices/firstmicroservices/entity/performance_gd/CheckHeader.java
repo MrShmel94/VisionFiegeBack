@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "check_header", schema = "performance_dg")
+@Table(name = "check_header", schema = "performance_gd")
 public class CheckHeader {
 
     @Id

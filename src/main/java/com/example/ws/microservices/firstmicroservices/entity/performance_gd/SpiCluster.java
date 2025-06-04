@@ -10,7 +10,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "spi_cluster", schema = "performance_dg")
+@Table(name = "spi_cluster", schema = "performance_gd")
 public class SpiCluster {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

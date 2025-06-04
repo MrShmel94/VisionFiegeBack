@@ -20,7 +20,6 @@ public class EmployeeFullInformationDTO {
 
     private Long id;
     private String expertis;
-    private Short zalosId;
     @MaskField(minWeight = 30)
     private String brCode;
     private String firstName;
@@ -47,5 +46,6 @@ public class EmployeeFullInformationDTO {
     private LocalDate dateAdrNow;
     private LocalDate dateAdrFuture;
     private Double fte;
-
+    private String supervisorName;
+    private String supervisorExpertis;
 }

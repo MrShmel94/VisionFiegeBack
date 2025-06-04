@@ -5,18 +5,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
-@Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class RoleDTO {
 
+    private Integer id;
     private String name;
-    private Integer roleId;
     private Integer weight;
-    private LocalDateTime validFrom;
-    private LocalDateTime validTo;
+    private String description;
 
 }

@@ -29,6 +29,7 @@ public class AttendanceStatusServiceImpl implements AttendanceStatusService {
                     .statusCode(obj.getStatusCode())
                     .statusName(obj.getStatusName())
                     .description(obj.getDescription())
+                    .color(obj.getColor())
                     .build();
         }).toList();
     }

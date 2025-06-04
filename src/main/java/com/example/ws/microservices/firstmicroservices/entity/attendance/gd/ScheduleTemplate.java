@@ -20,16 +20,15 @@ import java.util.Map;
 @Entity
 @Table(name = "schedule_template", schema = "attendance_gd")
 public class ScheduleTemplate {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('attendance_gd.schedule_template_id_seq')")
     @Column(name = "id", nullable = false)
     private Long id;
 
     @NotNull
-    @Convert(converter = YearMonthConverter.class)
     @Column(name = "date", nullable = false)
-    private YearMonth date;
+    private LocalDate date;
 
     @NotNull
     @Column(name = "schedule", nullable = false, columnDefinition = "jsonb")

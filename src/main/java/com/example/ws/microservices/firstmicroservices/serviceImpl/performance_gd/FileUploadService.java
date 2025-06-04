@@ -1,12 +1,10 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.performance_gd;
 
-import com.example.ws.microservices.firstmicroservices.configuration.FileUploadConfig;
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.CheckHeaderService;
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.PerformanceService;
 import com.example.ws.microservices.firstmicroservices.utils.XlsxParserGDUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,10 +12,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,7 +23,7 @@ import java.util.regex.Pattern;
 public class FileUploadService {
 
     private final DataSource dataSource;
-    private final CheckNameFileService checkNameFileService;
+    private final CheckNameFileServiceCustom checkNameFileServiceCustom;
     private final CheckHeaderService checkHeaderService;
     private final PerformanceService performanceService;
 
@@ -53,7 +49,7 @@ public class FileUploadService {
 
         try (Connection conn = dataSource.getConnection()) {
             conn.setAutoCommit(false);
-            long recordId = checkNameFileService.insertInProgress(conn, LocalDate.now(), userId, normalFileName);
+            long recordId = checkNameFileServiceCustom.insertInProgress(conn, LocalDate.now(), userId, normalFileName);
             try {
 
                 Map<String, String> headerMap = checkHeaderService.getAllCheckHeaders();
@@ -61,7 +57,7 @@ public class FileUploadService {
 
                 List<List<String>> parsedData = XlsxParserGDUtils.parserXlsxFile(file.getInputStream(), onlyTableNames, 2, normalFileName);
                 performanceService.processFile(conn, parsedData, headerMap, onlyTableNames);
-                checkNameFileService.updateStatus(conn, recordId, "DONE");
+                checkNameFileServiceCustom.updateStatus(conn, recordId, "DONE");
                 conn.commit();
             } catch (Exception e) {
                 conn.rollback();

@@ -1,8 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.repository;
 
-import com.example.ws.microservices.firstmicroservices.entity.role.Role;
-import com.example.ws.microservices.firstmicroservices.entity.role.UserRole;
-import com.example.ws.microservices.firstmicroservices.entity.role.UserRoleId;
+import com.example.ws.microservices.firstmicroservices.entity.vision.role.UserRole;
+import com.example.ws.microservices.firstmicroservices.entity.vision.role.UserRoleId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -29,5 +28,5 @@ public interface UserRoleRepository extends JpaRepository<UserRole, Long> {
 
     @Modifying
     @Query("DELETE FROM UserRole ur WHERE ur.id.userId = :userId AND ur.id.roleId = :roleId")
-    void deleteByUserIdAndRoleId(@Param("userId") String userId, @Param("roleId") Integer roleId);
+    void deleteByUserIdAndRoleId(@Param("userId") Long userId, @Param("roleId") Integer roleId);
 }

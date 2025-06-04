@@ -1,9 +1,11 @@
 package com.example.ws.microservices.firstmicroservices.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,14 +14,13 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@Data
 public class CreateEmployeeRequest {
 
     @NotBlank(message = "Expertis is required")
     @Size(min = 5, message = "Expertis must be at least 5 characters long")
     @Pattern(regexp = "\\d+", message = "Expertis must contain only digits")
     private String expertis;
-
-    private Short zalosId = null;
 
     @Pattern(regexp = "BR-\\d+", message = "BR code must start with 'BR' followed by digits")
     private String brCode = null;
@@ -59,7 +60,11 @@ public class CreateEmployeeRequest {
 
     private Boolean isCanHasAccount = false;
 
+    private Boolean isSupervisor = false;
+
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime validToAccount = LocalDateTime.now().minusSeconds(1);
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime validFromAccount = LocalDateTime.now();
 
     private String note = "";
@@ -70,10 +75,14 @@ public class CreateEmployeeRequest {
     @NotNull(message = "Date Start Contract should be!")
     private LocalDate dateFinishContract;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateBhpNow = null;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateBhpFuture = null;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateAdrNow = null;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dateAdrFuture = null;
-    private Double fte = 1D;
 
+    private Double fte = 1D;
 }

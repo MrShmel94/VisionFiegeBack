@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,6 +22,7 @@ public class RedisCacheService {
 
     private final RedisTemplate<String, Object> redisTemplate;
     private List<CachingService<?>> cachingServices;
+    private final ObjectMapper objectMapper;
 
     public void updateSupervisorAccess(String supervisorExpertis, List<String> employeeExpertis) {
         String key = "supervisor:" + supervisorExpertis;
@@ -40,6 +42,10 @@ public class RedisCacheService {
         redisTemplate.opsForHash().put(mapping, expertis, object);
     }
 
+    public void saveAllMapping(String redisKey, Map<String, ?> values) {
+        redisTemplate.opsForHash().putAll(redisKey, values);
+    }
+
     public <T>Optional<T> getValueFromMapping(String mapping, String expertis, TypeReference<T> typeReference) {
         Object cachedValue = redisTemplate.opsForHash().get(mapping, expertis);
         if (cachedValue == null) {
@@ -56,6 +62,10 @@ public class RedisCacheService {
             log.error("Error converting cached value: {}", e.getMessage());
             return Optional.empty();
         }
+    }
+
+    public void removeEmployeeFromMapping(String expertis) {
+        redisTemplate.opsForHash().delete("userFullMapping", expertis);
     }
 
     public <T>Optional<T> getValueFromMapping(String mapping, String expertis, Class<T> type) {
@@ -225,5 +235,97 @@ public class RedisCacheService {
                         i -> type.cast(values.get(i)),
                         (v1, v2) -> v1
                 ));
+    }
+
+
+    //WORK ON HSET
+    public <T> void saveToHash(String hashName, String fieldKey, T value) {
+        redisTemplate.opsForHash().put(hashName, fieldKey, value);
+    }
+
+    public <T> void saveAllToHash(String hashName, Map<String, T> values) {
+        redisTemplate.opsForHash().putAll(hashName, values);
+    }
+
+    public <T> Optional<T> getFromHash(String hashName, String fieldKey, Class<T> type) {
+        Object cachedValue = redisTemplate.opsForHash().get(hashName, fieldKey);
+        if (cachedValue == null) {
+            return Optional.empty();
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        try {
+            T value = mapper.convertValue(cachedValue, type);
+            return Optional.of(value);
+        } catch (IllegalArgumentException e) {
+            log.error("Error converting value from hash {} field {}: {}", hashName, fieldKey, e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    public <T> Map<String, T> getAllFromHash(String hashName, Class<T> type) {
+        Map<Object, Object> entries = redisTemplate.opsForHash().entries(hashName);
+        if (entries == null || entries.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+        Map<String, T> result = new HashMap<>();
+        entries.forEach((key, value) -> {
+            try {
+                T convertedValue = mapper.convertValue(value, type);
+                result.put((String) key, convertedValue);
+            } catch (IllegalArgumentException e) {
+                log.error("Error converting value from hash {} key {}: {}", hashName, key, e.getMessage());
+            }
+        });
+
+        return result;
+    }
+
+    public void deleteFromHash(String hashName, String fieldKey) {
+        redisTemplate.opsForHash().delete(hashName, fieldKey);
+    }
+
+    public void deleteMultipleFromHash(String hashName, List<String> fieldKeys) {
+        if (fieldKeys.isEmpty()) return;
+        redisTemplate.opsForHash().delete(hashName, fieldKeys.toArray(new Object[0]));
+    }
+
+    public <T> Optional<T> getFromHash(String hashName, String fieldKey, TypeReference<T> typeReference) {
+        Object cachedValue = redisTemplate.opsForHash().get(hashName, fieldKey);
+        if (cachedValue == null) {
+            return Optional.empty();
+        }
+        try {
+            T value = objectMapper.convertValue(cachedValue, typeReference);
+            return Optional.of(value);
+        } catch (IllegalArgumentException e) {
+            log.error("Error converting value from hash {} field {}: {}", hashName, fieldKey, e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    public <T> Map<String, T> getAllFromHash(String hashName, TypeReference<T> typeReference) {
+        Map<Object, Object> entries = redisTemplate.opsForHash().entries(hashName);
+        if (entries == null || entries.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, T> result = new HashMap<>();
+        entries.forEach((key, value) -> {
+            try {
+                T convertedValue = objectMapper.convertValue(value, typeReference);
+                result.put((String) key, convertedValue);
+            } catch (IllegalArgumentException e) {
+                log.error("Error converting value from hash {} key {}: {}", hashName, key, e.getMessage());
+            }
+        });
+
+        return result;
     }
 }

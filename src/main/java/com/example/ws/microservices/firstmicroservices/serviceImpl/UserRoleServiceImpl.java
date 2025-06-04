@@ -1,13 +1,19 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
-import com.example.ws.microservices.firstmicroservices.dto.RoleDTO;
+import com.example.ws.microservices.firstmicroservices.customError.AuthenticationFailedException;
+import com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO;
+import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.dto.UserRoleDTO;
 import com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformationDTO;
-import com.example.ws.microservices.firstmicroservices.entity.role.Role;
-import com.example.ws.microservices.firstmicroservices.entity.role.UserRole;
-import com.example.ws.microservices.firstmicroservices.entity.role.UserRoleId;
+import com.example.ws.microservices.firstmicroservices.entity.vision.role.Role;
+import com.example.ws.microservices.firstmicroservices.entity.vision.role.UserRole;
+import com.example.ws.microservices.firstmicroservices.entity.vision.role.UserRoleId;
 import com.example.ws.microservices.firstmicroservices.repository.RoleRepository;
 import com.example.ws.microservices.firstmicroservices.repository.UserRoleRepository;
+import com.example.ws.microservices.firstmicroservices.request.AssignRoleUserRequest;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
+import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
+import com.example.ws.microservices.firstmicroservices.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.service.RoleService;
 import com.example.ws.microservices.firstmicroservices.service.UserRoleService;
 import com.example.ws.microservices.firstmicroservices.service.UserService;
@@ -15,20 +21,24 @@ import com.example.ws.microservices.firstmicroservices.service.redice.RedisCache
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class UserRoleServiceImpl implements UserRoleService {
 
     private final UserRoleRepository userRoleRepository;
+    private final EmployeeService employeeService;
     private final RedisCacheService redisCacheService;
     private final RoleRepository roleRepository;
     private final RoleService roleService;
@@ -36,7 +46,7 @@ public class UserRoleServiceImpl implements UserRoleService {
 
     @Override
     @Transactional
-    public void assignRoleToUser(String userId, String roleName, LocalDateTime validFrom, LocalDateTime validTo) {
+    public void assignRoleToUser(AssignRoleUserRequest requestModel) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
@@ -44,45 +54,82 @@ public class UserRoleServiceImpl implements UserRoleService {
             throw new AccessDeniedException("Invalid authentication");
         }
 
-        if(currentUser.getUserId().equals(userId)){
+        if(currentUser.getExpertis().equals(requestModel.expertis())){
             throw new AccessDeniedException("You can't prescribe roles for yourself.");
         }
 
+        EmployeeFullInformationDTO employee = employeeService.getEmployeeFullInformation(requestModel.expertis());
+
+        if (!employee.getSiteName().equalsIgnoreCase(currentUser.getSiteName())){
+            throw new AuthenticationFailedException("Access denied: your site must match the employee’s site.");
+        }
+
         int maxCurrentWeight = currentUser.getRoles().stream()
-                .mapToInt(RoleDTO::getWeight)
+                .mapToInt(UserRoleDTO::getWeight)
                 .max()
                 .orElseThrow(() -> new AccessDeniedException("User does not have any roles assigned"));
 
-        RoleDTO roleDto = roleService.getRoleDTOByName(roleName);
+        UserRoleDTO userRoleDto = roleService.getRoleDTOByName(requestModel.roleName());
 
-        if (roleDto.getWeight() >= maxCurrentWeight) {
+        if (userRoleDto.getWeight() > maxCurrentWeight) {
             throw new AccessDeniedException(String.format(
-                    "Access denied: You can only assign roles with weight less than your maximum role weight (%d)",
+                    "Access denied: You can only assign roles with weight less or equals than your maximum role weight (%d)",
                     maxCurrentWeight
             ));
         }
 
-        SupervisorAllInformationDTO employeeDto = userService.getSupervisorAllInformation(null, userId);
-
+        SupervisorAllInformationDTO employeeDto = userService.getSupervisorAllInformation(requestModel.expertis(), null);
 
         UserRole userRole = new UserRole();
-        userRole.setId(new UserRoleId(employeeDto.getId(), roleDto.getRoleId()));
-        userRole.setValidFrom(validFrom != null ? validFrom : LocalDateTime.now());
-        userRole.setValidTo(validTo != null ? validTo : LocalDateTime.of(9999, 12, 31, 23, 59, 59));
+        userRole.setId(new UserRoleId(employeeDto.getId(), userRoleDto.getRoleId()));
+        userRole.setValidFrom(requestModel.validFrom() != null ? requestModel.validFrom() : LocalDate.now());
+        userRole.setValidTo(requestModel.validTo() != null ? requestModel.validTo() : LocalDate.of(9999, 12, 31));
+
+        userRoleDto.setValidTo(userRole.getValidTo());
+        userRoleDto.setValidFrom(userRole.getValidFrom());
+        userRoleDto.setUserId(userRole.getId().getUserId());
 
         userRoleRepository.save(userRole);
 
-        employeeDto.getRoles().add(roleDto);
-        redisCacheService.saveToCache("userDetails:" + employeeDto.getExpertis(), employeeDto);
+        employeeDto.getRoles().add(userRoleDto);
+        updateCacheForUserDetailsAndAccounts(employeeDto);
     }
 
     @Override
     @Transactional
-    public void removeRoleFromUser(String userId, String roleName) {
+    public void removeRoleFromUser(String expertis, String roleName) {
+        SupervisorAllInformationDTO employeeDto = userService.getSupervisorAllInformation(expertis, null);
+
+        CustomUserDetails currentUser = new SecurityUtils().getCurrentUser();
+
+        if (!employeeDto.getSiteName().equalsIgnoreCase(currentUser.getSiteName())){
+            throw new AuthenticationFailedException("Access denied: your site must match the employee’s site.");
+        }
+
         Role role = roleRepository.findByName(roleName)
                 .orElseThrow(() -> new EntityNotFoundException("Role not found with name: " + roleName));
 
-        userRoleRepository.deleteByUserIdAndRoleId(userId, role.getId());
+        userRoleRepository.deleteByUserIdAndRoleId(employeeDto.getId(), role.getId());
+
+        employeeDto.getRoles().removeIf(roleDTO -> roleDTO.getName().equals(roleName));
+        updateCacheForUserDetailsAndAccounts(employeeDto);
+    }
+
+    private void updateCacheForUserDetailsAndAccounts(SupervisorAllInformationDTO employeeDto) {
+        redisCacheService.saveToHash("userDetails:hash", employeeDto.getExpertis(), employeeDto);
+
+        PreviewEmployeeDTO dto = redisCacheService.getFromHash("usersAccount:hash", employeeDto.getExpertis(), PreviewEmployeeDTO.class)
+                .orElse(PreviewEmployeeDTO.builder()
+                        .id(employeeDto.getId())
+                        .expertis(employeeDto.getExpertis())
+                        .firstName(employeeDto.getFirstName())
+                        .lastName(employeeDto.getLastName())
+                        .department(employeeDto.getDepartmentName())
+                        .team(employeeDto.getTeamName())
+                        .build());
+
+        dto.setRoles(employeeDto.getRoles());
+        redisCacheService.saveToHash("usersAccount:hash", dto.getExpertis(), dto);
     }
 
     @Override
@@ -94,10 +141,19 @@ public class UserRoleServiceImpl implements UserRoleService {
     }
 
     @Override
-    public List<RoleDTO> getAllRolePerUserId(Long userId) {
-        List<RoleDTO> roles = roleRepository.findAllRolesByUserId(userId);
+    public List<UserRoleDTO> getAllRolePerUserId(Long userId) {
+        List<UserRoleDTO> roles = roleRepository.findAllRolesByUserId(userId);
         if (roles.isEmpty()) {
             throw new EntityNotFoundException("No roles found for user ID: " + userId);
+        }
+        return roles;
+    }
+
+    @Override
+    public List<UserRoleDTO> getAllRolesByUserIds(List<Long> userIds) {
+        List<UserRoleDTO> roles = roleRepository.findUserRoleDtosByUserIds(userIds);
+        if (roles.isEmpty()) {
+            throw new EntityNotFoundException("No roles found for user IDs: " + userIds);
         }
         return roles;
     }

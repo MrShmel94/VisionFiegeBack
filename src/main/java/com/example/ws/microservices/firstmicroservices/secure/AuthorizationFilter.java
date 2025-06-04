@@ -18,6 +18,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -34,6 +35,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static com.example.ws.microservices.firstmicroservices.secure.SecurityConstants.*;
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
 /**
  * AuthorizationFilter handles user authentication by validating JWT access tokens and refreshing them
@@ -50,13 +52,15 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
     private final RefreshTokenService refreshTokenService;
     private final Utils utils;
     private final UserService userService;
+    private final String COOKIE_DOMAIN;
 
-    public AuthorizationFilter(AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService, Utils utils, UserService userService) {
+    public AuthorizationFilter(AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService, Utils utils, UserService userService, String COOKIE_DOMAIN) {
         super(authenticationManager);
 
         this.refreshTokenService = refreshTokenService;
         this.utils = utils;
         this.userService = userService;
+        this.COOKIE_DOMAIN = COOKIE_DOMAIN;
     }
 
     /**
@@ -77,47 +81,54 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
         try {
-        String uri = request.getRequestURI();
+            String uri = request.getRequestURI();
 
-        if (uri.equals(SIGN_UP_URL) ||
-                uri.equals("/swagger-ui/index.html") ||
-                uri.contains("/api/v1/users/verify-email/")) {
-            chain.doFilter(request, response);
-            return;
-        }
+            if (isPublicUri(uri)) {
+                chain.doFilter(request, response);
+                return;
+            }
 
-        String requestIp = utils.getClientIp(request);
-        Bucket bucket = resolveBucket(requestIp);
+            String requestIp = utils.getClientIp(request);
+            Bucket bucket = resolveBucket(requestIp);
 
-        if (!isPublicUri(uri) && !bucket.tryConsume(1)) {
-            throw new TooManyRequestsException("Too many requests. Please try again later.");
-        }
+            if (!bucket.tryConsume(1)) {
+                throw new TooManyRequestsException("Too many requests. Please try again later.");
+            }
 
-        String accessToken = getCookieValue(request, "AccessToken");
+            String accessToken = getCookieValue(request, "AccessToken");
 
-        if (accessToken == null) {
-            log.debug("Access token not found in request cookies. Proceeding without authentication.");
-            response.sendRedirect(String.format("/%s?message=" + URLEncoder.encode("Authentication token is missing. Please log in.", StandardCharsets.UTF_8), SIGN_UP_URL));
-            return;
-            //throw new InvalidTokenException("Authentication token is missing. Please log in.");
-        }
+            if (accessToken == null) {
+                throw new InvalidTokenException("Access token is missing.");
+            }
 
-        UsernamePasswordAuthenticationToken authentication = getAuthentication(request, response);
+            UsernamePasswordAuthenticationToken authentication = getAuthentication(request, response);
 
-        if (authentication != null) {
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
+            if (authentication != null) {
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+                chain.doFilter(request, response);
+            } else {
+                throw new InvalidTokenException("Invalid access token.");
+            }
 
-        response.setHeader("Cache-Control", "no-store");
-        response.setHeader("Pragma", "no-cache");
-
-        chain.doFilter(request, response);
         } catch (InvalidTokenException | AuthenticationFailedException ex) {
             log.info("Authentication error: {}", ex.getMessage());
-            if (!response.isCommitted()) {
-                response.sendRedirect(String.format("/%s?message=" +
-                        URLEncoder.encode(ex.getMessage(), StandardCharsets.UTF_8), SIGN_UP_URL));
-            }
+
+            clearCookies(response);
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("status", HttpServletResponse.SC_UNAUTHORIZED);
+            errorResponse.put("error", "Unauthorized");
+            errorResponse.put("message", ex.getMessage());
+            errorResponse.put("timestamp", LocalDateTime.now());
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            objectMapper.registerModule(new JavaTimeModule());
+            objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            objectMapper.writeValue(response.getWriter(), errorResponse);
         }
     }
 
@@ -131,10 +142,11 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
      * @param request  the HTTP request containing the cookies.
      * @param response the HTTP response to send updated tokens if needed.
      * @return an authenticated user wrapped in a UsernamePasswordAuthenticationToken, or null if no token is found.
-     * @throws InvalidTokenException        if the token has invalid details or is tampered with.
+     * @throws InvalidTokenException         if the token has invalid details or is tampered with.
      * @throws AuthenticationFailedException if the token is invalid or cannot be refreshed.
      */
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request, HttpServletResponse response) {
+
         String accessToken = getCookieValue(request, "AccessToken");
 
         if (accessToken == null) {
@@ -163,7 +175,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
                 throw new InvalidTokenException("Invalid JWT token - subject is null.");
             }
 
-            CustomUserDetails userDetails = (CustomUserDetails) userService.loadUserByUsername(userId);
+            CustomUserDetails userDetails = (CustomUserDetails) userService.loadUserByUsernameWithoutPassword(userId);
             return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
 
         } catch (ExpiredJwtException e) {
@@ -204,7 +216,16 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
             }
 
             String newAccessToken = utils.generateAccessToken(userId, request);
-            setCookie(response, "AccessToken", newAccessToken, 3600);
+            ResponseCookie accessCookie = ResponseCookie.from("AccessToken", newAccessToken)
+                    .httpOnly(true)
+                    .secure(true)
+                    .path("/")
+                    .domain(COOKIE_DOMAIN)
+                    .sameSite("Strict")
+                    .maxAge(SecurityConstants.ACCESS_TOKEN_EXPIRATION)
+                    .build();
+
+            response.addHeader(SET_COOKIE, accessCookie.toString());
 
             log.info("Access token successfully refreshed for userId: {}", userId);
 
@@ -242,28 +263,6 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
         return null;
     }
 
-    /**
-     * Sets a secure, HTTP-only cookie in the response.
-     * <p>
-     * Configures the cookie with properties to enhance security:
-     * 1. Marks the cookie as HttpOnly to prevent JavaScript access.
-     * 2. Ensures the cookie is only sent over HTTPS using the Secure flag.
-     * 3. Sets the cookie's lifespan using maxAge.
-     *
-     * @param response the HTTP response to add the cookie.
-     * @param name     the name of the cookie.
-     * @param value    the value of the cookie.
-     * @param maxAge   the maximum age of the cookie in seconds.
-     */
-    private void setCookie(HttpServletResponse response, String name, String value, long maxAge) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setHttpOnly(true);
-        cookie.setSecure(true);
-        cookie.setPath("/");
-        cookie.setMaxAge((int) maxAge / 1000);
-        response.addCookie(cookie);
-    }
-
 
     /**
      * Checks if the URI is public and does not require authentication.
@@ -274,8 +273,25 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
     private boolean isPublicUri(String uri) {
         return uri.equals(SIGN_UP_URL)
                 || uri.equals("/swagger-ui/index.html")
-                || uri.contains("/api/v1/users/verify-email/");
+                || uri.contains("/api/v1/users/verify-email/")
+                || uri.startsWith("/actuator")
+                || uri.contains("/favicon.ico");
     }
+
+
+//        if (uri.startsWith("/attendance")) {
+//            chain.doFilter(request, response);
+//            return;
+//        }
+//
+//        if (uri.equals(SIGN_UP_URL) ||
+//                uri.equals("/swagger-ui/index.html") ||
+//                uri.contains("/api/v1/users/verify-email/")
+//                || uri.startsWith("/actuator")) {
+//            chain.doFilter(request, response);
+//            return;
+//        }
+
 
     /**
      * Resolves or creates a rate-limiting bucket for a given key (e.g., user IP or user ID).
@@ -307,7 +323,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
      * Buckets are considered inactive if their available tokens match the full capacity,
      * meaning no requests have been made recently.
      * This method helps prevent memory bloat caused by unused keys.
-
+     * <p>
      * Handles periodic cleanup of inactive buckets.
      * <p>
      * 1. Removes buckets that have not been accessed for a configurable duration (e.g., 30 minutes).
@@ -326,6 +342,31 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
         long expirationTime = System.currentTimeMillis() - Duration.ofMinutes(INACTIVITY_CLEANUP_MINUTES).toMillis();
         buckets.entrySet().removeIf(entry -> entry.getValue().getLastAccessed() < expirationTime);
         log.info("Cleanup completed. Active buckets: {}", buckets.size());
+    }
+
+    private void clearCookies(HttpServletResponse response) {
+        ResponseCookie clearAccess = ResponseCookie.from("AccessToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .domain(COOKIE_DOMAIN)
+                .sameSite("Strict")
+                .maxAge(0)
+                .build();
+
+        ResponseCookie clearRefresh = ResponseCookie.from("RefreshToken", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .domain(COOKIE_DOMAIN)
+                .sameSite("Strict")
+                .maxAge(0)
+                .build();
+
+        response.addHeader(SET_COOKIE, clearAccess.toString());
+        response.addHeader(SET_COOKIE, clearRefresh.toString());
+
+        log.debug("Cleared AccessToken and RefreshToken cookies");
     }
 
 }

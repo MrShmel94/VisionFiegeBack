@@ -1,14 +1,17 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
+import com.example.ws.microservices.firstmicroservices.customError.EmployeeNotFound;
 import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO;
 import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.entity.vision.Employee;
 import com.example.ws.microservices.firstmicroservices.repository.EmployeeRepository;
 import com.example.ws.microservices.firstmicroservices.response.PaginatedResponse;
 import com.example.ws.microservices.firstmicroservices.secure.aspects.AccessControl;
 import com.example.ws.microservices.firstmicroservices.secure.aspects.MaskField;
 import com.example.ws.microservices.firstmicroservices.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -17,7 +20,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
@@ -46,8 +54,95 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
+    public List<String> getAllExpertis() {
+        return redisCacheService.getFromCache("allExpertis", new TypeReference<List<String>>() {})
+                .orElseGet(() -> {
+                    List<String> allExpertis = employeeRepository.getAllExpertis();
+                    redisCacheService.saveToCacheWithTTL("allExpertis", allExpertis, Duration.ofHours(24));
+                    return allExpertis;
+                });
+    }
+
+    @Override
     public Optional<EmployeeDTO> getUsersByExpertisForRegistration(String expertis) {
         return employeeRepository.findEmployeeByExpertis(expertis);
+    }
+
+    @Override
+    public Map<String, EmployeeFullInformationDTO> getEmployeeFullDTO(List<String> expertis){
+        Map<String, EmployeeFullInformationDTO> map = redisCacheService.getEmployeeFullMapping(expertis, EmployeeFullInformationDTO.class);
+
+        if(expertis.size() != map.size()){
+            List<String> notContainExpertis = expertis.stream().filter(exp -> !map.containsKey(exp)).toList();
+            List<EmployeeFullInformationDTO> restEmployee = employeeRepository.findEmployeeFullInformationByExpertisList(notContainExpertis);
+
+            Map<String, EmployeeFullInformationDTO> toSave = restEmployee.stream()
+                    .collect(Collectors.toMap(EmployeeFullInformationDTO::getExpertis, Function.identity()));
+
+            redisCacheService.saveAllMapping("userFullMapping", toSave);
+            map.putAll(toSave);
+
+        }
+        return map;
+    }
+
+    @Override
+    @MaskField
+    public EmployeeFullInformationDTO getEmployeeFullInformation(String expertis){
+        Map<String, EmployeeFullInformationDTO> mapResul = getEmployeeFullDTO(List.of(expertis));
+        if(!mapResul.containsKey(expertis)){
+            throw new EmployeeNotFound("Employee with expertis " + expertis + " not found");
+        }else{
+            return mapResul.get(expertis);
+        }
+    }
+
+    @Override
+    public Employee getEmployeeByExpertis(String expertis) {
+        Optional<Employee> employee = employeeRepository.findByExpertis(expertis);
+        if(employee.isEmpty()){
+            throw new EmployeeNotFound("Employee with expertis " + expertis + " not found");
+        }else{
+            return employee.get();
+        }
+    }
+
+    @Override
+    public void save(Employee employee) {
+        employeeRepository.save(employee);
+    }
+
+    @Override
+    public List<EmployeeFullInformationDTO> searchByQuery(String query) {
+
+        List<EmployeeFullInformationDTO> dto = new ArrayList<>();
+
+        if (query.contains(" ")) {
+            String[] parts = query.trim().split("\\s+", 2);
+            String part1 = parts[0];
+            String part2 = parts[1];
+
+            dto = employeeRepository.searchByFullNameVariants(part1, part2);
+        } else {
+            dto = employeeRepository.searchByAnyField(query);
+        }
+
+        if(!dto.isEmpty()){
+            Map<String, EmployeeFullInformationDTO> toSave = dto.stream().collect(Collectors.toMap(EmployeeFullInformationDTO::getExpertis, Function.identity()));
+            redisCacheService.saveAllMapping("userFullMapping", toSave);
+        }
+
+        return dto;
+    }
+
+    @Override
+    public void removeEmployeeFromRedis(String expertis) {
+        redisCacheService.removeEmployeeFromMapping(expertis);
+    }
+
+    @Override
+    public List<PreviewEmployeeDTO> getAllEmployeesWithPlannedShiftMatching(LocalDate dateTraining, LocalTime startTime, LocalTime endTime, List<Integer> positionsIds, String nameDoc) {
+        return employeeRepository.findAllEmployeesWithPlannedShiftMatching(dateTraining, startTime, endTime, positionsIds, nameDoc);
     }
 
     @Override
@@ -107,21 +202,6 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .currentPage(adjustedPageable.getPageNumber())
                 .pageSize(adjustedPageable.getPageSize())
                 .build();
-    }
-
-    @Override
-    public Map<String, EmployeeFullInformationDTO> getEmployeeFullDTO(List<String> expertis){
-        Map<String, EmployeeFullInformationDTO> map = redisCacheService.getEmployeeFullMapping(expertis, EmployeeFullInformationDTO.class);
-        if(expertis.size() != map.size()){
-            List<String> notContainExpertis = expertis.stream().filter(exp -> !map.containsKey(exp)).toList();
-            List<EmployeeFullInformationDTO> restEmployee = employeeRepository.findEmployeeFullInformationByExpertisList(notContainExpertis);
-            restEmployee.forEach(employee -> {
-                redisCacheService.saveMapping("userFullMapping", employee.getExpertis(), employee);
-                map.put(employee.getExpertis(), employee);
-            });
-
-        }
-        return map;
     }
 
 }

@@ -1,14 +1,16 @@
 package com.example.ws.microservices.firstmicroservices.repository;
 
+import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.SmallInformationSupervisorDTO;
 import com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformationDTO;
-import com.example.ws.microservices.firstmicroservices.entity.UserEntity;
+import com.example.ws.microservices.firstmicroservices.entity.vision.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -19,10 +21,10 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     @Query("""
         SELECT new com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformationDTO(
-            e.id, ur.expertis, e.zalosId, e.brCode, e.firstName, e.lastName, e.isWork, e.sex,
+            e.id, ur.expertis, e.brCode, e.firstName, e.lastName, e.isWork, e.sex,
             s.name, sh.name, d.name, t.name, p.name, a.name, ur.userId, ur.email, ur.isVerified, ur.emailVerificationStatus,
             e.isCanHasAccount, e.isSupervisor,  e.validToAccount, e.validFromAccount, ai.note, ai.dateStartContract, ai.dateFinishContract, ai.dateBhpNow, ai.dateBhpFuture,
-            ai.dateAdrNow, ai.dateAdrFuture, ur.encryptedPassword
+            ai.dateAdrNow, ai.dateAdrFuture
         )
         FROM UserEntity ur
         LEFT JOIN ur.employee e
@@ -46,12 +48,6 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     @Query("UPDATE UserEntity u SET u.isVerified = true WHERE u.userId = :userId")
     void setVerified(String userId);
 
-//    @Query(value = """
-//           SELECT e.first_name AS firstName, e.last_name AS lastName, e.expertis
-//           FROM vision.employee e
-//           JOIN vision.user_registration ur ON e.expertis = ur.expertis
-//           WHERE ur.user_id = :userId
-//           """, nativeQuery = true)
     @Query("""
            SELECT new com.example.ws.microservices.firstmicroservices.dto.SmallInformationSupervisorDTO(
             e.firstName, e.lastName
@@ -61,4 +57,37 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
             WHERE ue.userId = :userId
            """)
     Optional<SmallInformationSupervisorDTO> findSmallInformationSupervisorDTOByUserId(@Param("userId") String userId);
+
+    @Query("""
+           SELECT new com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO(
+           e.id, e.expertis, e.firstName, e.lastName, d.name, t.name, p.name, s.name
+           ) FROM Employee e
+           JOIN UserEntity ue ON e.expertis = ue.expertis
+           JOIN Department d ON e.departmentId = d.id
+           JOIN Position p ON e.positionId = p.id
+           JOIN Team t ON e.teamId = t.id
+           JOIN Site s ON s.id = e.siteId
+           WHERE ue.isVerified = false
+           """)
+    List<PreviewEmployeeDTO> getAllUsersWithoutVerification();
+
+    @Query("""
+           SELECT new com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO(
+           e.id, e.expertis, e.firstName, e.lastName, d.name, t.name, p.name, s.name
+           ) FROM Employee e
+           JOIN UserEntity ue ON e.expertis = ue.expertis
+           JOIN Department d ON e.departmentId = d.id
+           JOIN Position p ON e.positionId = p.id
+           JOIN Team t ON e.teamId = t.id
+           JOIN Site s ON s.id = e.siteId
+           WHERE ue.isVerified = true
+           """)
+    List<PreviewEmployeeDTO> getAllUsersAccount();
+
+    @Query(value = """
+           SELECT ue.encrypted_password
+           FROM vision.user_registration AS ue
+           WHERE ue.email = :userId
+           """, nativeQuery = true)
+    Optional<String> getUserEncryptedPassword (@Param("userId") String userId);
 }

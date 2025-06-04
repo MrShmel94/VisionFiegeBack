@@ -3,6 +3,7 @@ package com.example.ws.microservices.firstmicroservices.entity.attendance.gd;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.ColumnDefault;
@@ -14,7 +15,6 @@ import org.hibernate.annotations.ColumnDefault;
 public class AttendanceStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('attendance_gd.attendance_status_id_seq')")
     @Column(name = "id", nullable = false)
     private Integer id;
 
@@ -27,6 +27,12 @@ public class AttendanceStatus {
     @NotNull
     @Column(name = "status_name", nullable = false, length = 64)
     private String statusName;
+
+    @Size(max = 32)
+    @NotNull
+    @ColumnDefault("#ffffff")
+    @Column(name = "color", nullable = false, length = 64)
+    private String color;
 
     @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;

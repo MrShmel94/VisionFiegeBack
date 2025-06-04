@@ -21,7 +21,6 @@ public class EmployeeDTO implements Serializable {
 
     private Long id;
     private String expertis;
-    private Short zalosId;
     @MaskField(minWeight = 30)
     private String brCode;
     private String firstName;

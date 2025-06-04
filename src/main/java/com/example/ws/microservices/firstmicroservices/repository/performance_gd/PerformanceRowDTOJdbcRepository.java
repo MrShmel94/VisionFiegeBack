@@ -20,32 +20,38 @@ public class PerformanceRowDTOJdbcRepository {
     private final JdbcTemplate jdbcTemplate;
 
     public List<PerformanceRowDTO> getAllByDateBetween(LocalDate start, LocalDate end) {
-        String sql = "SELECT p.date, " +
-                "       p.expertis, " +
-                "       an.name as activity_name, " +
-                "       fc.name as final_cluster, " +
-                "       sc.name as activity_cluster, " +
-                "       p.start_activity, " +
-                "       p.end_activity, " +
-                "       p.duration, " +
-                "       p.ql, " +
-                "       p.ql_box, " +
-                "       p.ql_hanging, " +
-                "       p.ql_shoes, " +
-                "       p.ql_boots, " +
-                "       p.ql_other, " +
-                "       p.stow_clarifications, " +
-                "       p.pick_nos1, " +
-                "       p.pick_nos2 " +
-                "FROM performance_dg.performance p " +
-                "LEFT JOIN performance_dg.activity_name an ON p.activity_name_id = an.id " +
-                "LEFT JOIN performance_dg.final_cluster fc ON p.final_cluster_id = fc.id " +
-                "LEFT JOIN performance_dg.spi_cluster sc ON p.activity_cluster_id = sc.id " +
-                "WHERE p.date BETWEEN ? AND ?";
+        String sql = """
+        SELECT
+            p.date,
+            p.expertis,
+            an.name AS activity_name,
+            fc.name AS final_cluster,
+            sc.name AS activity_cluster,
+            p.start_activity,
+            p.end_activity,
+            p.duration,
+            p.duration_idle,
+            p.ql,
+            p.ql_box,
+            p.ql_hanging,
+            p.ql_shoes,
+            p.ql_boots,
+            p.ql_other,
+            p.stow_clarifications,
+            p.pick_nos1,
+            p.pick_nos2
+        FROM performance_gd.performance p
+        LEFT JOIN performance_gd.activity_name an ON p.activity_name_id = an.id
+        LEFT JOIN performance_gd.final_cluster fc ON p.final_cluster_id = fc.id
+        LEFT JOIN performance_gd.spi_cluster sc ON p.activity_cluster_id = sc.id
+        WHERE p.date BETWEEN ? AND ?
+        """;
 
-        return jdbcTemplate.query(sql,
+        return jdbcTemplate.query(
+                sql,
                 new PerformanceRowRowMapper(),
                 Date.valueOf(start),
-                Date.valueOf(end));
+                Date.valueOf(end)
+        );
     }
 }

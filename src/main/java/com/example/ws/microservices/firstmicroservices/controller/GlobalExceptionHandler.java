@@ -1,12 +1,15 @@
 package com.example.ws.microservices.firstmicroservices.controller;
 
 import com.example.ws.microservices.firstmicroservices.customError.*;
+import jakarta.mail.AuthenticationFailedException;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -24,10 +27,21 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(InvalidTokenException.class)
     public ResponseEntity<Object> handleInvalidTokenException(InvalidTokenException ex) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
+    @ExceptionHandler(EmployeeNotFound.class)
+    public ResponseEntity<Object> handleEmployeeNotFoundException(EmployeeNotFound ex) {
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(UnauthenticatedException.class)
+    public ResponseEntity<Object> handleUnauthenticatedException(UnauthenticatedException ex) {
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
@@ -95,6 +109,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return buildErrorResponse((HttpStatus)status, "Invalid input format. Please check the request body.");
     }
 
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex) {
+        return buildErrorResponse(HttpStatus.FORBIDDEN, "Access Denied: " + ex.getMessage());
+    }
+
+    @ExceptionHandler(com.example.ws.microservices.firstmicroservices.customError.AuthenticationFailedException.class)
+    public ResponseEntity<Object> handleAuthenticationFailedException(com.example.ws.microservices.firstmicroservices.customError.AuthenticationFailedException ex) {
+        return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
+    }
+
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Object> handleConstraintViolationException(ConstraintViolationException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -117,6 +141,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         errorResponse.put("error", status.getReasonPhrase());
         errorResponse.put("message", message);
         errorResponse.put("timestamp", LocalDateTime.now());
+
+        log.error("Sending error response: {}", errorResponse);
+
         return ResponseEntity.status(status).body(errorResponse);
     }
 }

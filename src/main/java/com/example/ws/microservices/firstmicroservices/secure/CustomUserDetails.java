@@ -1,7 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.secure;
 
-import com.example.ws.microservices.firstmicroservices.dto.RoleDTO;
-import com.example.ws.microservices.firstmicroservices.entity.enums.Role;
+import com.example.ws.microservices.firstmicroservices.dto.UserRoleDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,7 +9,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -22,6 +20,9 @@ import java.util.stream.Collectors;
 public class CustomUserDetails implements UserDetails {
 
     private final String userId;
+    @Getter
+    private final String expertis;
+    private final String siteName;
     private final boolean isVerified;
     private final boolean isVerifiedEmail;
     private final boolean isCanHasAccount;
@@ -30,7 +31,7 @@ public class CustomUserDetails implements UserDetails {
     private final LocalDate validFromAccount;
 
     @Builder.Default
-    private final List<RoleDTO> roles = new ArrayList<>();
+    private final List<UserRoleDTO> roles = new ArrayList<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

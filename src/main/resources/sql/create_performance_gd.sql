@@ -1,39 +1,22 @@
-CREATE SCHEMA performance_dg;
+CREATE SCHEMA performance_gd;
 
-SET search_path TO performance_dg;
-
-CREATE TABLE IF NOT EXISTS available_department(
-    id SERIAL PRIMARY KEY,
-    name VARCHAR (64) NOT NULL UNIQUE
-);
-
-INSERT INTO available_department (name)
-VALUES ('Sort/Pack'),
-       ('Pick/Stow'),
-       ('Unloading'),
-       ('Receive'),
-       ('Shipping'),
-       ('Quality'),
-       ('Return'),
-       ('Others');
-
-CREATE TABLE IF NOT EXISTS spi_cluster (
+CREATE TABLE IF NOT EXISTS performance_gd.spi_cluster (
     id SERIAL PRIMARY KEY,
     name VARCHAR (64) NOT NULL UNIQUE ,
     name_table VARCHAR (64) DEFAULT 'unknown'
 );
 
-INSERT INTO spi_cluster (name, name_table)
+INSERT INTO performance_gd.spi_cluster (name, name_table)
 VALUES ('spi_I', 'Direct'),
        ('spi_II', 'NTT'),
        ('spi_III', 'Support'),
        ('timetracking', 'Timetracking'),
        ('ntt_unbezahlt', 'NTT - unbezahlt');
 
-CREATE TABLE IF NOT EXISTS activity_name (
+CREATE TABLE IF NOT EXISTS performance_gd.activity_name (
     id SERIAL PRIMARY KEY,
     name VARCHAR(64) NOT NULL UNIQUE,
-    spi_cluster INT NOT NULL REFERENCES spi_cluster
+    spi_cluster INT NOT NULL REFERENCES performance_gd.spi_cluster
 );
 
 DO $$
@@ -44,13 +27,13 @@ DECLARE
     timetracking_id INT;
     ntt_unbezahlt_id INT;
 BEGIN
-    SELECT id INTO spi_I_id FROM spi_cluster WHERE name = 'spi_I';
-    SELECT id INTO spi_II_id FROM spi_cluster WHERE name = 'spi_II';
-    SELECT id INTO spi_III_id FROM spi_cluster WHERE name = 'spi_III';
-    SELECT id INTO timetracking_id FROM spi_cluster WHERE name = 'timetracking';
-    SELECT id INTO ntt_unbezahlt_id FROM spi_cluster WHERE name = 'ntt_unbezahlt';
+    SELECT id INTO spi_I_id FROM performance_gd.spi_cluster WHERE name = 'spi_I';
+    SELECT id INTO spi_II_id FROM performance_gd.spi_cluster WHERE name = 'spi_II';
+    SELECT id INTO spi_III_id FROM performance_gd.spi_cluster WHERE name = 'spi_III';
+    SELECT id INTO timetracking_id FROM performance_gd.spi_cluster WHERE name = 'timetracking';
+    SELECT id INTO ntt_unbezahlt_id FROM performance_gd.spi_cluster WHERE name = 'ntt_unbezahlt';
 
-    INSERT INTO activity_name (name, spi_cluster)
+    INSERT INTO performance_gd.activity_name (name, spi_cluster)
     VALUES ('FASTLANE RECEIVE', spi_I_id),
            ('NCO PACK direct',spi_I_id),
            ('PACK_MULTI', spi_I_id),
@@ -174,78 +157,18 @@ BEGIN
 
 END $$;
 
-CREATE OR REPLACE FUNCTION set_default_department()
-    RETURNS TRIGGER AS $$
-BEGIN
-    IF NEW.department_id IS NULL THEN
-        NEW.department_id := (SELECT id FROM available_department WHERE name = 'Others' LIMIT 1);
-    END IF;
-    RETURN NEW;
-END;
-$$ LANGUAGE plpgsql;
-
-CREATE TABLE IF NOT EXISTS final_cluster(
+CREATE TABLE IF NOT EXISTS performance_gd.final_cluster(
     id SERIAL PRIMARY KEY,
-    name VARCHAR(64) NOT NULL UNIQUE,
-    department_id INT REFERENCES available_department
+    name VARCHAR(64) NOT NULL UNIQUE
 );
 
-CREATE TRIGGER default_department_trigger
-    BEFORE INSERT ON final_cluster
-    FOR EACH ROW
-EXECUTE FUNCTION set_default_department();
-
-DO $$
-    DECLARE
-        pack_id INT;
-        pick_id INT;
-        receive_id INT;
-        return_id INT;
-        unloading_id INT;
-        shipping_id INT;
-        quality_id INT;
-        others_id INT;
-    BEGIN
-        SELECT id INTO pack_id FROM available_department WHERE name = 'Sort/Pack';
-        SELECT id INTO pick_id FROM available_department WHERE name = 'Pick/Stow';
-        SELECT id INTO receive_id FROM available_department WHERE name = 'Receive';
-        SELECT id INTO return_id FROM available_department WHERE name = 'Return';
-        SELECT id INTO unloading_id FROM available_department WHERE name = 'Unloading';
-        SELECT id INTO shipping_id FROM available_department WHERE name = 'Shipping';
-        SELECT id INTO quality_id FROM available_department WHERE name = 'Quality';
-        SELECT id INTO others_id FROM available_department WHERE name = 'Others';
-
-        INSERT INTO final_cluster (name, department_id)
-        VALUES ('Linesorter Pack', pack_id),
-               ('Pack', pack_id),
-               ('Standard Pack Multi', pack_id),
-               ('Standard Pack Single', pack_id),
-               ('Manual Sort', pack_id),
-               ('Internal Orders Shipping', pack_id),
-               ('NCO Shipping', pack_id),
-               ('Pick', pick_id),
-               ('Core Stow', pick_id),
-               ('Shipping', shipping_id),
-               ('Core Receive', receive_id),
-               ('Fastlane Receive', receive_id),
-               ('Goodsreceive', receive_id),
-               ('Repackreceive', receive_id),
-               ('Additional Effort',others_id),
-               ('ActivityExclude',others_id),
-               ('Refurbishment', return_id),
-               ('Recommerce Receive', return_id),
-               ('Core Retoure', return_id),
-               ('Overhead',others_id);
-
-    END $$;
-
-CREATE TABLE IF NOT EXISTS check_header (
+CREATE TABLE IF NOT EXISTS performance_gd.check_header (
     id SERIAL PRIMARY KEY ,
     name VARCHAR (64) NOT NULL UNIQUE,
     table_name VARCHAR (128) NOT NULL UNIQUE
 );
 
-INSERT INTO check_header (name, table_name)
+INSERT INTO performance_gd.check_header (name, table_name)
 VALUES  ('date','Work Date Date'),
         ('expertis','Employee Personnel Number'),
         ('activityName','Activity Activity Name'),
@@ -269,17 +192,36 @@ VALUES  ('date','Work Date Date'),
         ('cartrunner', '# Cartrunner'),
         ('relocation', '# Relocation'),
         ('stocktaking', '# Stocktaking'),
+        ('idleTime', 'Idle Time Duration in Activity (h)'),
+        ('idleCount', '# Idle Times in Activity'),
         ('volumescan', '# Items Volumescan');
 
-CREATE TABLE IF NOT EXISTS performance (
+CREATE TABLE IF NOT EXISTS performance_gd.additional_effort(
+    id BIGSERIAL PRIMARY KEY,
+    date DATE NOT NULL,
+    expertis VARCHAR(64) NOT NULL ,
+    activity_name_id INT NOT NULL REFERENCES performance_gd.activity_name(id),
+    duration DOUBLE PRECISION NOT NULL,
+    shift_id INT NOT NULL REFERENCES vision.shift_time_work(id)
+);
+
+CREATE INDEX idx_ae_date ON performance_gd.additional_effort (date);
+CREATE INDEX idx_ae_expertis ON performance_gd.additional_effort (expertis);
+CREATE INDEX idx_ae_activity_name ON performance_gd.additional_effort (activity_name_id);
+CREATE INDEX idx_ae_shift ON performance_gd.additional_effort (shift_id);
+
+
+CREATE TABLE IF NOT EXISTS performance_gd.performance (
     date DATE NOT NULL,
     expertis VARCHAR (64) NOT NULL,
-    activity_name_id INT NOT NULL REFERENCES activity_name,
-    final_cluster_id INT NOT NULL REFERENCES final_cluster,
-    activity_cluster_id INT NOT NULL REFERENCES spi_cluster,
+    activity_name_id INT NOT NULL REFERENCES performance_gd.activity_name,
+    final_cluster_id INT NOT NULL REFERENCES performance_gd.final_cluster,
+    activity_cluster_id INT NOT NULL REFERENCES performance_gd.spi_cluster,
     start_activity TIMESTAMP NOT NULL ,
     end_activity TIMESTAMP NOT NULL,
     duration DOUBLE PRECISION NOT NULL,
+    duration_idle DOUBLE PRECISION NOT NULL,
+    idle_count INT DEFAULT 0,
     ql INT DEFAULT 0,
     ql_box INT DEFAULT 0,
     ql_hanging INT DEFAULT 0,
@@ -291,80 +233,28 @@ CREATE TABLE IF NOT EXISTS performance (
     pick_nos2 INT DEFAULT 0
 ) PARTITION BY RANGE (date);
 
-CREATE INDEX idx_performance_date ON performance (date);
-CREATE INDEX idx_performance_expertis ON performance (expertis);
-CREATE INDEX idx_performance_activity_name ON performance (activity_name_id);
-CREATE INDEX idx_performance_final_cluster ON performance (final_cluster_id);
-CREATE INDEX idx_performance_start_activity ON performance (start_activity);
-CREATE INDEX idx_performance_end_activity ON performance (end_activity);
+CREATE INDEX idx_performance_date ON performance_gd.performance (date);
+CREATE INDEX idx_performance_expertis ON performance_gd.performance (expertis);
+CREATE INDEX idx_performance_date_expertis ON performance_gd.performance (date, expertis);
+CREATE INDEX idx_performance_activity_name ON performance_gd.performance (activity_name_id);
+CREATE INDEX idx_performance_final_cluster ON performance_gd.performance (final_cluster_id);
+CREATE INDEX idx_performance_start_activity ON performance_gd.performance (start_activity);
+CREATE INDEX idx_performance_end_activity ON performance_gd.performance (end_activity);
 
--- CREATE SEQUENCE performance_seq START 1;
-
--- CREATE OR REPLACE FUNCTION create_partition_if_not_exists()
---     RETURNS TRIGGER AS $$
--- DECLARE
---     partition_name TEXT;
---     partition_start DATE;
---     partition_end DATE;
--- BEGIN
---     EXECUTE 'SET LOCAL plan_cache_mode = force_generic_plan';
---
---     partition_start := date_trunc('month', NEW.date)::DATE;
---     partition_end := (partition_start + INTERVAL '1 month')::DATE;
---     partition_name := 'performance_' || to_char(partition_start, 'YYYY_MM');
---
---     RAISE NOTICE 'Attempting to create partition for % from % to %', partition_name, partition_start, partition_end;
---
---     IF NOT EXISTS (
---         SELECT 1
---         FROM information_schema.tables
---         WHERE table_name = partition_name
---           AND table_schema = 'performance_dg'
---     ) THEN
---         RAISE NOTICE 'Creating partition % for range % to %', partition_name, partition_start, partition_end;
---
---         EXECUTE format('
---             CREATE TABLE performance_dg.%I PARTITION OF performance
---             FOR VALUES FROM (''%s'') TO (''%s'')',
---                        partition_name, partition_start, partition_end
---                 );
---         EXECUTE format('CREATE INDEX ON performance_dg.%I (date)', partition_name);
---         EXECUTE format('CREATE INDEX ON performance_dg.%I (expertis)', partition_name);
---         EXECUTE format('CREATE INDEX ON performance_dg.%I (activity_name_id)', partition_name);
---         EXECUTE format('CREATE INDEX ON performance_dg.%I (final_cluster_id)', partition_name);
---         EXECUTE format('CREATE INDEX ON performance_dg.%I (start_activity)', partition_name);
---         EXECUTE format('CREATE INDEX ON performance_dg.%I (end_activity)', partition_name);
---     ELSE
---         RAISE NOTICE 'Partition % already exists', partition_name;
---     END IF;
---
---     RETURN NEW;
--- EXCEPTION
---     WHEN OTHERS THEN
---         RAISE NOTICE 'Error occurred: %', SQLERRM;
---         RETURN NULL;
--- END;
--- $$ LANGUAGE plpgsql;
---
---
--- CREATE TRIGGER create_partition_trigger
---     BEFORE INSERT ON performance
---     FOR EACH ROW EXECUTE FUNCTION create_partition_if_not_exists();
-
-CREATE TABLE IF NOT EXISTS check_name_file(
+CREATE TABLE IF NOT EXISTS performance_gd.check_name_file(
     id BIGSERIAL PRIMARY KEY ,
     date DATE NOT NULL,
-    id_user_loaded VARCHAR(256) NOT NULL,
+    id_user_loaded VARCHAR(512) NOT NULL,
     name_file VARCHAR(256) NOT NULL UNIQUE,
     status VARCHAR(64) NOT NULL
 );
 
-CREATE SEQUENCE clear_performance_employee_id_seq
-    INCREMENT 100
+CREATE SEQUENCE performance_gd.clear_performance_employee_id_seq
+    INCREMENT 200
     START WITH 1;
 
-CREATE TABLE IF NOT EXISTS clear_performance_employee(
-    id BIGINT PRIMARY KEY DEFAULT nextval('clear_performance_employee_id_seq'),
+CREATE TABLE IF NOT EXISTS performance_gd.clear_performance_employee(
+    id BIGINT PRIMARY KEY DEFAULT nextval('performance_gd.clear_performance_employee_id_seq'),
     date DATE NOT NULL ,
     expertis VARCHAR(64) NOT NULL ,
     --PACK PROCESSING
@@ -429,14 +319,37 @@ CREATE TABLE IF NOT EXISTS clear_performance_employee(
     ntt_core DOUBLE PRECISION DEFAULT 0,
     --UNLOADING PROCESSING
     support_goods DOUBLE PRECISION DEFAULT 0,
-    ntt_goods DOUBLE PRECISION DEFAULT 0
+    ntt_goods DOUBLE PRECISION DEFAULT 0,
+    --ADDITIONAL PROCESSING
+    duration_idle DOUBLE PRECISION NOT NULL,
+    idle_count INT DEFAULT 0,
+    ql_relocation INT DEFAULT 0,
+    time_relocation DOUBLE PRECISION DEFAULT 0,
+    ql_volume_scan INT DEFAULT 0,
+    time_volume_scan DOUBLE PRECISION DEFAULT 0,
+    ql_return_sort INT DEFAULT 0,
+    time_return_sort DOUBLE PRECISION DEFAULT 0,
+    ql_stocktaking INT DEFAULT 0,
+    time_stocktaking DOUBLE PRECISION DEFAULT 0,
+    pick_nos_1 INT DEFAULT 0,
+    pick_nos_2 INT DEFAULT 0,
+    stow_clarifications INT DEFAULT 0,
+
+    shift_id INT REFERENCES vision.shift_time_work(id)
 );
 
-CREATE INDEX idx_performance_clear_date ON clear_performance_employee (date);
-CREATE INDEX idx_performance_clear_expertis ON clear_performance_employee (expertis);
+CREATE INDEX idx_performance_clear_date ON performance_gd.clear_performance_employee (date);
+CREATE INDEX idx_performance_clear_expertis ON performance_gd.clear_performance_employee (expertis);
+CREATE INDEX idx_performance_clear_date_shift ON performance_gd.clear_performance_employee (date, shift_id);
+CREATE INDEX idx_performance_clear_expertis_date ON performance_gd.clear_performance_employee (expertis, date);
+CREATE INDEX idx_performance_clear_shift_id ON performance_gd.clear_performance_employee (shift_id);
 
-CREATE TABLE IF NOT EXISTS clear_performance_employee_without_ntt_tatig(
-    id BIGSERIAL PRIMARY KEY,
+CREATE SEQUENCE performance_gd.clear_performance_employee_without_ntt_id_seq
+    INCREMENT 200
+    START WITH 1;
+
+CREATE TABLE IF NOT EXISTS performance_gd.clear_performance_employee_without_ntt_tatig(
+    id BIGINT PRIMARY KEY DEFAULT nextval('performance_gd.clear_performance_employee_without_ntt_id_seq'),
     date DATE NOT NULL ,
     expertis VARCHAR(64) NOT NULL ,
     --PACK PROCESSING
@@ -446,10 +359,10 @@ CREATE TABLE IF NOT EXISTS clear_performance_employee_without_ntt_tatig(
     ntt_opt DOUBLE PRECISION DEFAULT 0,
     ql_multi INT DEFAULT 0,
     time_multi DOUBLE PRECISION DEFAULT 0,
-    support_multi DOUBLE PRECISION DEFAULT 0,
     ntt_multi DOUBLE PRECISION DEFAULT 0,
     ql_single INT DEFAULT 0,
     time_single DOUBLE PRECISION DEFAULT 0,
+    ntt_single DOUBLE PRECISION DEFAULT 0,
     support_pack DOUBLE PRECISION DEFAULT 0,
     ntt_pack DOUBLE PRECISION DEFAULT 0,
     ql_sort INT DEFAULT 0,
@@ -501,20 +414,41 @@ CREATE TABLE IF NOT EXISTS clear_performance_employee_without_ntt_tatig(
     ntt_core DOUBLE PRECISION DEFAULT 0,
     --UNLOADING PROCESSING
     support_goods DOUBLE PRECISION DEFAULT 0,
-    ntt_goods DOUBLE PRECISION DEFAULT 0
+    ntt_goods DOUBLE PRECISION DEFAULT 0,
+    --ADDITIONAL PROCESSING
+    duration_idle DOUBLE PRECISION NOT NULL,
+    idle_count INT DEFAULT 0,
+    ql_relocation INT DEFAULT 0,
+    time_relocation DOUBLE PRECISION DEFAULT 0,
+    ql_volume_scan INT DEFAULT 0,
+    time_volume_scan DOUBLE PRECISION DEFAULT 0,
+    ql_return_sort INT DEFAULT 0,
+    time_return_sort DOUBLE PRECISION DEFAULT 0,
+    ql_stocktaking INT DEFAULT 0,
+    time_stocktaking DOUBLE PRECISION DEFAULT 0,
+    pick_nos_1 INT DEFAULT 0,
+    pick_nos_2 INT DEFAULT 0,
+    stow_clarifications INT DEFAULT 0,
+
+    shift_id SMALLINT REFERENCES vision.shift_time_work(id)
 );
 
-CREATE INDEX idx_performance_clear_date_without_ntt ON clear_performance_employee_without_ntt_tatig (date);
-CREATE INDEX idx_performance_clear_expertis_without_ntt ON clear_performance_employee_without_ntt_tatig (expertis);
+CREATE INDEX idx_performance_clear_date_without_ntt ON performance_gd.clear_performance_employee_without_ntt_tatig (date);
+CREATE INDEX idx_performance_clear_expertis_without_ntt ON performance_gd.clear_performance_employee_without_ntt_tatig (expertis);
+CREATE INDEX idx_performance_clear_date_shift_without_ntt ON performance_gd.clear_performance_employee_without_ntt_tatig (date, shift_id);
+CREATE INDEX idx_performance_clear_expertis_date_without_ntt ON performance_gd.clear_performance_employee_without_ntt_tatig (expertis, date);
+CREATE INDEX idx_performance_clear_shift_id_without_ntt ON performance_gd.clear_performance_employee_without_ntt_tatig (shift_id);
 
-CREATE TABLE IF NOT EXISTS spi_gd(
+CREATE TABLE IF NOT EXISTS performance_gd.spi_gd(
     id BIGSERIAL PRIMARY KEY,
-    date DATE NOT NULL UNIQUE,
+    date DATE NOT NULL,
+    shift_id INT REFERENCES vision.shift_time_work(id),
     --CORE RECEIVE
     spi_I_core DOUBLE PRECISION DEFAULT 0,
     spi_II_core DOUBLE PRECISION DEFAULT 0,
     spi_III_core DOUBLE PRECISION DEFAULT 0,
     core_total_ql INT DEFAULT 0,
+    core_shoes_ql INT DEFAULT 0,
     core_total_time DOUBLE PRECISION DEFAULT 0,
     --REPACK RECEIVE
     spi_I_repack DOUBLE PRECISION DEFAULT 0,
@@ -587,4 +521,86 @@ CREATE TABLE IF NOT EXISTS spi_gd(
     return_total_time DOUBLE PRECISION DEFAULT 0
 );
 
-CREATE INDEX idx_spi_gd ON spi_gd (date);
+CREATE INDEX idx_spi_gd ON performance_gd.spi_gd (date);
+
+CREATE TABLE IF NOT EXISTS performance_gd.spi_cluster_name(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(256) NOT NULL UNIQUE,
+    description TEXT,
+    department_id INT NOT NULL REFERENCES vision.department(id),
+    user_id VARCHAR(512) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS performance_gd.spi_cell(
+    id BIGSERIAL PRIMARY KEY,
+    name_id INT REFERENCES performance_gd.spi_cluster_name(id),
+    cell DOUBLE PRECISION NOT NULL,
+    valid_from DATE NOT NULL,
+    user_id VARCHAR(512) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS performance_gd.uph_process_name(
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(256) NOT NULL UNIQUE,
+    type VARCHAR (128) NOT NULL,
+    department_id INT NOT NULL REFERENCES vision.department(id)
+);
+
+DO $$
+DECLARE
+    unloading_id INT;
+    receive_id INT;
+    sort_pack_id INT;
+    pick_stow_id INT;
+    shipping_id INT;
+    return_id INT;
+    quality_id INT;
+
+    site_gd_id INT;
+BEGIN
+    SELECT id INTO site_gd_id FROM vision.site WHERE name = 'GD';
+    SELECT id INTO unloading_id FROM vision.department WHERE name = 'Unloading' AND site_id = site_gd_id;
+    SELECT id INTO receive_id FROM vision.department WHERE name = 'Receive' AND site_id = site_gd_id;
+    SELECT id INTO sort_pack_id FROM vision.department WHERE name = 'Sort/Pack' AND site_id = site_gd_id;
+    SELECT id INTO pick_stow_id FROM vision.department WHERE name = 'Pick/Stow' AND site_id = site_gd_id;
+    SELECT id INTO shipping_id FROM vision.department WHERE name = 'Shipping' AND site_id = site_gd_id;
+    SELECT id INTO return_id FROM vision.department WHERE name = 'Return' AND site_id = site_gd_id;
+    SELECT id INTO quality_id FROM vision.department WHERE name = 'Quality' AND site_id = site_gd_id;
+
+    INSERT INTO performance_gd.uph_process_name(name, department_id, type)
+    VALUES
+           ('Linesorter', sort_pack_id, 'Main'),
+           ('Single', sort_pack_id, 'Main'),
+           ('Multi', sort_pack_id, 'Main'),
+           ('Sort', sort_pack_id, 'Main'),
+           ('WMO', sort_pack_id, 'Main'),
+           ('NCO', sort_pack_id, 'Additional'),
+           ('Stow', pick_stow_id, 'Main'),
+           ('Pick', pick_stow_id, 'Main'),
+           ('Relocation', pick_stow_id, 'Additional'),
+           ('Fastline', receive_id, 'Main'),
+           ('ReceiveCore', receive_id, 'Main'),
+           ('Rereplenishment', receive_id, 'Main'),
+           ('Repackreceive', receive_id, 'Main'),
+           ('Volumescan', receive_id, 'Additional'),
+           ('Defect', return_id, 'Main'),
+           ('Defect-Sort', return_id, 'Additional'),
+           ('Stocktaking', quality_id, 'Additional');
+END $$;
+
+CREATE TABLE IF NOT EXISTS performance_gd.uph_process(
+    id BIGSERIAL PRIMARY KEY,
+    process_id INT REFERENCES performance_gd.uph_process_name(id),
+    uph DOUBLE PRECISION NOT NULL,
+    percent_others DOUBLE PRECISION NOT NULL,
+    valid_from DATE NOT NULL,
+    user_id VARCHAR(512) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS performance_gd.color_performance(
+    id SERIAL PRIMARY KEY,
+    process_id INT REFERENCES performance_gd.uph_process_name(id),
+    percent DOUBLE PRECISION NOT NULL,
+    color VARCHAR(128) NOT NULL,
+    user_id VARCHAR(512) NOT NULL
+);

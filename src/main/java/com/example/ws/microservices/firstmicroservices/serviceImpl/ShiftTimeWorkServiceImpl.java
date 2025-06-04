@@ -1,7 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
 import com.example.ws.microservices.firstmicroservices.dto.ShiftTimeWorkDTO;
-import com.example.ws.microservices.firstmicroservices.entity.ShiftTimeWork;
 import com.example.ws.microservices.firstmicroservices.repository.ShiftTimeWorkRepository;
 import com.example.ws.microservices.firstmicroservices.service.ShiftTimeWorkService;
 import lombok.RequiredArgsConstructor;

@@ -5,6 +5,7 @@ import com.example.ws.microservices.firstmicroservices.secure.SecurityConstants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -87,5 +88,19 @@ public class Utils {
                 .build()
                 .parseClaimsJws(token)
                 .getBody();
+    }
+
+    public String getCookieValue(HttpServletRequest request, String name) {
+        if (request.getCookies() == null) {
+            return null;
+        }
+
+        for (Cookie cookie : request.getCookies()) {
+            if (name.equals(cookie.getName())) {
+                return cookie.getValue();
+            }
+        }
+
+        return null;
     }
 }

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SiteDTO {
 
-    private Short id;
+    private Integer id;
     private String name;
 
 }

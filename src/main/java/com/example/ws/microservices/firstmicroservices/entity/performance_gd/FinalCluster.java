@@ -10,7 +10,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Entity
-@Table(name = "final_cluster", schema = "performance_dg")
+@Table(name = "final_cluster", schema = "performance_gd")
 public class FinalCluster {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -1,5 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.dto.attendance.gd;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,7 +20,9 @@ import org.hibernate.annotations.ColumnDefault;
 @NoArgsConstructor
 public class AttendanceStatusDTO {
     private Integer id;
+    @JsonInclude()
     private String statusCode;
     private String statusName;
     private String description;
+    private String color;
 }

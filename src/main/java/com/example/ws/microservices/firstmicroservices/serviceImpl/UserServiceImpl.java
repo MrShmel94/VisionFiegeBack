@@ -1,15 +1,14 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
 import com.example.ws.microservices.firstmicroservices.customError.CustomException;
+import com.example.ws.microservices.firstmicroservices.customError.UnauthenticatedException;
 import com.example.ws.microservices.firstmicroservices.customError.UserAlreadyExistsException;
 import com.example.ws.microservices.firstmicroservices.customError.VerificationException;
 import com.example.ws.microservices.firstmicroservices.dto.*;
 import com.example.ws.microservices.firstmicroservices.mapper.UserMapper;
-import com.example.ws.microservices.firstmicroservices.repository.UserRoleRepository;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
-import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.service.*;
-import com.example.ws.microservices.firstmicroservices.entity.UserEntity;
+import com.example.ws.microservices.firstmicroservices.entity.vision.UserEntity;
 import com.example.ws.microservices.firstmicroservices.repository.UserRepository;
 import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
 import jakarta.annotation.Nullable;
@@ -19,13 +18,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -48,9 +48,7 @@ public class UserServiceImpl implements UserService {
 
         userRepository.findByEmailOrExpertis(user.getEmail(), user.getExpertis())
                 .ifPresent(existingUser -> {
-                    String message = existingUser.getEmail().equals(user.getEmail())
-                            ? "User with this email already exists."
-                            : "User with this expertis already exists.";
+                    String message = "User with this email or expertis already exists.";
                     throw new UserAlreadyExistsException(message);
                 });
 
@@ -97,7 +95,7 @@ public class UserServiceImpl implements UserService {
 
         SupervisorAllInformationDTO allInformation = getSupervisorAllInformation(userEntity.getExpertis(), null);
         allInformation.setEmailVerificationStatus(true);
-        redisCacheService.saveToCache("userDetails:" + userEntity.getExpertis(), allInformation);
+        redisCacheService.saveToHash("userDetails:hash", allInformation.getExpertis(), allInformation);
         redisCacheService.saveMapping(userEntity.getUserId(), allInformation.getExpertis());
 
 
@@ -122,8 +120,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void verifyUserAccount(String userId) {
-        SupervisorAllInformationDTO allInformation = getSupervisorAllInformation(null, userId);
+    public void verifyUserAccount(String expertis) {
+        SupervisorAllInformationDTO allInformation = getSupervisorAllInformation(expertis, null);
         userRepository.setVerified(allInformation.getUserId());
     }
 
@@ -140,12 +138,12 @@ public class UserServiceImpl implements UserService {
             expertisRedis = redisCacheService.getExpertisByUserId(userId);
         }
 
-        String redisKey = expertisRedis != null ? "userDetails:" + expertisRedis : expertis;
+        String redisKey = expertisRedis != null ?  expertisRedis :  expertis;
 
         SupervisorAllInformationDTO entity;
 
-        if (redisKey != null) {
-            entity = redisCacheService.getFromCache(redisKey, SupervisorAllInformationDTO.class).orElse(null);
+        if (expertisRedis != null) {
+            entity = redisCacheService.getFromHash("userDetails:hash", redisKey, SupervisorAllInformationDTO.class).orElse(null);
         } else {
             entity = null;
         }
@@ -157,17 +155,12 @@ public class UserServiceImpl implements UserService {
                     .orElseThrow(() -> new UsernameNotFoundException(
                             String.format("User %s not found", attributeToSearch)));
 
-            String newRedisKey = "userDetails:" + entity.getExpertis();
+            String newRedisKey = entity.getExpertis();
 
-            redisCacheService.saveToCache("encryptedPassword:" + entity.getExpertis(),
-                    entity.getEncryptedPassword());
-
-            entity.setEncryptedPassword(null);
-
-            List<RoleDTO> roles = roleService.getAllRoleByUserId(entity.getId());
+            List<UserRoleDTO> roles = roleService.getAllRoleByUserId(entity.getId());
             entity.setRoles(roles);
 
-            redisCacheService.saveToCache(newRedisKey, entity);
+            redisCacheService.saveToHash("userDetails:hash", newRedisKey, entity);
 
             if (expertisRedis == null) {
                 redisCacheService.saveMapping(entity.getUserId(), entity.getExpertis());
@@ -183,27 +176,75 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<PreviewEmployeeDTO> getAllUsersWithoutVerification() {
+        return userRepository.getAllUsersWithoutVerification();
+    }
+
+    @Override
+    public List<PreviewEmployeeDTO> getAllUsersVerification() {
+        return userRepository.getAllUsersAccount();
+    }
+
+    @Override
+    public UserMeDTO getCurrentUserInfo() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+        if (auth == null || !(auth.getPrincipal() instanceof CustomUserDetails)) {
+            throw new UnauthenticatedException("User is not authenticated");
+        }
+
+        String userId = ((CustomUserDetails) auth.getPrincipal()).getUserId();
+
+        SupervisorAllInformationDTO fullDTO = getSupervisorAllInformation(null, userId);
+
+        return new UserMeDTO(fullDTO.getFirstName(), fullDTO.getLastName(), fullDTO.getDepartmentName(), fullDTO.getPositionName());
+    }
+
+    @Override
+    public Optional<String> getUserEncryptedPassword(String userId) {
+        return userRepository.getUserEncryptedPassword(userId);
+    }
+
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         SupervisorAllInformationDTO entity = getSupervisorAllInformation(null, username);
 
+        String password = tryGetPasswordOnlyIfNeeded(username);
 
-        String encryptedPassword = entity.getEncryptedPassword();
-        if (encryptedPassword == null) {
-            encryptedPassword = redisCacheService.getFromCache("encryptedPassword:" + entity.getExpertis(), String.class)
-                    .orElseThrow(() -> new UsernameNotFoundException(
-                            String.format("Password not found for user %s", username)));
-        }
-
-        List<RoleDTO> roles = entity.getRoles() != null && !entity.getRoles().isEmpty()
+        List<UserRoleDTO> roles = entity.getRoles() != null && !entity.getRoles().isEmpty()
                 ? entity.getRoles() : List.of();
 
         return new CustomUserDetails(
                 entity.getUserId(),
+                entity.getExpertis(),
+                entity.getSiteName(),
                 entity.getIsVerified(),
                 entity.getEmailVerificationStatus(),
                 entity.getIsCanHasAccount(),
-                encryptedPassword,
+                password,
+                entity.getValidToAccount(),
+                entity.getValidFromAccount(),
+                roles
+        );
+    }
+
+    @Override
+    public UserDetails loadUserByUsernameWithoutPassword(String username) throws UsernameNotFoundException {
+
+        SupervisorAllInformationDTO entity = getSupervisorAllInformation(null, username);
+
+        List<UserRoleDTO> roles = entity.getRoles() != null && !entity.getRoles().isEmpty()
+                ? entity.getRoles() : List.of();
+
+        return new CustomUserDetails(
+                entity.getUserId(),
+                entity.getExpertis(),
+                entity.getSiteName(),
+                entity.getIsVerified(),
+                entity.getEmailVerificationStatus(),
+                entity.getIsCanHasAccount(),
+                "",
                 entity.getValidToAccount(),
                 entity.getValidFromAccount(),
                 roles
@@ -221,5 +262,15 @@ public class UserServiceImpl implements UserService {
                 log.warn("UUID collision detected for userId: {}. Retrying...", user.getUserId());
             }
         }
+    }
+
+    private String tryGetPasswordOnlyIfNeeded(String userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return getUserEncryptedPassword(userId).orElseThrow(() -> new UsernameNotFoundException(
+                    String.format("User %s not found", userId)));
+        }
+        return "";
     }
 }

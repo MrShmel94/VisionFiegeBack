@@ -1,7 +1,5 @@
 package com.example.ws.microservices.firstmicroservices.service.redice;
 
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.*;
-import com.example.ws.microservices.firstmicroservices.service.templateTables.*;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

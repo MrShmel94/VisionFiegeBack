@@ -1,19 +1,21 @@
 package com.example.ws.microservices.firstmicroservices.secure;
 
 import com.example.ws.microservices.firstmicroservices.customError.*;
+import com.example.ws.microservices.firstmicroservices.dto.UserMeDTO;
 import com.example.ws.microservices.firstmicroservices.request.UserLoginRequestModel;
 import com.example.ws.microservices.firstmicroservices.service.RefreshTokenService;
+import com.example.ws.microservices.firstmicroservices.service.UserService;
 import com.example.ws.microservices.firstmicroservices.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import jakarta.servlet.FilterChain;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.json.JsonParseException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,15 +30,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.springframework.http.HttpHeaders.SET_COOKIE;
+
 @Slf4j
 public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final RefreshTokenService refreshTokenService;
     private final Utils utils;
+    private final String COOKIE_DOMAIN;
+    private final UserService userService;
 
-    public AuthenticationFilter(AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService, Utils utils) {
+    public AuthenticationFilter(AuthenticationManager authenticationManager, RefreshTokenService refreshTokenService, Utils utils, String COOKIE_DOMAIN, UserService userService) {
         super(authenticationManager);
         this.utils = utils;
+        this.COOKIE_DOMAIN = COOKIE_DOMAIN;
+        this.userService = userService;
         this.refreshTokenService = refreshTokenService;
     }
 
@@ -70,15 +78,12 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                         "Email is required",
                         "Please check your email.");
                 return null;
-                //throw new InvalidLoginRequestException("Email is required", HttpStatus.BAD_REQUEST);
-
             }
             if (creds.getPassword() == null || creds.getPassword().trim().isEmpty()) {
                 sendErrorResponse(res, HttpStatus.BAD_REQUEST,
                         "Password is required",
                         "Please check your password.");
                 return null;
-                //throw new InvalidLoginRequestException("Password is required", HttpStatus.BAD_REQUEST);
             }
 
             UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
@@ -91,7 +96,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 sendErrorResponse(res, HttpStatus.UNAUTHORIZED,
                         "Account not verified",
                         "Please check your email to verify your account.");
-                //throw new CustomAuthenticationException("Account not verified. Please check your email to verify your account.", HttpStatus.UNAUTHORIZED);
             }
 
         } catch (JsonParseException e) {
@@ -105,7 +109,6 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             sendErrorResponse(res, HttpStatus.UNAUTHORIZED,
                     "Authentication processing error",
                     "Please check your credentials (email and password).");
-            //throw new CustomAuthenticationException("Authentication processing error", HttpStatus.BAD_REQUEST);
         }
         return null;
     }
@@ -185,6 +188,9 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             CustomUserDetails customUserDetails = (CustomUserDetails) auth.getPrincipal();
 
             String accessToken = utils.generateAccessToken(customUserDetails.getUserId(), req);
+
+            refreshTokenService.deleteTokensForUser(customUserDetails.getUserId());
+
             String refreshToken = refreshTokenService.createRefreshToken(customUserDetails.getUserId(), req);
             log.debug("Generated tokens for user: {}, accessToken (first 8 chars): {}...",
                     customUserDetails.getUserId(),
@@ -193,6 +199,15 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
             addCookiesToResponse(res, accessToken, refreshToken);
 
             SecurityContextHolder.getContext().setAuthentication(auth);
+
+            UserMeDTO dto = userService.getCurrentUserInfo();
+
+            res.setStatus(HttpStatus.OK.value());
+            res.setContentType("application/json");
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.registerModule(new JavaTimeModule());
+            mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+            mapper.writeValue(res.getWriter(), dto);
 
             log.info("Successful authentication for user: {}", customUserDetails.getUserId());
         } catch (TokenGenerationException e) {
@@ -217,22 +232,28 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
      * @param refreshToken the JWT refresh token.
      */
     private void addCookiesToResponse(HttpServletResponse res, String accessToken, String refreshToken) {
-        Cookie accessCookie = new Cookie("AccessToken", accessToken);
-        accessCookie.setHttpOnly(true);
-        accessCookie.setSecure(true);
-        accessCookie.setPath("/");
-        accessCookie.setMaxAge(900);
+        ResponseCookie access = ResponseCookie.from("AccessToken", accessToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .domain(COOKIE_DOMAIN)
+                .sameSite("Strict")
+                .maxAge(SecurityConstants.ACCESS_TOKEN_EXPIRATION)
+                .build();
 
-        Cookie refreshCookie = new Cookie("RefreshToken", refreshToken);
-        refreshCookie.setHttpOnly(true);
-        refreshCookie.setSecure(true);
-        refreshCookie.setPath("/api/v1/auth/refresh");
-        refreshCookie.setMaxAge(30 * 24 * 60 * 60);
+        ResponseCookie refresh = ResponseCookie.from("RefreshToken", refreshToken)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .domain(COOKIE_DOMAIN)
+                .sameSite("Strict")
+                .maxAge(SecurityConstants.REFRESH_TOKEN_EXPIRATION)
+                .build();
 
-        res.addCookie(accessCookie);
-        res.addCookie(refreshCookie);
+        res.addHeader(SET_COOKIE, access.toString());
+        res.addHeader(SET_COOKIE, refresh.toString());
 
-        log.debug("Added AccessToken and RefreshToken as HttpOnly cookies.");
+        log.debug("Set AccessToken и RefreshToken cookies с SameSite=Strict, Domain=$");
     }
 
     private void handleException(HttpServletResponse response, CustomException exception) throws IOException {

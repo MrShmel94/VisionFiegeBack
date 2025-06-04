@@ -1,18 +1,18 @@
 package com.example.ws.microservices.firstmicroservices.request.attendance.gd;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class DayScheduleRequest {
 
-    @NotBlank(message = "Status code is required")
+    @NotNull(message = "Status id is required")
+    @JsonInclude()
     private String statusCode;
 
     @NotNull(message = "Shift id is required")

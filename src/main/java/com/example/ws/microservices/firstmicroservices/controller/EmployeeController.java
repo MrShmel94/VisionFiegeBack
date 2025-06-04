@@ -3,10 +3,7 @@ package com.example.ws.microservices.firstmicroservices.controller;
 import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO;
 import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.request.CreateEmployeeRequest;
-import com.example.ws.microservices.firstmicroservices.request.CreateEmployeeRequestList;
-import com.example.ws.microservices.firstmicroservices.request.RequestSetEmployeeToSupervisor;
-import com.example.ws.microservices.firstmicroservices.request.SiteRequestModel;
+import com.example.ws.microservices.firstmicroservices.request.*;
 import com.example.ws.microservices.firstmicroservices.response.ConfigurationRegistrationDTO;
 import com.example.ws.microservices.firstmicroservices.response.CreateEmployeeResponse;
 import com.example.ws.microservices.firstmicroservices.service.EmployeeMappingService;
@@ -59,13 +56,13 @@ public class EmployeeController {
                     content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ConfigurationRegistrationDTO.class)) }),
             @ApiResponse(responseCode = "500", description = "Internal server error", content = @Content)
     })
-    @GetMapping("/config/{siteName}")
-    public ResponseEntity<ConfigurationRegistrationDTO> getAllConfigurationForRegistration(@Valid @PathVariable String siteName){
+    @GetMapping("/config")
+    public ResponseEntity<ConfigurationRegistrationDTO> getAllConfigurationForRegistration(){
         try {
-            ConfigurationRegistrationDTO dto = configurationService.getConfigurationForSite(siteName);
+            ConfigurationRegistrationDTO dto = configurationService.getConfigurationForSite();
             return ResponseEntity.ok(dto);
         } catch (Exception e) {
-            log.error("Error retrieving configuration for site: {}", siteName, e);
+            log.error("Error retrieving configuration for site", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(null);
         }
@@ -93,6 +90,18 @@ public class EmployeeController {
     public ResponseEntity<CreateEmployeeResponse> createEmployees(@Valid @RequestBody CreateEmployeeRequestList createEmployeeRequests){
         CreateEmployeeResponse response = employeeMappingService.createEmployees(createEmployeeRequests.getEmployees());
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping(path = "/updateEmployee", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<?> updateEmployees(@Valid @RequestBody CreateEmployeeRequest createEmployeeRequests){
+        employeeMappingService.updateEmployees(createEmployeeRequests);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(path = "/searchQuery/{query}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<EmployeeFullInformationDTO>> updateEmployees(@PathVariable("query") String query){
+        List<EmployeeFullInformationDTO> allEmployee = employeeServices.searchByQuery(query);
+        return ResponseEntity.ok(allEmployee);
     }
 
     @PostMapping(path = "/uploadEmployees", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -179,10 +188,19 @@ public class EmployeeController {
     @GetMapping(path = "/getEmployeeBySupervisor/{expertis}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<EmployeeFullInformationDTO>> getListEmployeeBySupervisor(
             @PathVariable("expertis") String expertis) {
-        log.info("Controller: Fetching employees for supervisor with expertis: {}", expertis);
         List<EmployeeFullInformationDTO> employees = employeeSupervisorService.getAllEmployeeBySupervisor(expertis);
-        log.info("Controller: Found {} employees for supervisor {}.", employees.size(), expertis);
         return ResponseEntity.ok(employees);
+    }
+
+    @GetMapping(path = "/getEmployeeBySupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<EmployeeFullInformationDTO>> getListEmployeeBySupervisor() {
+        List<EmployeeFullInformationDTO> employees = employeeSupervisorService.getAllEmployeeBySupervisor();
+        return ResponseEntity.ok(employees);
+    }
+
+    @GetMapping(path = "/getEmployeeInformation/{expertis}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<EmployeeFullInformationDTO> getEmployeeInformation(@PathVariable("expertis") String expertis) {
+        return ResponseEntity.ok(employeeServices.getEmployeeFullInformation(expertis));
     }
 
     /**
@@ -201,16 +219,14 @@ public class EmployeeController {
     @PostMapping(path = "/setEmployeeToSupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<String>> setEmployeeToSupervisor(
             @RequestBody List<RequestSetEmployeeToSupervisor> setEmployeeToSupervisor) {
-        log.info("Controller: Assigning employees to supervisor.");
         List<String> result = employeeSupervisorService.addEmployeeAccessForSupervisor(setEmployeeToSupervisor);
-        log.info("Controller: Successfully assigned {} employee(s).", result.size());
         return ResponseEntity.ok(result);
     }
 
     /**
      * Removes employee assignments from a supervisor.
      *
-     * @param setEmployeeToSupervisor List of mapping requests for employees to remove from a supervisor.
+     * @param removeSupervisionRequest List of mapping requests for employees to remove from a supervisor.
      * @return ResponseEntity with HTTP status OK if deletion is successful.
      */
     @Operation(summary = "Remove Employees from Supervisor",
@@ -221,10 +237,8 @@ public class EmployeeController {
     })
     @PostMapping(path = "/deleteEmployeeToSupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteEmployeeToSupervisor(
-            @RequestBody List<RequestSetEmployeeToSupervisor> setEmployeeToSupervisor) {
-        log.info("Controller: Deleting employees from supervisor.");
-        employeeSupervisorService.deleteEmployeeAccessForSupervisor(setEmployeeToSupervisor);
-        log.info("Controller: Employee removal completed.");
+            @RequestBody RemoveSupervisionRequest removeSupervisionRequest) {
+        employeeSupervisorService.deleteEmployeeAccessForSupervisor(removeSupervisionRequest);
         return ResponseEntity.ok().build();
     }
 

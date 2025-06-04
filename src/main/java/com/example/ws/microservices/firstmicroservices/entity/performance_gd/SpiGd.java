@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity
-@Table(name = "spi_gd", schema = "performance_dg")
+@Table(name = "spi_gd", schema = "performance_gd")
 public class SpiGd {
 
     @Id

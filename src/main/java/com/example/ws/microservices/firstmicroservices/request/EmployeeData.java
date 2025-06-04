@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.request;
 
-import com.example.ws.microservices.firstmicroservices.entity.AiEmployee;
-import com.example.ws.microservices.firstmicroservices.entity.EmployeeMapping;
+import com.example.ws.microservices.firstmicroservices.entity.vision.AiEmployee;
+import com.example.ws.microservices.firstmicroservices.entity.vision.EmployeeMapping;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;

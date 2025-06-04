@@ -1,13 +1,14 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
 import com.example.ws.microservices.firstmicroservices.dto.RoleDTO;
-import com.example.ws.microservices.firstmicroservices.entity.role.Role;
+import com.example.ws.microservices.firstmicroservices.dto.UserRoleDTO;
+import com.example.ws.microservices.firstmicroservices.entity.vision.role.Role;
 import com.example.ws.microservices.firstmicroservices.repository.RoleRepository;
 import com.example.ws.microservices.firstmicroservices.service.RoleService;
 import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AllArgsConstructor;
-import org.hibernate.validator.internal.util.stereotypes.Lazy;
-import org.springframework.data.redis.core.RedisTemplate;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
@@ -27,11 +29,11 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public RoleDTO getRoleDTOByName(String name) {
-        Optional<RoleDTO> roleDTO = redisCacheService.getFromCache("role:" + name, RoleDTO.class);
+    public UserRoleDTO getRoleDTOByName(String name) {
+        Optional<UserRoleDTO> roleDTO = redisCacheService.getFromCache("role:" + name, UserRoleDTO.class);
         if(roleDTO.isEmpty()){
             Role role = findRoleByName(name);
-            RoleDTO newDto = RoleDTO.builder()
+            UserRoleDTO newDto = UserRoleDTO.builder()
                     .roleId(role.getId())
                     .name(role.getName())
                     .weight(role.getWeight())
@@ -39,12 +41,31 @@ public class RoleServiceImpl implements RoleService {
             redisCacheService.saveToCache("role:" + name, newDto);
             return newDto;
         }
-        throw new RuntimeException("Role not found: " + name);
+        return roleDTO.get();
     }
 
     @Override
-    public List<RoleDTO> getAllRoleByUserId(Long userId) {
+    public List<UserRoleDTO> getAllRoleByUserId(Long userId) {
         return roleRepository.findAllRolesByUserId(userId);
     }
 
+    @Override
+    public List<RoleDTO> getAllRoles() {
+        List<RoleDTO> userRoleDTO = redisCacheService.getFromCache("roles", new TypeReference<List<RoleDTO>>() {})
+                .orElseGet(() -> {
+                    List<RoleDTO> userRoles = roleRepository.findAll()
+                            .stream().map(role -> RoleDTO.builder()
+                                    .id(role.getId())
+                                    .description(role.getDescription())
+                                    .weight(role.getWeight())
+                                    .name(role.getName())
+                                    .build()).toList();
+
+                    redisCacheService.saveToCache("roles", userRoles);
+
+                    return userRoles;
+                });
+        log.info("Found {} roles", userRoleDTO.size());
+        return userRoleDTO;
+    }
 }

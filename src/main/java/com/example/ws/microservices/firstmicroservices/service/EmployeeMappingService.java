@@ -12,4 +12,5 @@ import java.util.Optional;
 public interface EmployeeMappingService {
     CreateEmployeeResponse createEmployees(@Valid List<CreateEmployeeRequest> createEmployeeRequests);
     List<CreateEmployeeRequest> parse(InputStream inputStream);
+    void updateEmployees(CreateEmployeeRequest request);
 }

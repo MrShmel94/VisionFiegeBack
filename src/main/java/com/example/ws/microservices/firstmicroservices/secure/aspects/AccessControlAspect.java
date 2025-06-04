@@ -1,8 +1,9 @@
 package com.example.ws.microservices.firstmicroservices.secure.aspects;
 
-import com.example.ws.microservices.firstmicroservices.dto.RoleDTO;
+import com.example.ws.microservices.firstmicroservices.dto.UserRoleDTO;
 import com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
+import com.example.ws.microservices.firstmicroservices.service.UserService;
 import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class AccessControlAspect {
 
-    private final RedisCacheService redisCacheService;
+    private final UserService userService;
 
     /**
      * Enforces access control before method execution based on the @AccessControl annotation.
@@ -40,31 +41,24 @@ public class AccessControlAspect {
             throw new AccessDeniedException("Invalid authentication.");
         }
 
-        String expertisEmployee =  redisCacheService.getExpertisByUserId(userDetails.getUsername());
+        SupervisorAllInformationDTO userInfo = userService.getSupervisorAllInformation(null, userDetails.getUsername());
 
-        SupervisorAllInformationDTO userInfo = redisCacheService
-                .getFromCache("userDetails:" + expertisEmployee, SupervisorAllInformationDTO.class)
-                .orElseThrow(() -> new AccessDeniedException("User data not found."));
-
-        // Check if the user has full access (e.g., Admin role)
         if (accessControl.fullAccess()) {
             log.info("Full access granted for user: {}", userDetails.getUsername());
             return;
         }
 
-        // Check if the user has sufficient role weight
         int maxWeight = userInfo.getRoles().stream()
-                .mapToInt(RoleDTO::getWeight)
+                .mapToInt(UserRoleDTO::getWeight)
                 .max()
                 .orElse(0);
         if (maxWeight < accessControl.minWeight()) {
             throw new AccessDeniedException("Insufficient role weight. Required: " + accessControl.minWeight());
         }
 
-        // Check allowed roles
         if (accessControl.allowedRoles().length > 0) {
             Set<String> userRoles = userInfo.getRoles().stream()
-                    .map(RoleDTO::getName)
+                    .map(UserRoleDTO::getName)
                     .collect(Collectors.toSet());
 
             Set<String> requiredRoles = new HashSet<>(Arrays.asList(accessControl.allowedRoles()));
@@ -74,7 +68,6 @@ public class AccessControlAspect {
             }
         }
 
-        // Check allowed departments
         if (accessControl.allowedDepartments().length > 0) {
             Set<String> allowedDepartments = new HashSet<>(Arrays.asList(accessControl.allowedDepartments()));
             if (!allowedDepartments.contains(userInfo.getDepartmentName())) {
@@ -82,7 +75,6 @@ public class AccessControlAspect {
             }
         }
 
-        // Check allowed sites
         if (accessControl.allowedSites().length > 0) {
             Set<String> allowedSites = new HashSet<>(Arrays.asList(accessControl.allowedSites()));
             if (!allowedSites.contains(userInfo.getSiteName())) {

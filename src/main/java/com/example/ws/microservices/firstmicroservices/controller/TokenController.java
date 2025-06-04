@@ -1,89 +1,73 @@
 package com.example.ws.microservices.firstmicroservices.controller;
 
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
-import com.example.ws.microservices.firstmicroservices.secure.SecurityConstants;
+import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.service.RefreshTokenService;
-import com.example.ws.microservices.firstmicroservices.service.UserService;
-import com.example.ws.microservices.firstmicroservices.utils.Utils;
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.AllArgsConstructor;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import static java.util.Arrays.stream;
 
 
 @RestController
 @Slf4j
 @RequestMapping("/api/v1/auth")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class TokenController {
 
     private final RefreshTokenService refreshTokenService;
-    private final UserService userService;
-    private final Utils utils;
 
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refreshAccessToken(@CookieValue(value = "RefreshToken",  required = false) String refreshToken, HttpServletRequest request) {
-
-        if (refreshToken == null) {
-            log.warn("No refresh token found in request cookies");
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Refresh token is missing.");
-        }
-
-        try {
-            if (refreshTokenService.validateRefreshToken(refreshToken)) {
-
-                Claims claims = utils.parseToken(refreshToken);
-                String requestIp = request.getRemoteAddr();
-                String tokenIp = claims.get("ip", String.class);
-
-                if (!requestIp.equals(tokenIp)) {
-                    refreshTokenService.deleteTokensForUser(claims.getSubject());
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Your session has been terminated due to IP change. Please log in again.");
-                }
-
-                String userId = refreshTokenService.getSubjectFromToken(refreshToken);
-                String newAccessToken = utils.generateAccessToken(userId, request);
-
-                CustomUserDetails userDetails = (CustomUserDetails) userService.loadUserByUsername(userId);
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-
-                return ResponseEntity.ok()
-                        .header(SecurityConstants.HEADER_STRING, SecurityConstants.TOKEN_PREFIX + newAccessToken)
-                        .build();
-            } else {
-                log.warn("Invalid or expired refresh token.");
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired refresh token.");
-            }
-        } catch (Exception e) {
-            log.error("Error refreshing access token: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred.");
-        }
-    }
+    @Value("${COOKIE_DOMAIN:}")
+    private String cookieDomain;
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@CookieValue("RefreshToken") String refreshToken) {
+    public ResponseEntity<?> logout(HttpServletResponse response) {
         try {
-            if (refreshTokenService.validateRefreshToken(refreshToken)) {
-                refreshTokenService.revokeRefreshToken(refreshToken);
-                return ResponseEntity.ok("Logged out successfully.");
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid or expired refresh token.");
+            CustomUserDetails currentUser = new SecurityUtils().getCurrentUser();
+
+            if (currentUser != null) {
+                String userId = currentUser.getUserId();
+                refreshTokenService.deleteTokensForUser(userId);
             }
+
+                ResponseCookie clearAccess = ResponseCookie.from("AccessToken", "")
+                        .httpOnly(true)
+                        .secure(true)
+                        .path("/")
+                        .domain(cookieDomain)
+                        .sameSite("Strict")
+                        .maxAge(0)
+                        .build();
+
+                ResponseCookie clearRefresh = ResponseCookie.from("RefreshToken", "")
+                        .httpOnly(true)
+                        .secure(true)
+                        .path("/")
+                        .domain(cookieDomain)
+                        .sameSite("Strict")
+                        .maxAge(0)
+                        .build();
+
+                response.addHeader(HttpHeaders.SET_COOKIE, clearAccess.toString());
+                response.addHeader(HttpHeaders.SET_COOKIE, clearRefresh.toString());
+
+                SecurityContextHolder.clearContext();
+
+                return ResponseEntity.ok("Logged out successfully.");
+
         } catch (Exception e) {
-            log.error("Error during logout: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred during logout.");
+            log.error("Error during logout", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("An unexpected error occurred during logout.");
         }
     }
 }

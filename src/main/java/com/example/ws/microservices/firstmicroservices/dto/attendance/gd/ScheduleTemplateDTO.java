@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ import java.util.Map;
 public class ScheduleTemplateDTO {
 
     private Long id;
-    private YearMonth period;
+    private LocalDate period;
     private Map<String, DayScheduleRequest> schedule;
     private String nameScheduleTemplate;
     private String description;

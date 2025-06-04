@@ -9,19 +9,17 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class EmailConfig {
 
-    @Value("${spring.mail.username}")
+    @Value("${mailgun.api-key}")
     private String apiKey;
 
-    @Value("${spring.mail.password}")
-    private String apiSecret;
+    @Value("${mailgun.domain}")
+    private String domain;
+
+    @Value("${mailgun.from}")
+    private String from;
 
     @Bean
-    public MailjetClient mailjetClient() {
-        ClientOptions options = ClientOptions.builder()
-                .apiKey(apiKey)
-                .apiSecretKey(apiSecret)
-                .build();
-
-        return new MailjetClient(options);
+    public MailgunProperties mailgunProperties() {
+        return new MailgunProperties(apiKey, domain, from);
     }
 }

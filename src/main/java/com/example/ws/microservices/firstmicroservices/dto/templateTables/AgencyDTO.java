@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 public class AgencyDTO implements SiteAware{
-    private Short id;
+    private Integer id;
     private String name;
     private String siteName;
 }

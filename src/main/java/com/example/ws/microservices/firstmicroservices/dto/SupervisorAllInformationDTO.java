@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,6 @@ public class SupervisorAllInformationDTO {
 
     private Long id;
     private String expertis;
-    private Short zalosId;
     private String brCode;
     private String firstName;
     private String lastName;
@@ -45,9 +43,8 @@ public class SupervisorAllInformationDTO {
     private LocalDate dateBhpFuture;
     private LocalDate dateAdrNow;
     private LocalDate dateAdrFuture;
-    private String encryptedPassword;
     @Builder.Default
-    private List<RoleDTO> roles = new ArrayList<>();
+    private List<UserRoleDTO> roles = new ArrayList<>();
     @Builder.Default
     private List<String> employeeList = new ArrayList<>();
     @Builder.Default
@@ -57,15 +54,14 @@ public class SupervisorAllInformationDTO {
 
     //FOR JPQL
     public SupervisorAllInformationDTO(
-            Long id, String expertis, Short zalosId, String brCode, String firstName, String lastName, Boolean isWork,
+            Long id, String expertis, String brCode, String firstName, String lastName, Boolean isWork,
             String sex, String siteName, String shiftName, String departmentName, String teamName,
             String positionName, String agencyName, String userId, String email, Boolean isVerified,
             Boolean emailVerificationStatus, Boolean isCanHasAccount, Boolean isSupervisor, LocalDate validToAccount, LocalDate validFromAccount, String note, LocalDate dateStartContract, LocalDate dateFinishContract,
-            LocalDate dateBhpNow, LocalDate dateBhpFuture, LocalDate dateAdrNow, LocalDate dateAdrFuture, String encryptedPassword
+            LocalDate dateBhpNow, LocalDate dateBhpFuture, LocalDate dateAdrNow, LocalDate dateAdrFuture
     ) {
         this.id = id;
         this.expertis = expertis;
-        this.zalosId = zalosId;
         this.brCode = brCode;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -92,7 +88,6 @@ public class SupervisorAllInformationDTO {
         this.dateBhpFuture = dateBhpFuture;
         this.dateAdrNow = dateAdrNow;
         this.dateAdrFuture = dateAdrFuture;
-        this.encryptedPassword = encryptedPassword;
     }
 
 }

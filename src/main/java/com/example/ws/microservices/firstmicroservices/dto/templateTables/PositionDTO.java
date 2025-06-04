@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PositionDTO implements SiteAware{
 
-    private Short id;
+    private Integer id;
     private String name;
     private String siteName;
 

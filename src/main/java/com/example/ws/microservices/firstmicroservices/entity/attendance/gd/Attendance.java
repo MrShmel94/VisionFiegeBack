@@ -1,12 +1,12 @@
 package com.example.ws.microservices.firstmicroservices.entity.attendance.gd;
 
-import com.example.ws.microservices.firstmicroservices.entity.Employee;
-import com.example.ws.microservices.firstmicroservices.entity.ShiftTimeWork;
+import com.example.ws.microservices.firstmicroservices.entity.vision.Employee;
+import com.example.ws.microservices.firstmicroservices.entity.vision.ShiftTimeWork;
+import com.example.ws.microservices.firstmicroservices.entity.vision.simpleTables.Department;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
@@ -15,13 +15,15 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name = "attendance", schema = "attendance_gd")
 public class Attendance {
 
     @NotNull
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ColumnDefault("nextval('attendance_gd.attendance_id_seq')")
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -40,6 +42,10 @@ public class Attendance {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "status_id")
     private AttendanceStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "department_id")
+    private Department department;
 
     @ColumnDefault("0")
     @Column(name = "hours_worked")

@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 public class DepartmentDTO implements SiteAware{
-    private Short id;
+
+    private Integer id;
     private String name;
     private String siteName;
 

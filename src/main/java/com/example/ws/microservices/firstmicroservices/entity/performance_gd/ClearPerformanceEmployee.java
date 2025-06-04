@@ -1,5 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.entity.performance_gd;
 
+import com.example.ws.microservices.firstmicroservices.entity.vision.ShiftTimeWork;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -12,14 +13,14 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @Entity
-@Table(name = "clear_performance_employee", schema = "performance_dg")
-public class ClearPerformanceEmployee {
+@Table(name = "clear_performance_employee", schema = "performance_gd")
+public class ClearPerformanceEmployee implements ClearPerformanceData{
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "clear_perf_seq")
     @SequenceGenerator(name = "clear_perf_seq",
-            sequenceName = "performance_dg.clear_performance_employee_id_seq",
-            allocationSize = 100)
+            sequenceName = "performance_gd.clear_performance_employee_id_seq",
+            allocationSize = 200)
     @Column(name = "id", nullable = false)
     private Long id;
 
@@ -260,7 +261,59 @@ public class ClearPerformanceEmployee {
     @Column(name = "ntt_goods")
     private double nttGoods;
 
+    @ColumnDefault("0")
+    @Column(name = "duration_idle")
+    private double durationIdle;
 
-    private String shiftName;
+    @ColumnDefault("0")
+    @Column(name = "idle_count")
+    private int idleCount;
 
+    @ColumnDefault("0")
+    @Column(name = "ql_relocation")
+    private int qlRelocation;
+
+    @ColumnDefault("0")
+    @Column(name = "time_relocation")
+    private double timeRelocation;
+
+    @ColumnDefault("0")
+    @Column(name = "ql_volume_scan")
+    private int qlVolumeScan;
+
+    @ColumnDefault("0")
+    @Column(name = "time_volume_scan")
+    private double timeVolumeScan;
+
+    @ColumnDefault("0")
+    @Column(name = "ql_return_sort")
+    private int qlReturnSort;
+
+    @ColumnDefault("0")
+    @Column(name = "time_return_sort")
+    private double timeReturnSort;
+
+    @ColumnDefault("0")
+    @Column(name = "ql_stocktaking")
+    private int qlStocktaking;
+
+    @ColumnDefault("0")
+    @Column(name = "time_stocktaking")
+    private double timeStocktaking;
+
+    @ColumnDefault("0")
+    @Column(name = "pick_nos_1")
+    private int pickNos1;
+
+    @ColumnDefault("0")
+    @Column(name = "pick_nos_2")
+    private int pickNos2;
+
+    @ColumnDefault("0")
+    @Column(name = "stow_clarifications")
+    private int stowClarifications;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shift_id", referencedColumnName = "id")
+    private ShiftTimeWork shiftId;
 }

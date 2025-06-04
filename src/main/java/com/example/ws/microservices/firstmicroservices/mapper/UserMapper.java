@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.mapper;
 
 import com.example.ws.microservices.firstmicroservices.dto.UserDto;
-import com.example.ws.microservices.firstmicroservices.entity.UserEntity;
+import com.example.ws.microservices.firstmicroservices.entity.vision.UserEntity;
 import com.example.ws.microservices.firstmicroservices.request.UserDetailsRequestModel;
 import com.example.ws.microservices.firstmicroservices.response.UserRest;
 import org.mapstruct.Mapper;

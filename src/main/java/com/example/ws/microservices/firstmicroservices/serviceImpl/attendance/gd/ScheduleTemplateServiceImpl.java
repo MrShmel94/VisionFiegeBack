@@ -1,6 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.attendance.gd;
 
 import com.example.ws.microservices.firstmicroservices.customError.VerificationException;
+import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.ShiftTimeWorkDTO;
 import com.example.ws.microservices.firstmicroservices.dto.SmallInformationSupervisorDTO;
 import com.example.ws.microservices.firstmicroservices.dto.attendance.gd.AttendanceStatusDTO;
@@ -21,6 +22,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -37,6 +40,11 @@ public class ScheduleTemplateServiceImpl implements ScheduleTemplateService {
 
 
     @Override
+    public List<PreviewEmployeeDTO> getAllEmployeeWithoutScheduleTemplateBeetwenDate(LocalDate startDate, LocalDate endDate) {
+        return scheduleTemplateRepository.getAllEmployeeWithoutScheduleTemplateBeetwenDate(startDate, endDate);
+    }
+
+    @Override
     public ResponseScheduleTemplate getScheduleTemplate() {
         List<AttendanceStatusDTO> attendanceStatus = attendanceStatusService.getAttendanceStatuses();
         List<ShiftTimeWorkDTO> shiftTimeWork = shiftTimeWorkService.getShiftTimeWorkByNameSite("GD");
@@ -48,12 +56,26 @@ public class ScheduleTemplateServiceImpl implements ScheduleTemplateService {
     }
 
     @Override
-    public List<ScheduleTemplateDTO> getAllScheduleTemplate() {
-        return List.of();
+    public List<ScheduleTemplateDTO> getAllScheduleTemplatePerDate(LocalDate date) {
+        List<ScheduleTemplate> getAllTemplates = scheduleTemplateRepository.findAllByDate(date.withDayOfMonth(1));
+        ResponseScheduleTemplate template = getScheduleTemplate();
+        return getAllTemplates.stream().map(obj -> convertEntityToScheduleTemplateDTO(obj, template)).collect(Collectors.toList());
     }
 
     @Override
-    public ScheduleTemplateDTO getScheduleTemplateByName(String name) {
+    public ScheduleTemplate getScheduleTemplateByName(String name) {
+        Optional<ScheduleTemplate> optionalScheduleTemplate = scheduleTemplateRepository
+                .findByNameScheduleTemplate(name);
+
+        if(optionalScheduleTemplate.isEmpty()) {
+            throw new VerificationException("Schedule Template with name " + name + " not found");
+        }
+
+        return optionalScheduleTemplate.get();
+    }
+
+    @Override
+    public ScheduleTemplateDTO getScheduleTemplateDTOByName(String name) {
         Optional<ScheduleTemplate> optionalScheduleTemplate = scheduleTemplateRepository
                 .findByNameScheduleTemplate(name);
 
@@ -62,14 +84,18 @@ public class ScheduleTemplateServiceImpl implements ScheduleTemplateService {
         }
 
         ScheduleTemplate scheduleTemplate = optionalScheduleTemplate.get();
+        ResponseScheduleTemplate template = getScheduleTemplate();
 
+        return convertEntityToScheduleTemplateDTO(scheduleTemplate, template);
+    }
+
+    private ScheduleTemplateDTO convertEntityToScheduleTemplateDTO(ScheduleTemplate scheduleTemplate, ResponseScheduleTemplate template) {
         SmallInformationSupervisorDTO informationAboutUser = userService
                 .getSmallInformationSupervisor(scheduleTemplate.getUserId()).orElse(SmallInformationSupervisorDTO.builder()
                         .firstName("Unknown")
                         .lastName("Unknown")
                         .build());
 
-        ResponseScheduleTemplate template = getScheduleTemplate();
         Map<Integer, ShiftTimeWorkDTO> shiftTimeWorkMap = template.getShiftTimeWork().stream()
                 .collect(Collectors.toMap(ShiftTimeWorkDTO::getShiftId, Function.identity()));
         Map<Integer, AttendanceStatusDTO> attendanceStatusMap = template.getAttendanceStatus().stream()
@@ -78,8 +104,8 @@ public class ScheduleTemplateServiceImpl implements ScheduleTemplateService {
         Map<String, DayScheduleRequest> mapDaySchedule = scheduleTemplate.getSchedule().entrySet().stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey,
-                        entry -> new DayScheduleRequest(shiftTimeWorkMap.get(entry.getValue().getShiftId()).getShiftCode()
-                                ,attendanceStatusMap.get(entry.getValue().getStatusId()).getStatusCode())
+                        entry -> new DayScheduleRequest(attendanceStatusMap.get(entry.getValue().getStatusId()).getStatusCode()
+                        ,shiftTimeWorkMap.get(entry.getValue().getShiftId()).getShiftCode())
                 ));
 
 
@@ -101,7 +127,7 @@ public class ScheduleTemplateServiceImpl implements ScheduleTemplateService {
     @Override
     public void saveScheduleTemplate(ScheduleTemplateRequest scheduleTemplate) {
         ScheduleTemplate scheduleTemplateEntity = new ScheduleTemplate();
-        scheduleTemplateEntity.setDate(scheduleTemplate.getPeriod());
+        scheduleTemplateEntity.setDate(scheduleTemplate.getPeriod().atDay(1));
         scheduleTemplateEntity.setCreatedAt(Instant.now());
         scheduleTemplateEntity.setDescription(scheduleTemplate.getDescription());
         scheduleTemplateEntity.setNameScheduleTemplate(scheduleTemplate.getNameScheduleTemplate());

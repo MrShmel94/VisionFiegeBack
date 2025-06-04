@@ -1,18 +1,15 @@
 package com.example.ws.microservices.firstmicroservices.repository;
 
-import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO;
 import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.entity.EmployeeSupervisor;
-import com.example.ws.microservices.firstmicroservices.entity.EmployeeSupervisorId;
-import jakarta.transaction.Transactional;
+import com.example.ws.microservices.firstmicroservices.entity.vision.EmployeeSupervisor;
+import com.example.ws.microservices.firstmicroservices.entity.vision.EmployeeSupervisorId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 public interface EmployeeSupervisorRepository extends JpaRepository<EmployeeSupervisor, EmployeeSupervisorId> {
@@ -50,14 +47,15 @@ public interface EmployeeSupervisorRepository extends JpaRepository<EmployeeSupe
              e.expertis,
              s.supervisor_id,
              COALESCE(i.valid_from, NOW()) AS valid_from,
-             COALESCE(i.valid_to, '9999-12-31'::DATE) AS valid_to
+             COALESCE(i.valid_to, '9999-12-31'::DATE) AS valid_to,
+             ?::varchar AS user_id
       FROM input_data i
       JOIN vision.employee e ON e.expertis = i.expertis
       CROSS JOIN supervisor s
     ),
     inserted AS (
-      INSERT INTO vision.employee_supervisors (employee_id, supervisor_id, valid_from, valid_to)
-      SELECT employee_id, supervisor_id, valid_from, valid_to
+      INSERT INTO vision.employee_supervisors (employee_id, supervisor_id, valid_from, valid_to, user_id)
+      SELECT employee_id, supervisor_id, valid_from, valid_to, user_id
       FROM rows_to_insert
       ON CONFLICT (employee_id) DO NOTHING
       RETURNING employee_id
@@ -71,7 +69,8 @@ public interface EmployeeSupervisorRepository extends JpaRepository<EmployeeSupe
             String[] expertis,
             LocalDate[] validFrom,
             LocalDate[] validTo,
-            Long supervisorId
+            Long supervisorId,
+            String userId
     );
 
     @Modifying
@@ -105,9 +104,9 @@ public interface EmployeeSupervisorRepository extends JpaRepository<EmployeeSupe
 
     @Query("""
             SELECT new com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO(
-            e.id, e.expertis, e.zalosId, e.brCode, e.firstName, e.lastName, e.sex,
+            e.id, e.expertis, e.brCode, e.firstName, e.lastName, e.sex,
             t.name, s.name, sh.name, c.name, d.name, p.name, e.isSupervisor, e.isCanHasAccount, e.validToAccount, e.validFromAccount, a.name, ai.note, ai.dateStartContract, ai.dateFinishContract,
-            ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte
+            ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(em.firstName, ' ', em.lastName), 'No Supervisor'), COALESCE(em.expertis, 'No Supervisor')
             )FROM Employee e
             JOIN Site s ON e.siteId = s.id
             JOIN Shift sh ON e.shiftId = sh.id
@@ -134,10 +133,11 @@ public interface EmployeeSupervisorRepository extends JpaRepository<EmployeeSupe
 
     @Query("""
            SELECT new com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO(
-           e.expertis, e.firstName, e.lastName, d.name, t.name
+           e.id, e.expertis, e.firstName, e.lastName, d.name, t.name, p.name, s.name
            ) FROM Employee e
            JOIN Department d ON e.departmentId = d.id
            JOIN Team t ON e.teamId = t.id
+           JOIN Position p ON e.positionId = p.id
            JOIN Site s ON e.siteId = s.id
            WHERE e.isWork = true
            AND s.name = :siteName
@@ -147,10 +147,11 @@ public interface EmployeeSupervisorRepository extends JpaRepository<EmployeeSupe
 
     @Query("""
            SELECT new com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO(
-           e.expertis, e.firstName, e.lastName, d.name, t.name
+           e.id, e.expertis, e.firstName, e.lastName, d.name, t.name, p.name, s.name
            ) FROM Employee e
            JOIN Department d ON e.departmentId = d.id
            JOIN Team t ON e.teamId = t.id
+           JOIN Position p ON e.positionId = p.id
            JOIN Site s ON e.siteId = s.id
            WHERE e.isWork = true
            AND s.name = :siteName

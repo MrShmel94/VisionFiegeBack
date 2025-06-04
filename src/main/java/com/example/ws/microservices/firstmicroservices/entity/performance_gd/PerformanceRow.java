@@ -4,6 +4,7 @@ import lombok.*;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -18,9 +19,11 @@ public class PerformanceRow {
     private FinalCluster finalCluster;
     private SpiCluster activityCluster;
 
-    private Instant startActivity;
-    private Instant endActivity;
+    private LocalDateTime startActivity;
+    private LocalDateTime endActivity;
     private double duration;
+    private double durationIdle;
+    private int idleCount;
 
     private int ql;
     private int qlBox;
@@ -28,9 +31,8 @@ public class PerformanceRow {
     private int qlShoes;
     private int qlBoots;
     private int qlOther;
+
     private int stowClarifications;
     private int pickNos1;
     private int pickNos2;
-
-
 }
