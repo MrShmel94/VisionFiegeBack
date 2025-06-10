@@ -7,6 +7,7 @@ public record SelectedEmployeeRequest(
         String expertis,
         String department,
         String team,
-        String position
+        String position,
+        String siteName
 ) {
 }

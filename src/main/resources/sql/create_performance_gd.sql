@@ -597,6 +597,8 @@ CREATE TABLE IF NOT EXISTS performance_gd.uph_process(
     user_id VARCHAR(512) NOT NULL
 );
 
+
+
 CREATE TABLE IF NOT EXISTS performance_gd.color_performance(
     id SERIAL PRIMARY KEY,
     process_id INT REFERENCES performance_gd.uph_process_name(id),
