@@ -38,4 +38,7 @@ public class EmployeeDTO implements Serializable {
     private LocalDate validToAccount;
     private LocalDate validFromAccount;
 
+    private String temporaryAssignmentSiteName;
+    private LocalDate temporaryAssignmentFrom;
+    private LocalDate temporaryAssignmentTo;
 }

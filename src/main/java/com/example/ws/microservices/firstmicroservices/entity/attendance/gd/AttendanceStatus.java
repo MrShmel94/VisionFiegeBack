@@ -11,7 +11,7 @@ import org.hibernate.annotations.ColumnDefault;
 @Getter
 @Setter
 @Entity
-@Table(name = "attendance_status", schema = "attendance_gd")
+@Table(name = "attendance_status", schema = "attendance")
 public class AttendanceStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +27,11 @@ public class AttendanceStatus {
     @NotNull
     @Column(name = "status_name", nullable = false, length = 64)
     private String statusName;
+
+    @Size(max = 64)
+    @NotNull
+    @Column(name = "display_front", nullable = false, length = 64)
+    private String displayFront;
 
     @Size(max = 32)
     @NotNull

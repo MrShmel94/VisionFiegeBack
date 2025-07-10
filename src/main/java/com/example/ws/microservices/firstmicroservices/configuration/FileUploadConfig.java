@@ -7,7 +7,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @Getter
 public class FileUploadConfig {
-
     @Value("${file.upload.max-size}")
     private long maxFileSize;
 

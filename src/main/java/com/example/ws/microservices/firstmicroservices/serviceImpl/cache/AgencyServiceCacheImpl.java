@@ -26,9 +26,6 @@ public class AgencyServiceCacheImpl implements AgencyServiceCache {
     public void preloadToCache(RedisTemplate<String, Object> redisTemplate) {
         List<AgencyDTO> agencies = getAllFromDB();
         redisTemplate.opsForValue().set("agencies", agencies);
-//        for (AgencyDTO agency : agencies) {
-//            redisTemplate.opsForValue().set("agency:" + agency.getId(), agency);
-//        }
     }
 
     @Override

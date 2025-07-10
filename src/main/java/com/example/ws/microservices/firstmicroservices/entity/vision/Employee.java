@@ -72,6 +72,18 @@ public class Employee {
     @Column(name = "agency_id", nullable = false)
     private Integer agencyId;
 
+    @Column(name = "temporary_assignment_site_id")
+    private Integer temporaryAssignmentSiteId;
+
+    @Column(name = "temporary_assignment_from")
+    private LocalDate temporaryAssignmentFrom;
+
+    @Column(name = "temporary_assignment_to")
+    private LocalDate temporaryAssignmentTo;
+
     @Column(name = "user_id", nullable = false)
     private String userId;
+
+    @Version
+    private Long version;
 }

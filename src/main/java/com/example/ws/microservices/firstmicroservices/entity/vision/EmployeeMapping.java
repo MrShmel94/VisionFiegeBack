@@ -77,6 +77,19 @@ public class EmployeeMapping {
     @Column(name = "valid_from", nullable = false)
     private LocalDate validFromAccount;
 
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "temporary_assignment_site_id")
+    private Site temporaryAssignmentSite;
+
+    @Column(name = "temporary_assignment_from")
+    private LocalDate temporaryAssignmentFrom;
+
+    @Column(name = "temporary_assignment_to")
+    private LocalDate temporaryAssignmentTo;
+
     @Column(name = "user_id", nullable = false)
     private String userId;
+
+    @Version
+    private Long version;
 }

@@ -20,5 +20,4 @@ public class SecretKeyProvider {
         byte[] secretKeyBytes = Base64.getDecoder().decode(tokenSecret.getBytes());
         this.secretKey = new SecretKeySpec(secretKeyBytes, SignatureAlgorithm.HS512.getJcaName());
     }
-
 }

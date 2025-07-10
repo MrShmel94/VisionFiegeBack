@@ -23,6 +23,8 @@ public class AttendanceStatusDTO {
     @JsonInclude()
     private String statusCode;
     private String statusName;
+    @JsonInclude()
+    private String displayFront;
     private String description;
     private String color;
 }

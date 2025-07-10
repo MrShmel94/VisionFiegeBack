@@ -30,6 +30,11 @@ public class AttendanceChangeRequest {
     @NotNull
     @NotBlank
     private String shiftCode;
+
+    @NotNull
+    @NotBlank
+    private String siteName;
+
     @NotNull
     @NotBlank
     private String statusCode;

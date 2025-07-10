@@ -111,12 +111,16 @@ CREATE TABLE IF NOT EXISTS vision.employee
     country_id SMALLINT NOT NULL REFERENCES vision.county,
     department_id SMALLINT NOT NULL REFERENCES vision.department,
     position_id SMALLINT NOT NULL REFERENCES vision.position,
+    temporary_assignment_site_id INT REFERENCES vision.site,
+    temporary_assignment_from DATE,
+    temporary_assignment_to DATE,
     is_supervisor BOOLEAN DEFAULT FALSE,
     is_can_has_account BOOLEAN DEFAULT FALSE,
     agency_id SMALLINT NOT NULL REFERENCES vision.agency,
     valid_from TIMESTAMP DEFAULT NOW() NOT NULL,
     valid_to TIMESTAMP DEFAULT (NOW() - INTERVAL '1 second')  NOT NULL,
-    user_id VARCHAR(512) NOT NULL
+    user_id VARCHAR(512) NOT NULL,
+    version BIGINT DEFAULT 0
 );
 
 CREATE INDEX idx_employee_expertis ON vision.employee (expertis);
@@ -156,6 +160,15 @@ CREATE TABLE IF NOT EXISTS vision.ai_employee
     user_id VARCHAR(512) NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS vision.temporary_assignment(
+    id BIGSERIAL PRIMARY KEY,
+    employee_id BIGINT NOT NULL REFERENCES vision.employee(id),
+    original_site_id INT NOT NULL REFERENCES vision.site(id),
+    temporary_assignment_site_id INT NOT NULL REFERENCES vision.site(id),
+    temporary_assignment_from DATE NOT NULL,
+    temporary_assignment_to DATE NOT NULL ,
+    user_id VARCHAR(512) NOT NULL
+);
 
 CREATE TABLE IF NOT EXISTS vision.phone_email_type_supervisor (
     id SERIAL PRIMARY KEY,
@@ -241,6 +254,7 @@ CREATE TABLE IF NOT EXISTS vision.employee_history
     agency_id SMALLINT NOT NULL,
     valid_from TIMESTAMP NOT NULL,
     valid_to TIMESTAMP NOT NULL,
+    version BIGINT DEFAULT 0,
     user_id VARCHAR(512) NOT NULL ,
     operation VARCHAR(10) NOT NULL,
     changed_at TIMESTAMP DEFAULT NOW() NOT NULL
@@ -255,12 +269,12 @@ BEGIN
         INSERT INTO vision.employee_history (
             employee_id, expertis, br_code, first_name, last_name,
             sex, is_work, team_id, site_id, shift_id, country_id, department_id, position_id,
-            is_supervisor, agency_id, valid_from, valid_to, user_id,
+            is_supervisor, agency_id, valid_from, valid_to, version, user_id,
             operation, changed_at
         ) VALUES (
                      NEW.id, NEW.expertis,  NEW.br_code, NEW.first_name, NEW.last_name,
                      NEW.sex, NEW.is_work, NEW.team_id, NEW.site_id, NEW.shift_id, NEW.country_id, NEW.department_id, NEW.position_id,
-                     NEW.is_supervisor, NEW.agency_id, NEW.valid_from, NEW.valid_to, NEW.user_id,
+                     NEW.is_supervisor, NEW.agency_id, NEW.valid_from, NEW.valid_to, NEW.version, NEW.user_id,
                      'INSERT',
                      NOW()
                  );
@@ -270,12 +284,12 @@ BEGIN
         INSERT INTO vision.employee_history (
             employee_id, expertis, br_code, first_name, last_name,
             sex, is_work, team_id, site_id, shift_id, country_id, department_id, position_id,
-            is_supervisor, agency_id, valid_from, valid_to, user_id,
+            is_supervisor, agency_id, valid_from, valid_to, version, user_id,
             operation, changed_at
         ) VALUES (
                      NEW.id, NEW.expertis,  NEW.br_code, NEW.first_name, NEW.last_name,
                      NEW.sex, NEW.is_work, NEW.team_id, NEW.site_id, NEW.shift_id, NEW.country_id, NEW.department_id, NEW.position_id,
-                     NEW.is_supervisor, NEW.agency_id, NEW.valid_from, NEW.valid_to, NEW.user_id,
+                     NEW.is_supervisor, NEW.agency_id, NEW.valid_from, NEW.valid_to, NEW.version, NEW.user_id,
                      'UPDATE',
                      NOW()
                  );

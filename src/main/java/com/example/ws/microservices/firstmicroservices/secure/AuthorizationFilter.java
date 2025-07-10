@@ -279,20 +279,6 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
     }
 
 
-//        if (uri.startsWith("/attendance")) {
-//            chain.doFilter(request, response);
-//            return;
-//        }
-//
-//        if (uri.equals(SIGN_UP_URL) ||
-//                uri.equals("/swagger-ui/index.html") ||
-//                uri.contains("/api/v1/users/verify-email/")
-//                || uri.startsWith("/actuator")) {
-//            chain.doFilter(request, response);
-//            return;
-//        }
-
-
     /**
      * Resolves or creates a rate-limiting bucket for a given key (e.g., user IP or user ID).
      * <p>

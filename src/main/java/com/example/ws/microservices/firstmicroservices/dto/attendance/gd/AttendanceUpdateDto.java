@@ -10,6 +10,7 @@ public interface AttendanceUpdateDto {
     String getShiftCode();
     String getStatusCode();
     String getDepartmentName();
+    String getSiteName();
     Double getHouseWorked();
     String getComment();
     Instant getCreatedAt();

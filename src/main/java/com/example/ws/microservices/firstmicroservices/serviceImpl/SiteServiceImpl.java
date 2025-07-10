@@ -1,6 +1,8 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
 import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.dto.templateTables.DepartmentDTO;
+import com.example.ws.microservices.firstmicroservices.dto.templateTables.SiteDTO;
 import com.example.ws.microservices.firstmicroservices.entity.vision.EmployeeMapping;
 import com.example.ws.microservices.firstmicroservices.entity.vision.simpleTables.*;
 import com.example.ws.microservices.firstmicroservices.repository.SiteRepository;
@@ -8,9 +10,12 @@ import com.example.ws.microservices.firstmicroservices.request.SiteRequestModel;
 import com.example.ws.microservices.firstmicroservices.secure.aspects.AccessControl;
 import com.example.ws.microservices.firstmicroservices.secure.aspects.MaskField;
 import com.example.ws.microservices.firstmicroservices.service.SiteService;
+import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
+import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,13 +25,15 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Transactional
 public class SiteServiceImpl implements SiteService {
 
+    private final RedisCacheService redisCacheService;
+    private final SiteRepository siteRepository;
+
     @PersistenceContext
-    private EntityManager entityManager;
-    private SiteRepository siteRepository;
+    private final EntityManager entityManager;
 
     /**
      * Retrieves a list of EmployeeDTO objects based on dynamic filters provided in the SiteRequestModel.
@@ -110,5 +117,20 @@ public class SiteServiceImpl implements SiteService {
     @Override
     public Optional<Site> findSiteByName(String name) {
         return siteRepository.getSiteByName(name);
+    }
+
+    @Override
+    public List<SiteDTO> getSites() {
+        return redisCacheService.getFromCache("sites", new TypeReference<List<SiteDTO>>() {}).orElseGet(() -> {
+            List<SiteDTO> allDto = siteRepository.findAll().stream().map(entity -> {
+                return SiteDTO.builder()
+                        .id(entity.getId())
+                        .name(entity.getName())
+                        .build();
+            }).toList();
+            redisCacheService.saveToCache("sites", allDto);
+
+            return allDto;
+        });
     }
 }

@@ -48,4 +48,11 @@ public class EmployeeFullInformationDTO {
     private Double fte;
     private String supervisorName;
     private String supervisorExpertis;
+
+    @JsonInclude()
+    private String temporaryAssignmentSiteName;
+    @JsonInclude()
+    private LocalDate temporaryAssignmentFrom;
+    @JsonInclude()
+    private LocalDate temporaryAssignmentTo;
 }

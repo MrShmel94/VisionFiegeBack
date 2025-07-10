@@ -21,9 +21,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     @Query("SELECT new com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO("
             + "e.id, e.expertis, e.brCode, "
             + "e.firstName, e.lastName, e.isWork, e.sex, "
-            + "s.name, sh.name, d.name, t.name, p.name, a.name, e.isCanHasAccount, e.isSupervisor, e.validToAccount, e.validFromAccount) "
+            + "s.name, sh.name, d.name, t.name, p.name, a.name, e.isCanHasAccount, e.isSupervisor, e.validToAccount, e.validFromAccount, st.name, e.temporaryAssignmentFrom, e.temporaryAssignmentTo) "
             + "FROM Employee e "
             + "JOIN Site s ON e.siteId = s.id "
+            + "JOIN Site st ON e.temporaryAssignmentSiteId = st.id "
             + "JOIN Shift sh ON e.shiftId = sh.id "
             + "JOIN Department d ON e.departmentId = d.id "
             + "JOIN Team t ON e.teamId = t.id "
@@ -36,9 +37,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             SELECT new com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO(
             e.id, e.expertis, e.brCode, e.firstName, e.lastName, e.sex,
             t.name, s.name, sh.name, c.name, d.name, p.name, e.isSupervisor, e.isCanHasAccount, e.validToAccount, e.validFromAccount, a.name, ai.note, ai.dateStartContract, ai.dateFinishContract,
-            ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(supervisor.firstName, ' ', supervisor.lastName), 'No Supervisor'), COALESCE(supervisor.expertis, 'No Supervisor')
+            ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(supervisor.firstName, ' ', supervisor.lastName), 'No Supervisor'), COALESCE(supervisor.expertis, 'No Supervisor'), st.name, e.temporaryAssignmentFrom, e.temporaryAssignmentTo
             )FROM Employee e
             JOIN Site s ON e.siteId = s.id
+            JOIN Site st ON e.temporaryAssignmentSiteId = st.id
             JOIN Shift sh ON e.shiftId = sh.id
             JOIN Department d ON e.departmentId = d.id
             JOIN Team t ON e.teamId = t.id
@@ -56,9 +58,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             SELECT new com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO(
             e.id, e.expertis, e.brCode, e.firstName, e.lastName, e.sex,
             t.name, s.name, sh.name, c.name, d.name, p.name, e.isSupervisor, e.isCanHasAccount, e.validToAccount, e.validFromAccount, a.name, ai.note, ai.dateStartContract, ai.dateFinishContract,
-            ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(supervisor.firstName, ' ', supervisor.lastName), 'No Supervisor'), COALESCE(supervisor.expertis, 'No Supervisor')
+            ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(supervisor.firstName, ' ', supervisor.lastName), 'No Supervisor'), COALESCE(supervisor.expertis, 'No Supervisor'), st.name, e.temporaryAssignmentFrom, e.temporaryAssignmentTo
             )FROM Employee e
             JOIN Site s ON e.siteId = s.id
+            JOIN Site st ON e.temporaryAssignmentSiteId = st.id
             JOIN Shift sh ON e.shiftId = sh.id
             JOIN Department d ON e.departmentId = d.id
             JOIN Team t ON e.teamId = t.id
@@ -76,9 +79,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             SELECT new com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO(
             e.id, e.expertis, e.brCode, e.firstName, e.lastName, e.sex,
             t.name, s.name, sh.name, c.name, d.name, p.name, e.isSupervisor, e.isCanHasAccount, e.validToAccount, e.validFromAccount, a.name, ai.note, ai.dateStartContract, ai.dateFinishContract,
-            ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(supervisor.firstName, ' ', supervisor.lastName), 'No Supervisor'), COALESCE(supervisor.expertis, 'No Supervisor')
+            ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(supervisor.firstName, ' ', supervisor.lastName), 'No Supervisor'), COALESCE(supervisor.expertis, 'No Supervisor'), st.name, e.temporaryAssignmentFrom, e.temporaryAssignmentTo
             )FROM Employee e
             JOIN Site s ON e.siteId = s.id
+            JOIN Site st ON e.temporaryAssignmentSiteId = st.id
             JOIN Shift sh ON e.shiftId = sh.id
             JOIN Department d ON e.departmentId = d.id
             JOIN Team t ON e.teamId = t.id
@@ -114,9 +118,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     SELECT new com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO(
             e.id, e.expertis, e.brCode, e.firstName, e.lastName, e.sex,
             t.name, s.name, sh.name, c.name, d.name, p.name, e.isSupervisor, e.isCanHasAccount, e.validToAccount, e.validFromAccount, a.name, ai.note, ai.dateStartContract, ai.dateFinishContract,
-            ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(supervisor.firstName, ' ', supervisor.lastName), 'No Supervisor'), COALESCE(supervisor.expertis, 'No Supervisor')
+            ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(supervisor.firstName, ' ', supervisor.lastName), 'No Supervisor'), COALESCE(supervisor.expertis, 'No Supervisor'), st.name, e.temporaryAssignmentFrom, e.temporaryAssignmentTo
             )FROM Employee e
             JOIN Site s ON e.siteId = s.id
+            JOIN Site st ON e.temporaryAssignmentSiteId = st.id
             JOIN Shift sh ON e.shiftId = sh.id
             JOIN Department d ON e.departmentId = d.id
             JOIN Team t ON e.teamId = t.id
@@ -136,9 +141,10 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     SELECT new com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO(
             e.id, e.expertis, e.brCode, e.firstName, e.lastName, e.sex,
             t.name, s.name, sh.name, c.name, d.name, p.name, e.isSupervisor, e.isCanHasAccount, e.validToAccount, e.validFromAccount, a.name, ai.note, ai.dateStartContract, ai.dateFinishContract,
-            ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(supervisor.firstName, ' ', supervisor.lastName), 'No Supervisor'), COALESCE(supervisor.expertis, 'No Supervisor')
+            ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(supervisor.firstName, ' ', supervisor.lastName), 'No Supervisor'), COALESCE(supervisor.expertis, 'No Supervisor'), st.name, e.temporaryAssignmentFrom, e.temporaryAssignmentTo
             )FROM Employee e
             JOIN Site s ON e.siteId = s.id
+            JOIN Site st ON e.temporaryAssignmentSiteId = st.id
             JOIN Shift sh ON e.shiftId = sh.id
             JOIN Department d ON e.departmentId = d.id
             JOIN Team t ON e.teamId = t.id

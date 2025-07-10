@@ -43,6 +43,7 @@ public class SupervisorAllInformationDTO {
     private LocalDate dateBhpFuture;
     private LocalDate dateAdrNow;
     private LocalDate dateAdrFuture;
+
     @Builder.Default
     private List<UserRoleDTO> roles = new ArrayList<>();
     @Builder.Default

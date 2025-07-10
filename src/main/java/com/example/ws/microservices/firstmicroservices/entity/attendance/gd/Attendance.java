@@ -3,6 +3,7 @@ package com.example.ws.microservices.firstmicroservices.entity.attendance.gd;
 import com.example.ws.microservices.firstmicroservices.entity.vision.Employee;
 import com.example.ws.microservices.firstmicroservices.entity.vision.ShiftTimeWork;
 import com.example.ws.microservices.firstmicroservices.entity.vision.simpleTables.Department;
+import com.example.ws.microservices.firstmicroservices.entity.vision.simpleTables.Site;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -18,7 +19,7 @@ import java.time.LocalDate;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "attendance", schema = "attendance_gd")
+@Table(name = "attendance", schema = "attendance")
 public class Attendance {
 
     @NotNull
@@ -46,6 +47,10 @@ public class Attendance {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id")
     private Department department;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "site_id")
+    private Site site;
 
     @ColumnDefault("0")
     @Column(name = "hours_worked")

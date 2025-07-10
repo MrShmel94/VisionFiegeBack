@@ -19,6 +19,7 @@ public class AttendanceEmployeeDTO {
     private String shiftName;
     private String positionName;
     private String departmentName;
+    private String siteName;
     private String supervisor;
 
 }

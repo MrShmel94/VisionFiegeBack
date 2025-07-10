@@ -37,5 +37,4 @@ public class CompressionUtils {
             throw new RuntimeException("Failed to decompress string", e);
         }
     }
-
 }

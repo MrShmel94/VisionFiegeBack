@@ -17,6 +17,7 @@ public class AttendanceDTO {
     private String shiftCode;
     private String statusCode;
     private String departmentName;
+    private String siteName;
     private Double houseWorked;
     private String comment;
     private Instant createdAt;

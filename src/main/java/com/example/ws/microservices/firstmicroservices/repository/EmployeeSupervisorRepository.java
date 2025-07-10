@@ -106,9 +106,10 @@ public interface EmployeeSupervisorRepository extends JpaRepository<EmployeeSupe
             SELECT new com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO(
             e.id, e.expertis, e.brCode, e.firstName, e.lastName, e.sex,
             t.name, s.name, sh.name, c.name, d.name, p.name, e.isSupervisor, e.isCanHasAccount, e.validToAccount, e.validFromAccount, a.name, ai.note, ai.dateStartContract, ai.dateFinishContract,
-            ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(em.firstName, ' ', em.lastName), 'No Supervisor'), COALESCE(em.expertis, 'No Supervisor')
+            ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(em.firstName, ' ', em.lastName), 'No Supervisor'), COALESCE(em.expertis, 'No Supervisor'), st.name, e.temporaryAssignmentFrom, e.temporaryAssignmentTo
             )FROM Employee e
             JOIN Site s ON e.siteId = s.id
+            JOIN Site st ON e.temporaryAssignmentSiteId = st.id
             JOIN Shift sh ON e.shiftId = sh.id
             JOIN Department d ON e.departmentId = d.id
             JOIN Team t ON e.teamId = t.id

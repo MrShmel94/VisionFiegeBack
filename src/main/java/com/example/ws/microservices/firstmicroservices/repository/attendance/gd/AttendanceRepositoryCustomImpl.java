@@ -21,10 +21,10 @@ public class AttendanceRepositoryCustomImpl implements AttendanceRepositoryCusto
 
     @Override
     public void bulkUpsert(List<Attendance> attendances) {
-        String sql = "INSERT INTO attendance_gd.attendance " +
-                "(employee_id, date, shift_id, status_id, department_id, hours_worked, comment, user_id, created_at) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) " +
-                "ON CONFLICT (employee_id, date) " +
+        String sql = "INSERT INTO attendance.attendance " +
+                "(employee_id, date, shift_id, site_id, status_id, department_id, hours_worked, comment, user_id, created_at) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?) " +
+                "ON CONFLICT (employee_id, date, site_id) " +
                 "DO NOTHING " ;
 
         batchUpdate(attendances, sql);
@@ -35,13 +35,13 @@ public class AttendanceRepositoryCustomImpl implements AttendanceRepositoryCusto
         jdbcTemplate.execute((ConnectionCallback<Void>) connection -> {
 
             String currentSchema = connection.getSchema();
-            String desiredSchema = "attendance_gd";
+            String desiredSchema = "attendance";
 
             if (!desiredSchema.equalsIgnoreCase(currentSchema)) {
                 connection.setSchema(desiredSchema);
             }
 
-            try (CallableStatement cs = connection.prepareCall("{ call attendance_gd.create_monthly_partition(?) }")) {
+            try (CallableStatement cs = connection.prepareCall("{ call attendance.create_monthly_partition(?) }")) {
                 cs.setDate(1, Date.valueOf(targetDate));
                 cs.execute();
             }
@@ -52,14 +52,15 @@ public class AttendanceRepositoryCustomImpl implements AttendanceRepositoryCusto
     @Override
     public void bulkUpdate(List<Attendance> attendances) {
         String sql = """
-                INSERT INTO attendance_gd.attendance
-                (employee_id, date, shift_id, status_id, department_id, hours_worked, comment, user_id, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT (employee_id, date)
+                INSERT INTO attendance.attendance
+                (employee_id, date, shift_id, site_id, status_id, department_id, hours_worked, comment, user_id, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT (employee_id, date, site_id)
                 DO UPDATE SET
                     shift_id = EXCLUDED.shift_id,
                     status_id = EXCLUDED.status_id,
                     department_id = EXCLUDED.department_id,
+                    site_id = EXCLUDED.site_id,
                     hours_worked = EXCLUDED.hours_worked,
                     comment = EXCLUDED.comment,
                     user_id = EXCLUDED.user_id,
@@ -77,12 +78,13 @@ public class AttendanceRepositoryCustomImpl implements AttendanceRepositoryCusto
                 ps.setLong(1, a.getEmployee().getId());
                 ps.setDate(2, java.sql.Date.valueOf(a.getDate()));
                 ps.setInt(3, a.getShift().getId());
-                ps.setInt(4, a.getStatus().getId());
-                ps.setInt(5, a.getDepartment().getId());
-                ps.setDouble(6, a.getHoursWorked() != null ? a.getHoursWorked() : 0);
-                ps.setString(7, a.getComment());
-                ps.setString(8, a.getUserId());
-                ps.setTimestamp(9, Timestamp.from(a.getCreatedAt() != null ? a.getCreatedAt() : Instant.now()));
+                ps.setInt(4, a.getSite().getId());
+                ps.setInt(5, a.getStatus().getId());
+                ps.setInt(6, a.getDepartment().getId());
+                ps.setDouble(7, a.getHoursWorked() != null ? a.getHoursWorked() : 0);
+                ps.setString(8, a.getComment());
+                ps.setString(9, a.getUserId());
+                ps.setTimestamp(10, Timestamp.from(a.getCreatedAt() != null ? a.getCreatedAt() : Instant.now()));
             }
             @Override
             public int getBatchSize() {

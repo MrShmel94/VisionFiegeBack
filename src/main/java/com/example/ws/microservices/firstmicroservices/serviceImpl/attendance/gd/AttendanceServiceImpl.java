@@ -5,6 +5,7 @@ import com.example.ws.microservices.firstmicroservices.dto.attendance.gd.Attenda
 import com.example.ws.microservices.firstmicroservices.dto.attendance.gd.AttendanceEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.attendance.gd.AttendanceUpdateDto;
 import com.example.ws.microservices.firstmicroservices.dto.templateTables.DepartmentDTO;
+import com.example.ws.microservices.firstmicroservices.dto.templateTables.SiteDTO;
 import com.example.ws.microservices.firstmicroservices.entity.vision.Employee;
 import com.example.ws.microservices.firstmicroservices.entity.vision.ShiftTimeWork;
 import com.example.ws.microservices.firstmicroservices.entity.attendance.DaySchedule;
@@ -12,6 +13,7 @@ import com.example.ws.microservices.firstmicroservices.entity.attendance.gd.Atte
 import com.example.ws.microservices.firstmicroservices.entity.attendance.gd.AttendanceStatus;
 import com.example.ws.microservices.firstmicroservices.entity.attendance.gd.ScheduleTemplate;
 import com.example.ws.microservices.firstmicroservices.entity.vision.simpleTables.Department;
+import com.example.ws.microservices.firstmicroservices.entity.vision.simpleTables.Site;
 import com.example.ws.microservices.firstmicroservices.repository.attendance.gd.AttendanceRepository;
 import com.example.ws.microservices.firstmicroservices.request.attendance.gd.AttendanceChangeRequest;
 import com.example.ws.microservices.firstmicroservices.response.attendance.gd.EmployeeAttendanceDTO;
@@ -19,6 +21,7 @@ import com.example.ws.microservices.firstmicroservices.response.attendance.gd.Re
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.service.EmployeeService;
+import com.example.ws.microservices.firstmicroservices.service.SiteService;
 import com.example.ws.microservices.firstmicroservices.service.attendance.gd.AttendanceService;
 import com.example.ws.microservices.firstmicroservices.service.attendance.gd.ScheduleTemplateService;
 import com.example.ws.microservices.firstmicroservices.service.vision.DepartmentService;
@@ -52,6 +55,7 @@ public class AttendanceServiceImpl implements AttendanceService {
     private final SimpMessagingTemplate messagingTemplate;
     private final ObjectMapper objectMapper;
     private final DepartmentService departmentService;
+    private final SiteService siteService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -61,35 +65,44 @@ public class AttendanceServiceImpl implements AttendanceService {
     public void copyScheduleTemplateToEmployee(String scheduleTemplateName, List<String> employeeExpertis) {
         ScheduleTemplate scheduleTemplate = scheduleTemplateService.getScheduleTemplateByName(scheduleTemplateName);
         CustomUserDetails currentUser = new SecurityUtils().getCurrentUser();
+        EmployeeFullInformationDTO fullInformationCurrentUser = employeeService.getEmployeeFullInformation(currentUser.getExpertis());
+
         List<EmployeeFullInformationDTO> idEmployee = employeeService.getEmployeeFullDTO(employeeExpertis).values().stream().toList();
         List<Attendance> attendances = new ArrayList<>();
         Map<String, Integer> departments = departmentService.getDepartmentsBySupervisorSite().stream().collect(Collectors.toMap(
                 DepartmentDTO::getName, DepartmentDTO::getId
         ));
 
+        Map<String, Integer> sites = siteService.getSites().stream().collect(Collectors.toMap(
+                SiteDTO::getName, SiteDTO::getId
+        ));
+
         ResponseScheduleTemplate template = scheduleTemplateService.getScheduleTemplate();
         Integer statusX = template.getAttendanceStatus().stream().filter(el -> el.getStatusCode().equalsIgnoreCase("x")).findFirst().orElseThrow().getId();
         Integer shiftDayOff = template.getShiftTimeWork().stream().filter(el -> el.getShiftCode().equalsIgnoreCase("w")).findFirst().orElseThrow().getShiftId();
 
-        for(Map.Entry<String, DaySchedule> entry : scheduleTemplate.getSchedule().entrySet()){
+        for (Map.Entry<String, DaySchedule> entry : scheduleTemplate.getSchedule().entrySet()) {
             LocalDate createDate = scheduleTemplate.getDate().withDayOfMonth(Integer.parseInt(entry.getKey()));
 
             idEmployee.forEach(eachEmployee -> {
-                boolean bool = checkDateContractInRange(createDate, eachEmployee.getDateStartContract(), eachEmployee.getDateFinishContract());
+                if (fullInformationCurrentUser.getSiteName().equals(eachEmployee.getSiteName()) || fullInformationCurrentUser.getSiteName().equals(eachEmployee.getTemporaryAssignmentSiteName())) {
+                    boolean bool = checkDateContractInRange(createDate, eachEmployee.getDateStartContract(), eachEmployee.getDateFinishContract());
 
-                attendances.add(Attendance.builder()
-                                .employee(entityManager.getReference(Employee.class, eachEmployee.getId()))
-                                .date(createDate)
-                                .shift(entityManager.getReference(ShiftTimeWork.class, bool ? entry.getValue().getShiftId() : shiftDayOff))
-                                .status(entityManager.getReference(AttendanceStatus.class, bool ? entry.getValue().getStatusId() : statusX))
-                                .department(entityManager.getReference(Department.class, departments.get(eachEmployee.getDepartmentName())))
-                                .userId(currentUser.getUserId())
-                                .comment("")
-                                .build());
+                    attendances.add(Attendance.builder()
+                            .employee(entityManager.getReference(Employee.class, eachEmployee.getId()))
+                            .date(createDate)
+                            .shift(entityManager.getReference(ShiftTimeWork.class, bool ? entry.getValue().getShiftId() : shiftDayOff))
+                            .status(entityManager.getReference(AttendanceStatus.class, bool ? entry.getValue().getStatusId() : statusX))
+                            .department(entityManager.getReference(Department.class, departments.get(eachEmployee.getDepartmentName())))
+                            .site(entityManager.getReference(Site.class, sites.get(fullInformationCurrentUser.getSiteName())))
+                            .userId(currentUser.getUserId())
+                            .comment("")
+                            .build());
+                }
             });
         }
 
-        try{
+        try {
 
             attendances.stream()
                     .map(a -> a.getDate().withDayOfMonth(1))
@@ -97,7 +110,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                     .forEach(attendanceRepository::createPartitionIfNotExists);
 
             attendanceRepository.bulkUpsert(attendances);
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e);
         }
     }
@@ -111,10 +124,10 @@ public class AttendanceServiceImpl implements AttendanceService {
 
         List<String> allExpertis = new ArrayList<>();
 
-        if(employeeExpertis == null){
+        if (employeeExpertis == null) {
             allExpertis = employeeService.getAllExpertis();
 
-            if(allExpertis == null){
+            if (allExpertis == null) {
                 return Collections.emptyList();
             }
         }
@@ -125,6 +138,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                     .shiftName(obj.getShiftName())
                     .teamName(obj.getTeamName())
                     .positionName(obj.getPositionName())
+                    .siteName(obj.getSiteName())
                     .firstName(obj.getFirstName())
                     .lastName(obj.getLastName())
                     .departmentName(obj.getDepartmentName())
@@ -143,7 +157,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         for (AttendanceEmployeeDTO employee : allEmployees) {
             List<AttendanceDTO> attendances = attendanceGroupedByEmployeeId.getOrDefault(employee.getId(), Collections.emptyList());
 
-            if(!attendances.isEmpty()){
+            if (!attendances.isEmpty()) {
                 listEmployeeAttendance.add(EmployeeAttendanceDTO.builder()
                         .attendance(attendances)
                         .employee(employee)
@@ -198,6 +212,8 @@ public class AttendanceServiceImpl implements AttendanceService {
                 attendance.getEmployee().getId(),
                 attendance.getDate(),
                 attendance.getShift().getId().longValue(),
+                attendance.getSite().getId().longValue(),
+                attendance.getDepartment().getId().longValue(),
                 attendance.getStatus().getId().longValue(),
                 attendance.getHoursWorked(),
                 attendance.getComment(),

@@ -18,7 +18,7 @@ import java.util.Map;
 @Getter
 @Setter
 @Entity
-@Table(name = "schedule_template", schema = "attendance_gd")
+@Table(name = "schedule_template", schema = "attendance")
 public class ScheduleTemplate {
 
     @Id
@@ -47,6 +47,10 @@ public class ScheduleTemplate {
 
     @Column(name = "description", length = Integer.MAX_VALUE)
     private String description;
+
+    @NotNull
+    @Column(name = "site_id", nullable = false)
+    private String siteId;
 
     @ColumnDefault("now()")
     @Column(name = "created_at")
