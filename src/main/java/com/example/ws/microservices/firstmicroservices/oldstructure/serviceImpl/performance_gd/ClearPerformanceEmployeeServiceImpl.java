@@ -5,7 +5,7 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.entity.perfo
 import com.example.ws.microservices.firstmicroservices.oldstructure.mapper.ClearPerformanceMapper;
 import com.example.ws.microservices.firstmicroservices.oldstructure.repository.performance_gd.ClearPerformanceEmployeeRepository;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.performance_gd.ClearPerformanceEmployeeService;
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class ClearPerformanceEmployeeServiceImpl implements ClearPerformanceEmployeeService {
 
     private final ClearPerformanceEmployeeRepository clearPerformanceEmployeeRepository;
-    private final RedisCacheService redisCacheService;
+    private final RedisService redisService;
 
     @Override
     public void saveAllPerformanceEmployee(List<ClearPerformanceEmployee> clearPerformanceEmployees) {
@@ -47,7 +47,7 @@ public class ClearPerformanceEmployeeServiceImpl implements ClearPerformanceEmpl
 
         for (LocalDate date : allDates) {
             String redisKey = String.format("clearPerformance:%s", date);
-            Map<String, ClearPerformanceGDDto> cached = redisCacheService.getAllFromHash(
+            Map<String, ClearPerformanceGDDto> cached = redisService.getAllFromHash(
                     redisKey, new TypeReference<ClearPerformanceGDDto>() {}
             );
 
@@ -72,7 +72,7 @@ public class ClearPerformanceEmployeeServiceImpl implements ClearPerformanceEmpl
                 String redisKey = String.format("clearPerformance:%s", entry.getKey());
                 Map<String, ClearPerformanceGDDto> groupedByExpertis = entry.getValue().stream()
                         .collect(Collectors.toMap(ClearPerformanceGDDto::getExpertis, Function.identity()));
-                redisCacheService.saveAllMapping(redisKey, groupedByExpertis);
+                redisService.saveAllMapping(redisKey, groupedByExpertis);
                 mergeResult(result, groupedByExpertis);
             }
         }

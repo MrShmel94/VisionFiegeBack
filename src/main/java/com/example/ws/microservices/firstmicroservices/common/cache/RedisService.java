@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.common.cache.redice;
+package com.example.ws.microservices.firstmicroservices.common.cache;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,10 +17,10 @@ import java.util.stream.IntStream;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class RedisCacheService {
+public class RedisService {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private List<CachingService<?>> cachingServices;
+    private List<RedisPreLoader<?>> redisPreLoaders;
     private final ObjectMapper objectMapper;
 
     public void updateSupervisorAccess(String supervisorExpertis, List<String> employeeExpertis) {
@@ -186,7 +186,7 @@ public class RedisCacheService {
         if (keys == null || keys.isEmpty()) {
             log.info("No keys found for pattern: {}. Attempting to reload cache.", keyPattern);
 
-            cachingServices.stream()
+            redisPreLoaders.stream()
                     .filter(service -> service.supportsType(type))
                     .findFirst()
                     .ifPresentOrElse(

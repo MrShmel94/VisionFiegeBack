@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.domain.usermanagement.role;
 
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleDTO;
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ import java.util.Optional;
 public class RoleServiceImpl implements RoleService {
 
     private final RoleRepository roleRepository;
-    private final RedisCacheService redisCacheService;
+    private final RedisService redisService;
 
     @Override
     public Role findRoleByName(String name) {
@@ -26,7 +26,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public UserRoleDTO getRoleDTOByName(String name) {
-        Optional<UserRoleDTO> roleDTO = redisCacheService.getFromCache("role:" + name, UserRoleDTO.class);
+        Optional<UserRoleDTO> roleDTO = redisService.getFromCache("role:" + name, UserRoleDTO.class);
         if(roleDTO.isEmpty()){
             Role role = findRoleByName(name);
             UserRoleDTO newDto = UserRoleDTO.builder()
@@ -34,7 +34,7 @@ public class RoleServiceImpl implements RoleService {
                     .name(role.getName())
                     .weight(role.getWeight())
                     .build();
-            redisCacheService.saveToCache("role:" + name, newDto);
+            redisService.saveToCache("role:" + name, newDto);
             return newDto;
         }
         return roleDTO.get();
@@ -47,7 +47,7 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public List<RoleDTO> getAllRoles() {
-        List<RoleDTO> userRoleDTO = redisCacheService.getFromCache("roles", new TypeReference<List<RoleDTO>>() {})
+        List<RoleDTO> userRoleDTO = redisService.getFromCache("roles", new TypeReference<List<RoleDTO>>() {})
                 .orElseGet(() -> {
                     List<RoleDTO> userRoles = roleRepository.findAll()
                             .stream().map(role -> RoleDTO.builder()
@@ -57,7 +57,7 @@ public class RoleServiceImpl implements RoleService {
                                     .name(role.getName())
                                     .build()).toList();
 
-                    redisCacheService.saveToCache("roles", userRoles);
+                    redisService.saveToCache("roles", userRoles);
 
                     return userRoles;
                 });

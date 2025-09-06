@@ -10,7 +10,7 @@ import com.example.ws.microservices.firstmicroservices.domain.employeedata.emplo
 import com.example.ws.microservices.firstmicroservices.oldstructure.response.PaginatedResponse;
 import com.example.ws.microservices.firstmicroservices.common.security.aspects.AccessControl;
 import com.example.ws.microservices.firstmicroservices.common.security.aspects.MaskField;
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,7 +33,7 @@ import java.util.stream.Stream;
 public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
-    private final RedisCacheService redisCacheService;
+    private final RedisService redisService;
 
     @Value("${pagination.max-page-size}")
     private int PAGE_SIZE_MAX;
@@ -55,10 +55,10 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public List<String> getAllExpertis() {
-        return redisCacheService.getFromCache("allExpertis", new TypeReference<List<String>>() {})
+        return redisService.getFromCache("allExpertis", new TypeReference<List<String>>() {})
                 .orElseGet(() -> {
                     List<String> allExpertis = employeeRepository.getAllExpertis();
-                    redisCacheService.saveToCacheWithTTL("allExpertis", allExpertis, Duration.ofHours(24));
+                    redisService.saveToCacheWithTTL("allExpertis", allExpertis, Duration.ofHours(24));
                     return allExpertis;
                 });
     }
@@ -70,7 +70,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Map<String, EmployeeFullInformationDTO> getEmployeeFullDTO(List<String> expertis){
-        Map<String, EmployeeFullInformationDTO> map = redisCacheService.getEmployeeFullMapping(expertis, EmployeeFullInformationDTO.class);
+        Map<String, EmployeeFullInformationDTO> map = redisService.getEmployeeFullMapping(expertis, EmployeeFullInformationDTO.class);
 
         if(expertis.size() != map.size()){
             List<String> notContainExpertis = expertis.stream().filter(exp -> !map.containsKey(exp)).toList();
@@ -79,7 +79,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             Map<String, EmployeeFullInformationDTO> toSave = restEmployee.stream()
                     .collect(Collectors.toMap(EmployeeFullInformationDTO::getExpertis, Function.identity()));
 
-            redisCacheService.saveAllMapping("userFullMapping", toSave);
+            redisService.saveAllMapping("userFullMapping", toSave);
             map.putAll(toSave);
 
         }
@@ -129,7 +129,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         if(!dto.isEmpty()){
             Map<String, EmployeeFullInformationDTO> toSave = dto.stream().collect(Collectors.toMap(EmployeeFullInformationDTO::getExpertis, Function.identity()));
-            redisCacheService.saveAllMapping("userFullMapping", toSave);
+            redisService.saveAllMapping("userFullMapping", toSave);
         }
 
         return dto;
@@ -137,7 +137,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public void removeEmployeeFromRedis(String expertis) {
-        redisCacheService.removeEmployeeFromMapping(expertis);
+        redisService.removeEmployeeFromMapping(expertis);
     }
 
     @Override
@@ -155,7 +155,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         List<String> uniqueExpertis = new ArrayList<>(new LinkedHashSet<>(expertisList));
 
         if (uniqueExpertis.size() <= adjustedPageable.getPageSize()) {
-            Map<String, EmployeeFullInformationDTO> cachedEmployees = redisCacheService.getMultiFromCacheAsMap(uniqueExpertis, EmployeeFullInformationDTO.class);
+            Map<String, EmployeeFullInformationDTO> cachedEmployees = redisService.getMultiFromCacheAsMap(uniqueExpertis, EmployeeFullInformationDTO.class);
 
             List<String> missingExpertis = uniqueExpertis.stream()
                     .filter(expertis -> !cachedEmployees.containsKey(expertis))
@@ -164,7 +164,7 @@ public class EmployeeServiceImpl implements EmployeeService {
             List<EmployeeFullInformationDTO> dbEmployees = missingExpertis.isEmpty() ? List.of() :
                     employeeRepository.findEmployeeFullInformationByExpertisList(missingExpertis);
 
-            dbEmployees.forEach(employee -> redisCacheService.saveToCache("employee:" + employee.getExpertis(), employee));
+            dbEmployees.forEach(employee -> redisService.saveToCache("employee:" + employee.getExpertis(), employee));
 
             List<EmployeeFullInformationDTO> allResults = Stream.concat(
                     cachedEmployees.values().stream(),
@@ -184,7 +184,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         Page<EmployeeFullInformationDTO> page = employeeRepository.findEmployeeFullInformationByExpertisListPageable(uniqueExpertis, adjustedPageable);
         List<EmployeeFullInformationDTO> employees = page.getContent();
 
-        employees.forEach(employee -> redisCacheService.saveToCache("employee:" + employee.getExpertis(), employee));
+        employees.forEach(employee -> redisService.saveToCache("employee:" + employee.getExpertis(), employee));
 
         List<String> foundExpertises = employees.stream()
                 .map(EmployeeFullInformationDTO::getExpertis)

@@ -3,7 +3,7 @@ package com.example.ws.microservices.firstmicroservices.oldstructure.serviceImpl
 import com.example.ws.microservices.firstmicroservices.oldstructure.entity.etc.DocumentsPositionAssistance;
 import com.example.ws.microservices.firstmicroservices.oldstructure.repository.etc.DocumentsPositionAssistanceRepository;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.etc.DocumentsPositionAssistanceService;
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
 public class DocumentsPositionAssistanceServiceImpl implements DocumentsPositionAssistanceService {
 
     private final DocumentsPositionAssistanceRepository documentsPositionAssistanceRepository;
-    private final RedisCacheService redisCacheService;
+    private final RedisService redisService;
 
     @Override
     public Map<Long, List<String>> getMapDocumentsPositionAssistance() {
-        Map<String, List<String>> cachedEntries = redisCacheService.getAllFromHash(
+        Map<String, List<String>> cachedEntries = redisService.getAllFromHash(
                 "mappingPositionAssistance", new TypeReference<List<String>>() {}
         );
 
@@ -47,7 +47,7 @@ public class DocumentsPositionAssistanceServiceImpl implements DocumentsPosition
         documentDepartments.replaceAll((key, value) -> value != null ? value : new ArrayList<>());
 
         documentDepartments.forEach((documentId, positions) ->
-                redisCacheService.saveToHash("mappingPositionAssistance", documentId.toString(), positions)
+                redisService.saveToHash("mappingPositionAssistance", documentId.toString(), positions)
         );
 
         return documentDepartments;

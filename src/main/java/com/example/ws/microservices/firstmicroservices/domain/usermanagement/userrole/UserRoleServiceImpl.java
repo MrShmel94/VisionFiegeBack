@@ -14,7 +14,7 @@ import com.example.ws.microservices.firstmicroservices.common.security.SecurityU
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.RoleService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -36,7 +36,7 @@ public class UserRoleServiceImpl implements UserRoleService {
 
     private final UserRoleRepository userRoleRepository;
     private final EmployeeService employeeService;
-    private final RedisCacheService redisCacheService;
+    private final RedisService redisService;
     private final RoleRepository roleRepository;
     private final RoleService roleService;
     private final UserService userService;
@@ -113,9 +113,9 @@ public class UserRoleServiceImpl implements UserRoleService {
     }
 
     private void updateCacheForUserDetailsAndAccounts(SupervisorAllInformationDTO employeeDto) {
-        redisCacheService.saveToHash("userDetails:hash", employeeDto.getExpertis(), employeeDto);
+        redisService.saveToHash("userDetails:hash", employeeDto.getExpertis(), employeeDto);
 
-        PreviewEmployeeDTO dto = redisCacheService.getFromHash("usersAccount:hash", employeeDto.getExpertis(), PreviewEmployeeDTO.class)
+        PreviewEmployeeDTO dto = redisService.getFromHash("usersAccount:hash", employeeDto.getExpertis(), PreviewEmployeeDTO.class)
                 .orElse(PreviewEmployeeDTO.builder()
                         .id(employeeDto.getId())
                         .expertis(employeeDto.getExpertis())
@@ -126,7 +126,7 @@ public class UserRoleServiceImpl implements UserRoleService {
                         .build());
 
         dto.setRoles(employeeDto.getRoles());
-        redisCacheService.saveToHash("usersAccount:hash", dto.getExpertis(), dto);
+        redisService.saveToHash("usersAccount:hash", dto.getExpertis(), dto);
     }
 
     @Override

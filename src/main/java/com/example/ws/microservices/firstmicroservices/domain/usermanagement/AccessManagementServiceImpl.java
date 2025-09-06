@@ -15,7 +15,7 @@ import com.example.ws.microservices.firstmicroservices.domain.employeedata.super
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.common.security.aspects.AccessControl;
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +34,7 @@ public class AccessManagementServiceImpl implements AccessManagementService {
 
     private final SupervisorAssignmentService supervisorService;
     private final EmployeeService employeeService;
-    private final RedisCacheService redisCacheService;
+    private final RedisService redisService;
     private final UserService userService;
     private final UserRoleService userRoleService;
     private final RoleService roleService;
@@ -70,15 +70,15 @@ public class AccessManagementServiceImpl implements AccessManagementService {
         SupervisorAllInformationDTO allInformation = userService.getSupervisorAllInformation(requestModel.expertis(), null);
         allInformation.setIsVerified(true);
 
-        redisCacheService.saveToHash("userDetails:hash", allInformation.getExpertis(), allInformation);
-        redisCacheService.deleteFromHash("usersNotVerification:hash", allInformation.getExpertis());
+        redisService.saveToHash("userDetails:hash", allInformation.getExpertis(), allInformation);
+        redisService.deleteFromHash("usersNotVerification:hash", allInformation.getExpertis());
 
         log.info("Account verified and role assigned for user: {}", requestModel.expertis());
     }
 
     @Override
     public ResponseUsersNotVerification getAllUsersNotVerified() {
-        Map<String, PreviewEmployeeDTO> allDto = redisCacheService.getAllFromHash("usersNotVerification:hash", new TypeReference<PreviewEmployeeDTO>() {});
+        Map<String, PreviewEmployeeDTO> allDto = redisService.getAllFromHash("usersNotVerification:hash", new TypeReference<PreviewEmployeeDTO>() {});
         CustomUserDetails currentUser = new SecurityUtils().getCurrentUser();
 
         if(allDto.isEmpty()){
@@ -87,7 +87,7 @@ public class AccessManagementServiceImpl implements AccessManagementService {
             Map<String, PreviewEmployeeDTO> mapPreview = list.stream()
                     .collect(Collectors.toMap(PreviewEmployeeDTO::getExpertis, Function.identity(), (a, b) -> a));
 
-            redisCacheService.saveAllToHash("usersNotVerification:hash", mapPreview);
+            redisService.saveAllToHash("usersNotVerification:hash", mapPreview);
         }
 
 
@@ -100,7 +100,7 @@ public class AccessManagementServiceImpl implements AccessManagementService {
 
     @Override
     public ResponseUsersNotVerification getAllUsersAccount() {
-        Map<String, PreviewEmployeeDTO> allDto = redisCacheService.getAllFromHash("usersAccount:hash", new TypeReference<PreviewEmployeeDTO>() {});
+        Map<String, PreviewEmployeeDTO> allDto = redisService.getAllFromHash("usersAccount:hash", new TypeReference<PreviewEmployeeDTO>() {});
         CustomUserDetails currentUser = new SecurityUtils().getCurrentUser();
 
         if(allDto.isEmpty()){
@@ -112,7 +112,7 @@ public class AccessManagementServiceImpl implements AccessManagementService {
             Map<String, PreviewEmployeeDTO> mapPreview = list.stream()
                     .collect(Collectors.toMap(PreviewEmployeeDTO::getExpertis, Function.identity(), (a, b) -> a));
 
-            redisCacheService.saveAllToHash("usersAccount:hash", mapPreview);
+            redisService.saveAllToHash("usersAccount:hash", mapPreview);
         }
 
         log.info("Employee account verification: {}", allDto.size());

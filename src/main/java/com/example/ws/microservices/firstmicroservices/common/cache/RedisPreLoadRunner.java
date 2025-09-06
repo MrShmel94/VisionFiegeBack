@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.common.cache.redice;
+package com.example.ws.microservices.firstmicroservices.common.cache;
 
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
@@ -11,14 +11,14 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Slf4j
-public class PreloadService {
+public class RedisPreLoadRunner {
 
     private final RedisTemplate<String, Object> redisTemplate;
-    private final List<CachingService<?>> cachingServices;
+    private final List<RedisPreLoader<?>> redisPreLoaders;
 
     @PostConstruct
-    public void preloadCache() {
-        for (CachingService<?> service : cachingServices) {
+    public void preLoad() {
+        for (RedisPreLoader<?> service : redisPreLoaders) {
             service.preloadToCache(redisTemplate);
         }
     }

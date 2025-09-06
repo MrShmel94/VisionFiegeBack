@@ -4,7 +4,7 @@ import com.example.ws.microservices.firstmicroservices.domain.employeedata.super
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,13 +19,13 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     private final UserService userService;
     private final DepartmentServiceCache departmentServiceCache;
-    private final RedisCacheService redisCacheService;
+    private final RedisService redisService;
 
     @Override
     public List<DepartmentDTO> getDepartments() {
-        return redisCacheService.getFromCache("departments", new TypeReference<List<DepartmentDTO>>() {}).orElseGet(() -> {
+        return redisService.getFromCache("departments", new TypeReference<List<DepartmentDTO>>() {}).orElseGet(() -> {
             List<DepartmentDTO> allDto = departmentServiceCache.getAllFromDB();
-            redisCacheService.saveToCache("departments", allDto);
+            redisService.saveToCache("departments", allDto);
 
             return allDto;
         });

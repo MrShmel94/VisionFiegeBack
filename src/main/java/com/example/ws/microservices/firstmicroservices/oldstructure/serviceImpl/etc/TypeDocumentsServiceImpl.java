@@ -8,7 +8,7 @@ import com.example.ws.microservices.firstmicroservices.common.security.CustomUse
 import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.etc.TypeDocumentsService;
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,7 @@ import java.util.List;
 public class TypeDocumentsServiceImpl implements TypeDocumentsService {
 
     private final TypeDocumentsRepository repository;
-    private final RedisCacheService redisCacheService;
+    private final RedisService redisService;
     private final UserService userService;
 
     @Override
@@ -48,12 +48,12 @@ public class TypeDocumentsServiceImpl implements TypeDocumentsService {
         repository.save(entity);
 
         allTypesDTO.add(typeDocumentsDTO);
-        redisCacheService.saveToCache("typeDocuments", allTypesDTO);
+        redisService.saveToCache("typeDocuments", allTypesDTO);
     }
 
     @Override
     public List<TypeDocumentsDTO> getAllTypeDocuments() {
-        List<TypeDocumentsDTO> typeDocumentsDTO = redisCacheService
+        List<TypeDocumentsDTO> typeDocumentsDTO = redisService
                 .getFromCache("typeDocuments", new TypeReference<List<TypeDocumentsDTO>>() {
                 }).orElseGet(() -> {
                    List<TypeDocumentsDTO> allTypeDocument = repository.findAll().stream()
@@ -67,7 +67,7 @@ public class TypeDocumentsServiceImpl implements TypeDocumentsService {
                                        .build();
                            }).toList();
 
-                   redisCacheService.saveToCache("typeDocuments", allTypeDocument);
+                   redisService.saveToCache("typeDocuments", allTypeDocument);
                    return allTypeDocument;
                 });
         return typeDocumentsDTO;

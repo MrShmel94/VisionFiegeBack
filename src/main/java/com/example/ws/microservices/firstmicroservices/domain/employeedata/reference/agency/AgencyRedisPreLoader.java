@@ -1,11 +1,11 @@
 package com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.agency;
 
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.CachingService;
+import com.example.ws.microservices.firstmicroservices.common.cache.RedisPreLoader;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface AgencyServiceCache extends CachingService<AgencyDTO> {
+public interface AgencyRedisPreLoader extends RedisPreLoader<AgencyDTO> {
     List<Agency> findAll();
     List<AgencyDTO> getAllFromDB();
     Optional<Agency> findById(Long id);

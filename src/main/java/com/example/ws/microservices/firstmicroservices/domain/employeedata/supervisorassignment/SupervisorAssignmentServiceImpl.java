@@ -11,7 +11,7 @@ import com.example.ws.microservices.firstmicroservices.common.security.SecurityU
 import com.example.ws.microservices.firstmicroservices.common.security.aspects.MaskField;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class SupervisorAssignmentServiceImpl implements SupervisorAssignmentServ
     private final SupervisorAssignmentRepository repository;
     private final EmployeeService employeeService;
     private final UserService userService;
-    private final RedisCacheService redisCacheService;
+    private final RedisService redisService;
 
     /**
      * Adds access for employees to a supervisor.
@@ -85,12 +85,12 @@ public class SupervisorAssignmentServiceImpl implements SupervisorAssignmentServ
 
                 log.info("Added {} employee(s) for supervisor {}.", currentSaveExpertis.size(), supervisor.getExpertis());
 
-                List<String> employeeExpertis = redisCacheService.getValueFromMapping("supervisorExpertisEmployee", request.getSupervisorExpertis(), new TypeReference<List<String>>() {
+                List<String> employeeExpertis = redisService.getValueFromMapping("supervisorExpertisEmployee", request.getSupervisorExpertis(), new TypeReference<List<String>>() {
                 }).orElse(new ArrayList<>());
 
                 if (!employeeExpertis.isEmpty()) {
                     employeeExpertis.addAll(currentSaveExpertis);
-                    redisCacheService.saveMapping("supervisorExpertisEmployee", request.getSupervisorExpertis(), employeeExpertis);
+                    redisService.saveMapping("supervisorExpertisEmployee", request.getSupervisorExpertis(), employeeExpertis);
                 }
                 log.debug("Updated Redis cache for supervisor {} with {} employee(s).", request.getSupervisorExpertis(), employeeExpertis.size());
 
@@ -100,7 +100,7 @@ public class SupervisorAssignmentServiceImpl implements SupervisorAssignmentServ
                     dto.setSupervisorName(String.format("%s %s", supervisor.getFirstName(), supervisor.getLastName()));
                 });
 
-                redisCacheService.saveAllMapping("userFullMapping", allEmployee);
+                redisService.saveAllMapping("userFullMapping", allEmployee);
 
                 unCorrectSaveExpertis.addAll(currentSaveExpertis);
             } else {
@@ -131,12 +131,12 @@ public class SupervisorAssignmentServiceImpl implements SupervisorAssignmentServ
 
         log.info("Deleted {} employee access(es) for supervisor {}.", currentDeletedExpertis.size(), supervisorExpertis);
 
-        List<String> employeeExpertis = redisCacheService.getValueFromMapping("supervisorExpertisEmployee", supervisorExpertis, new TypeReference<List<String>>() {
+        List<String> employeeExpertis = redisService.getValueFromMapping("supervisorExpertisEmployee", supervisorExpertis, new TypeReference<List<String>>() {
         }).orElse(new ArrayList<>());
 
         if (!employeeExpertis.isEmpty() && !currentDeletedExpertis.isEmpty()) {
             employeeExpertis = employeeExpertis.stream().filter(obj -> !currentDeletedExpertis.contains(obj)).toList();
-            redisCacheService.saveMapping("supervisorExpertisEmployee", supervisorExpertis, employeeExpertis);
+            redisService.saveMapping("supervisorExpertisEmployee", supervisorExpertis, employeeExpertis);
             log.debug("Updated Redis cache for supervisor {} after deletion.", supervisorExpertis);
 
             Map<String, EmployeeFullInformationDTO> allEmployee = employeeService.getEmployeeFullDTO(currentDeletedExpertis);
@@ -146,7 +146,7 @@ public class SupervisorAssignmentServiceImpl implements SupervisorAssignmentServ
                 dto.setSupervisorName("No Supervisor");
             });
 
-            redisCacheService.saveAllMapping("userFullMapping", allEmployee);
+            redisService.saveAllMapping("userFullMapping", allEmployee);
         }
         log.info("Completed deleteAccess.");
     }
@@ -213,7 +213,7 @@ public class SupervisorAssignmentServiceImpl implements SupervisorAssignmentServ
     public List<EmployeeFullInformationDTO> getAllEmployeeBySupervisor(String expertis) {
         log.info("Retrieving all employees for supervisor with expertis: {}", expertis);
 
-        List<String> employeeExpertis = redisCacheService.getValueFromMapping("supervisorExpertisEmployee", expertis, new TypeReference<List<String>>() {
+        List<String> employeeExpertis = redisService.getValueFromMapping("supervisorExpertisEmployee", expertis, new TypeReference<List<String>>() {
         }).orElse(new ArrayList<>());
         if (employeeExpertis.isEmpty()) {
             log.info("Cache miss for supervisor {}. Querying database.", expertis);
@@ -222,9 +222,9 @@ public class SupervisorAssignmentServiceImpl implements SupervisorAssignmentServ
 
             Map<String, EmployeeFullInformationDTO> fullMap = fullEmployee.stream().collect(Collectors.toMap(EmployeeFullInformationDTO::getExpertis, Function.identity()));
 
-            redisCacheService.saveAllMapping("userFullMapping", fullMap);
+            redisService.saveAllMapping("userFullMapping", fullMap);
 
-            redisCacheService.saveMapping("supervisorExpertisEmployee", expertis, fullMap.keySet());
+            redisService.saveMapping("supervisorExpertisEmployee", expertis, fullMap.keySet());
 
             log.debug("Updated Redis cache for supervisor {} with {} employee(s).", expertis, fullMap.keySet().size());
 
@@ -250,7 +250,7 @@ public class SupervisorAssignmentServiceImpl implements SupervisorAssignmentServ
 
         log.info("Retrieving all employees for supervisor with expertis: {}", expertis);
 
-        List<String> employeeExpertis = redisCacheService.getValueFromMapping("supervisorExpertisEmployee", expertis, new TypeReference<List<String>>() {
+        List<String> employeeExpertis = redisService.getValueFromMapping("supervisorExpertisEmployee", expertis, new TypeReference<List<String>>() {
         }).orElse(new ArrayList<>());
         if (employeeExpertis.isEmpty()) {
             log.info("Cache miss for supervisor {}. Querying database.", expertis);
@@ -258,9 +258,9 @@ public class SupervisorAssignmentServiceImpl implements SupervisorAssignmentServ
             List<EmployeeFullInformationDTO> fullEmployee = repository.getAllEmployeeBySupervisor(expertis);
             Map<String, EmployeeFullInformationDTO> fullMap = fullEmployee.stream().collect(Collectors.toMap(EmployeeFullInformationDTO::getExpertis, Function.identity()));
 
-            redisCacheService.saveAllMapping("userFullMapping", fullMap);
+            redisService.saveAllMapping("userFullMapping", fullMap);
 
-            redisCacheService.saveMapping("supervisorExpertisEmployee", expertis, fullMap.keySet());
+            redisService.saveMapping("supervisorExpertisEmployee", expertis, fullMap.keySet());
 
             log.debug("Updated Redis cache for supervisor {} with {} employee(s).", expertis, fullMap.keySet().size());
 
@@ -296,12 +296,12 @@ public class SupervisorAssignmentServiceImpl implements SupervisorAssignmentServ
 
         if (!supervisorToEmployeeExpertis.isEmpty()) {
             supervisorToEmployeeExpertis.forEach((key, value) -> {
-                List<String> employeeExpertis = redisCacheService.getValueFromMapping("supervisorExpertisEmployee", key, new TypeReference<List<String>>() {
+                List<String> employeeExpertis = redisService.getValueFromMapping("supervisorExpertisEmployee", key, new TypeReference<List<String>>() {
                 }).orElse(new ArrayList<>());
 
                 if (!employeeExpertis.isEmpty()) {
                     employeeExpertis = employeeExpertis.stream().filter(eachObj -> !value.contains(eachObj)).toList();
-                    redisCacheService.saveMapping("supervisorExpertisEmployee", key, employeeExpertis);
+                    redisService.saveMapping("supervisorExpertisEmployee", key, employeeExpertis);
                 }
             });
         }

@@ -12,7 +12,6 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.response.Con
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +25,7 @@ import java.util.List;
 @Slf4j
 public class ConfigurationService {
 
-    private final RedisCacheService redisCacheService;
+    private final RedisService redisService;
     private final UserService userService;
 
 //    public ConfigurationRegistrationDTO getConfigurationForSite() {
@@ -95,13 +94,13 @@ public class ConfigurationService {
     }
 
     private <T extends SiteAware> List<T> filterBySite(String keyPattern, Class<T> type, String siteName) {
-        return redisCacheService.getAllFromCache(keyPattern, type).stream()
+        return redisService.getAllFromCache(keyPattern, type).stream()
                 .filter(obj -> obj.getSiteName().equals(siteName))
                 .toList();
     }
 
     private <T extends SiteAware> List<T> filterBySite(String keyPattern, TypeReference<List<T>> typeReference, String siteName) {
-        List<T> allObject = redisCacheService.getFromCache(keyPattern, typeReference).orElseGet(Collections::emptyList);
+        List<T> allObject = redisService.getFromCache(keyPattern, typeReference).orElseGet(Collections::emptyList);
         return allObject.stream()
                 .filter(obj -> obj.getSiteName().equals(siteName))
                 .toList();

@@ -15,7 +15,7 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.service.etc.
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.department.DepartmentService;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.position.PositionService;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -38,7 +38,7 @@ public class DocumentsServiceImpl implements DocumentsService {
 
     private final DocumentRepository documentRepository;
     private final TypeDocumentsService typeDocumentsService;
-    private final RedisCacheService redisCacheService;
+    private final RedisService redisService;
     private final DepartmentService departmentService;
     private final PositionService positionService;
     private final UserService userService;
@@ -165,11 +165,11 @@ public class DocumentsServiceImpl implements DocumentsService {
                 .positionsAssistance(allPositionsAssistanceName)
                 .build();
 
-        redisCacheService.saveToHash("allDocuments", documentId.toString(), newDocumentDTO);
+        redisService.saveToHash("allDocuments", documentId.toString(), newDocumentDTO);
 
-        redisCacheService.saveToHash("mappingDepartment", documentId.toString(), allDepartmentsName);
-        redisCacheService.saveToHash("mappingPosition", documentId.toString(), allPositionsName);
-        redisCacheService.saveToHash("mappingPositionAssistance", documentId.toString(), allPositionsAssistanceName);
+        redisService.saveToHash("mappingDepartment", documentId.toString(), allDepartmentsName);
+        redisService.saveToHash("mappingPosition", documentId.toString(), allPositionsName);
+        redisService.saveToHash("mappingPositionAssistance", documentId.toString(), allPositionsAssistanceName);
     }
 
     @Override
@@ -256,10 +256,10 @@ public class DocumentsServiceImpl implements DocumentsService {
                 .positionsAssistance(newPositionsAssistance)
                 .build();
 
-        redisCacheService.saveToHash("allDocuments", documentId.toString(), updatedDTO);
-        redisCacheService.saveToHash("mappingDepartment", documentId.toString(), newDepartments);
-        redisCacheService.saveToHash("mappingPosition", documentId.toString(), newPositions);
-        redisCacheService.saveToHash("mappingPositionAssistance", documentId.toString(), newPositionsAssistance);
+        redisService.saveToHash("allDocuments", documentId.toString(), updatedDTO);
+        redisService.saveToHash("mappingDepartment", documentId.toString(), newDepartments);
+        redisService.saveToHash("mappingPosition", documentId.toString(), newPositions);
+        redisService.saveToHash("mappingPositionAssistance", documentId.toString(), newPositionsAssistance);
     }
 
     @Override
@@ -275,10 +275,10 @@ public class DocumentsServiceImpl implements DocumentsService {
         documentRepository.delete(existing);
 
         String key = documentId.toString();
-        redisCacheService.deleteFromHash("allDocuments", key);
-        redisCacheService.deleteFromHash("mappingDepartment", key);
-        redisCacheService.deleteFromHash("mappingPosition", key);
-        redisCacheService.deleteFromHash("mappingPositionAssistance", key);
+        redisService.deleteFromHash("allDocuments", key);
+        redisService.deleteFromHash("mappingDepartment", key);
+        redisService.deleteFromHash("mappingPosition", key);
+        redisService.deleteFromHash("mappingPositionAssistance", key);
     }
 
     @Override
@@ -288,7 +288,7 @@ public class DocumentsServiceImpl implements DocumentsService {
 
     @Override
     public List<DocumentDTO> getAllDocuments() {
-        Map<String, DocumentDTO> cachedDocuments = redisCacheService.getAllFromHash(
+        Map<String, DocumentDTO> cachedDocuments = redisService.getAllFromHash(
                 "allDocuments", new TypeReference<DocumentDTO>() {}
         );
 
@@ -307,7 +307,7 @@ public class DocumentsServiceImpl implements DocumentsService {
             document.setPositions(mappingPosition.getOrDefault(document.getId(), new ArrayList<>()));
             document.setPositionsAssistance(mappingPositionAssistance.getOrDefault(document.getId(), new ArrayList<>()));
 
-            redisCacheService.saveToHash("allDocuments", document.getId().toString(), document);
+            redisService.saveToHash("allDocuments", document.getId().toString(), document);
         });
 
         return allDocumentList;

@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Service
 @AllArgsConstructor
-public class AgencyServiceCacheImpl implements AgencyServiceCache {
+public class AgencyRedisPreLoaderImpl implements AgencyRedisPreLoader {
 
     private final AgencyRepositoryCache agencyRepositoryCache;
 

@@ -3,7 +3,7 @@ package com.example.ws.microservices.firstmicroservices.domain.usermanagement;
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.EmailCooldownException;
 import com.example.ws.microservices.firstmicroservices.common.mailing.EmailService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserLookupService;
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Slf4j
 public class EmailTokenService {
 
-    private final RedisCacheService redisCacheService;
+    private final RedisService redisService;
     private final UserLookupService userService;
     private final EmailService emailService;
 
@@ -28,25 +28,25 @@ public class EmailTokenService {
 
     public void processEmailVerification(String email, @Nullable String tokenEmployee) {
         String lastSentKey = EMAIL_LAST_SENT_PREFIX + email;
-        String lastSentTime = redisCacheService.getFromCache(lastSentKey, String.class).orElse(null);
+        String lastSentTime = redisService.getFromCache(lastSentKey, String.class).orElse(null);
 
         if (lastSentTime != null && isWithinCooldown(lastSentTime)) {
             throw new EmailCooldownException("Please wait before requesting another email.");
         }
 
         String tokenKey = EMAIL_VERIFICATION_PREFIX + email;
-        String token = redisCacheService.getFromCache(tokenKey, String.class).orElseGet(() -> {
+        String token = redisService.getFromCache(tokenKey, String.class).orElseGet(() -> {
             String newToken = tokenEmployee;
 
             if (newToken == null) {
                 newToken = userService.getUserByEmail(email).getEmailVerificationToken();
             }
 
-            redisCacheService.saveToCacheWithTTL(tokenKey, newToken, TTL);
+            redisService.saveToCacheWithTTL(tokenKey, newToken, TTL);
             return newToken;
         });
 
-        redisCacheService.saveToCacheWithTTL(lastSentKey, LocalDateTime.now().toString(), COOLDOWN);
+        redisService.saveToCacheWithTTL(lastSentKey, LocalDateTime.now().toString(), COOLDOWN);
         emailService.publishEmailNotification(email, token);
     }
 

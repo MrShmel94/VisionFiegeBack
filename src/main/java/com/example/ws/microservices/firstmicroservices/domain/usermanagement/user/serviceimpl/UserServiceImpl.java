@@ -18,7 +18,7 @@ import com.example.ws.microservices.firstmicroservices.domain.usermanagement.use
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.EmailTokenService;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
@@ -49,7 +49,7 @@ public class UserServiceImpl implements UserService {
     private final EmployeeService employeeService;
     private final RoleService roleService;
     private final EmailTokenService emailTokenService;
-    private final RedisCacheService redisCacheService;
+    private final RedisService redisService;
 
     @Override
     @Transactional
@@ -104,8 +104,8 @@ public class UserServiceImpl implements UserService {
 
         SupervisorAllInformationDTO allInformation = getSupervisorAllInformation(userEntity.getExpertis(), null);
         allInformation.setEmailVerificationStatus(true);
-        redisCacheService.saveToHash("userDetails:hash", allInformation.getExpertis(), allInformation);
-        redisCacheService.saveMapping(userEntity.getUserId(), allInformation.getExpertis());
+        redisService.saveToHash("userDetails:hash", allInformation.getExpertis(), allInformation);
+        redisService.saveMapping(userEntity.getUserId(), allInformation.getExpertis());
 
 
         log.info("User with email {} has successfully verified their email.", userEntity.getEmail());
@@ -144,7 +144,7 @@ public class UserServiceImpl implements UserService {
         String expertisRedis = null;
 
         if (userId != null) {
-            expertisRedis = redisCacheService.getExpertisByUserId(userId);
+            expertisRedis = redisService.getExpertisByUserId(userId);
         }
 
         String redisKey = expertisRedis != null ?  expertisRedis :  expertis;
@@ -152,7 +152,7 @@ public class UserServiceImpl implements UserService {
         SupervisorAllInformationDTO entity;
 
         if (expertisRedis != null) {
-            entity = redisCacheService.getFromHash("userDetails:hash", redisKey, SupervisorAllInformationDTO.class).orElse(null);
+            entity = redisService.getFromHash("userDetails:hash", redisKey, SupervisorAllInformationDTO.class).orElse(null);
         } else {
             entity = null;
         }
@@ -169,10 +169,10 @@ public class UserServiceImpl implements UserService {
             List<UserRoleDTO> roles = roleService.getAllRoleByUserId(entity.getId());
             entity.setRoles(roles);
 
-            redisCacheService.saveToHash("userDetails:hash", newRedisKey, entity);
+            redisService.saveToHash("userDetails:hash", newRedisKey, entity);
 
             if (expertisRedis == null) {
-                redisCacheService.saveMapping(entity.getUserId(), entity.getExpertis());
+                redisService.saveMapping(entity.getUserId(), entity.getExpertis());
             }
         }
 

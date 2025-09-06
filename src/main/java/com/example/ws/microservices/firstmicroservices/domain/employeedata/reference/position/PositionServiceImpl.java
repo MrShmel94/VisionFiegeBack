@@ -4,7 +4,7 @@ import com.example.ws.microservices.firstmicroservices.domain.employeedata.super
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +20,13 @@ public class PositionServiceImpl implements PositionService {
     private final PositionRepository positionRepository;
     private final UserService userService;
     private final PositionServiceCache positionServiceCache;
-    private final RedisCacheService redisCacheService;
+    private final RedisService redisService;
 
     @Override
     public List<PositionDTO> getPositions() {
-        return redisCacheService.getFromCache("positions", new TypeReference<List<PositionDTO>>() {}).orElseGet(() -> {
+        return redisService.getFromCache("positions", new TypeReference<List<PositionDTO>>() {}).orElseGet(() -> {
            List<PositionDTO> allDto = positionServiceCache.getAllFromDB();
-           redisCacheService.saveToCache("positions", allDto);
+           redisService.saveToCache("positions", allDto);
            return allDto;
         });
     }

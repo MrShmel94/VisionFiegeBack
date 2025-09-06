@@ -11,7 +11,7 @@ import com.example.ws.microservices.firstmicroservices.domain.employeedata.refer
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.SiteRequestModel;
 import com.example.ws.microservices.firstmicroservices.common.security.aspects.AccessControl;
 import com.example.ws.microservices.firstmicroservices.common.security.aspects.MaskField;
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -29,7 +29,7 @@ import java.util.Optional;
 @Transactional
 public class SiteServiceImpl implements SiteService {
 
-    private final RedisCacheService redisCacheService;
+    private final RedisService redisService;
     private final SiteRepository siteRepository;
 
     @PersistenceContext
@@ -121,14 +121,14 @@ public class SiteServiceImpl implements SiteService {
 
     @Override
     public List<SiteDTO> getSites() {
-        return redisCacheService.getFromCache("sites", new TypeReference<List<SiteDTO>>() {}).orElseGet(() -> {
+        return redisService.getFromCache("sites", new TypeReference<List<SiteDTO>>() {}).orElseGet(() -> {
             List<SiteDTO> allDto = siteRepository.findAll().stream().map(entity -> {
                 return SiteDTO.builder()
                         .id(entity.getId())
                         .name(entity.getName())
                         .build();
             }).toList();
-            redisCacheService.saveToCache("sites", allDto);
+            redisService.saveToCache("sites", allDto);
 
             return allDto;
         });

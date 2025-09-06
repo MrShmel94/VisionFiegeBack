@@ -3,7 +3,7 @@ package com.example.ws.microservices.firstmicroservices.oldstructure.serviceImpl
 import com.example.ws.microservices.firstmicroservices.oldstructure.entity.etc.DocumentsDepartment;
 import com.example.ws.microservices.firstmicroservices.oldstructure.repository.etc.DocumentsDepartmentRepository;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.etc.DocumentsDepartmentService;
-import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,11 +20,11 @@ import java.util.stream.Collectors;
 public class DocumentsDepartmentServiceImpl implements DocumentsDepartmentService {
 
     private final DocumentsDepartmentRepository documentsDepartmentRepository;
-    private final RedisCacheService redisCacheService;
+    private final RedisService redisService;
 
     @Override
     public Map<Long, List<String>> getMapDocumentsDepartment() {
-        Map<String, List<String>> cachedEntries = redisCacheService.getAllFromHash(
+        Map<String, List<String>> cachedEntries = redisService.getAllFromHash(
                 "mappingDepartment", new TypeReference<List<String>>() {}
         );
 
@@ -47,7 +47,7 @@ public class DocumentsDepartmentServiceImpl implements DocumentsDepartmentServic
         documentDepartments.replaceAll((key, value) -> value != null ? value : new ArrayList<>());
 
         documentDepartments.forEach((documentId, positions) ->
-                redisCacheService.saveToHash("mappingDepartment", documentId.toString(), positions)
+                redisService.saveToHash("mappingDepartment", documentId.toString(), positions)
         );
 
         return documentDepartments;
