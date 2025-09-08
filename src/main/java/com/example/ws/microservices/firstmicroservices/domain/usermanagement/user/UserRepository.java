@@ -1,9 +1,8 @@
-package com.example.ws.microservices.firstmicroservices.repository;
+package com.example.ws.microservices.firstmicroservices.domain.usermanagement.user;
 
 import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.SmallInformationSupervisorDTO;
 import com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformationDTO;
-import com.example.ws.microservices.firstmicroservices.entity.vision.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

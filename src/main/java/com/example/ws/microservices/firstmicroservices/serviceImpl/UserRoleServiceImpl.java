@@ -16,7 +16,7 @@ import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.service.RoleService;
 import com.example.ws.microservices.firstmicroservices.service.UserRoleService;
-import com.example.ws.microservices.firstmicroservices.service.UserService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserService;
 import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;

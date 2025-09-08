@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.request;
+package com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto;
 
 
 import lombok.Getter;

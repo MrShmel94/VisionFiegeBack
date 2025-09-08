@@ -1,10 +1,10 @@
 package com.example.ws.microservices.firstmicroservices.secure;
 
 import com.example.ws.microservices.firstmicroservices.customError.*;
-import com.example.ws.microservices.firstmicroservices.dto.UserMeDTO;
-import com.example.ws.microservices.firstmicroservices.request.UserLoginRequestModel;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserMeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserLoginRequestModel;
 import com.example.ws.microservices.firstmicroservices.service.RefreshTokenService;
-import com.example.ws.microservices.firstmicroservices.service.UserService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserService;
 import com.example.ws.microservices.firstmicroservices.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;

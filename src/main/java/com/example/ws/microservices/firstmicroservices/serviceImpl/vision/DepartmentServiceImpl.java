@@ -2,14 +2,10 @@ package com.example.ws.microservices.firstmicroservices.serviceImpl.vision;
 
 import com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.dto.templateTables.DepartmentDTO;
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.PositionDTO;
-import com.example.ws.microservices.firstmicroservices.repository.vision.DepartmentRepository;
-import com.example.ws.microservices.firstmicroservices.repository.vision.PositionRepository;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
-import com.example.ws.microservices.firstmicroservices.service.UserService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserService;
 import com.example.ws.microservices.firstmicroservices.service.cache.DepartmentServiceCache;
-import com.example.ws.microservices.firstmicroservices.service.cache.PositionServiceCache;
 import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
 import com.example.ws.microservices.firstmicroservices.service.vision.DepartmentService;
 import com.fasterxml.jackson.core.type.TypeReference;

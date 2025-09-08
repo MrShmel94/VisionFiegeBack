@@ -13,7 +13,7 @@ import com.example.ws.microservices.firstmicroservices.request.attendance.gd.Day
 import com.example.ws.microservices.firstmicroservices.request.attendance.gd.ScheduleTemplateRequest;
 import com.example.ws.microservices.firstmicroservices.response.attendance.gd.ResponseScheduleTemplate;
 import com.example.ws.microservices.firstmicroservices.service.ShiftTimeWorkService;
-import com.example.ws.microservices.firstmicroservices.service.UserService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserService;
 import com.example.ws.microservices.firstmicroservices.service.attendance.gd.AttendanceStatusService;
 import com.example.ws.microservices.firstmicroservices.service.attendance.gd.ScheduleTemplateService;
 import lombok.AllArgsConstructor;
@@ -23,7 +23,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;

@@ -1,9 +1,9 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
-import com.example.ws.microservices.firstmicroservices.dto.UserDto;
-import com.example.ws.microservices.firstmicroservices.entity.vision.UserEntity;
-import com.example.ws.microservices.firstmicroservices.mapper.UserMapper;
-import com.example.ws.microservices.firstmicroservices.repository.UserRepository;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserDto;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserEntity;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserMapper;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserRepository;
 import com.example.ws.microservices.firstmicroservices.service.UserLookupService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.dto;
+package com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto;
 
 public record UserMeDTO(
         String firstName,

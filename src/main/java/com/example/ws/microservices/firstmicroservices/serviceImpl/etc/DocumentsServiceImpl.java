@@ -13,7 +13,7 @@ import com.example.ws.microservices.firstmicroservices.request.etc.DocumentEtcRe
 import com.example.ws.microservices.firstmicroservices.response.etc.DocumentConfigurationSave;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
-import com.example.ws.microservices.firstmicroservices.service.UserService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserService;
 import com.example.ws.microservices.firstmicroservices.service.etc.*;
 import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
 import com.example.ws.microservices.firstmicroservices.service.vision.DepartmentService;

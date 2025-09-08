@@ -1,10 +1,10 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.controller;
 
-import com.example.ws.microservices.firstmicroservices.controller.UserController;
-import com.example.ws.microservices.firstmicroservices.dto.UserDto;
-import com.example.ws.microservices.firstmicroservices.request.UserDetailsRequestModel;
-import com.example.ws.microservices.firstmicroservices.response.UserRest;
-import com.example.ws.microservices.firstmicroservices.service.UserService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserController;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserDto;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserDetailsRequestModel;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserRest;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.BeanUtils;

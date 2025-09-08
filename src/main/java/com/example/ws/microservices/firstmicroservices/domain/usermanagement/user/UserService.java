@@ -1,7 +1,8 @@
-package com.example.ws.microservices.firstmicroservices.service;
+package com.example.ws.microservices.firstmicroservices.domain.usermanagement.user;
 
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserDto;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserMeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.*;
-import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
 import jakarta.annotation.Nullable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

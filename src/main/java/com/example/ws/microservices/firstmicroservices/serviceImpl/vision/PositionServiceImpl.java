@@ -5,14 +5,13 @@ import com.example.ws.microservices.firstmicroservices.dto.templateTables.Positi
 import com.example.ws.microservices.firstmicroservices.repository.vision.PositionRepository;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
-import com.example.ws.microservices.firstmicroservices.service.UserService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserService;
 import com.example.ws.microservices.firstmicroservices.service.cache.PositionServiceCache;
 import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
 import com.example.ws.microservices.firstmicroservices.service.vision.PositionService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

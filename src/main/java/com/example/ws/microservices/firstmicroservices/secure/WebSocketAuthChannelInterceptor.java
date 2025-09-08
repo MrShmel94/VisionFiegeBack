@@ -1,8 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.secure;
 
 
-import com.example.ws.microservices.firstmicroservices.service.RefreshTokenService;
-import com.example.ws.microservices.firstmicroservices.service.UserService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserService;
 import com.example.ws.microservices.firstmicroservices.utils.Utils;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;

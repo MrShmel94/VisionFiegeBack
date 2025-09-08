@@ -1,43 +1,25 @@
-package com.example.ws.microservices.firstmicroservices.controller;
+package com.example.ws.microservices.firstmicroservices.domain.usermanagement.user;
 
-import com.example.ws.microservices.firstmicroservices.customError.CustomException;
-import com.example.ws.microservices.firstmicroservices.customError.InvalidIdFormatException;
-import com.example.ws.microservices.firstmicroservices.customError.UserAlreadyExistsException;
-import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformationDTO;
-import com.example.ws.microservices.firstmicroservices.dto.UserDto;
-import com.example.ws.microservices.firstmicroservices.dto.UserMeDTO;
-import com.example.ws.microservices.firstmicroservices.mapper.UserMapper;
-import com.example.ws.microservices.firstmicroservices.repository.UserRepository;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserDto;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserMeDTO;
 import com.example.ws.microservices.firstmicroservices.request.AssignRoleUserRequest;
-import com.example.ws.microservices.firstmicroservices.request.UserDetailsRequestModel;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserDetailsRequestModel;
 import com.example.ws.microservices.firstmicroservices.response.ResponseUsersNotVerification;
-import com.example.ws.microservices.firstmicroservices.response.UserRest;
-import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.service.AccessManagementService;
 import com.example.ws.microservices.firstmicroservices.service.UserLookupService;
 import com.example.ws.microservices.firstmicroservices.service.UserRoleService;
-import com.example.ws.microservices.firstmicroservices.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * The UserController is a REST controller that handles requests for managing user accounts.

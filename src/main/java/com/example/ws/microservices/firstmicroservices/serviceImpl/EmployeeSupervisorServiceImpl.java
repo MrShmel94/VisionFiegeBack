@@ -12,7 +12,7 @@ import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.secure.aspects.MaskField;
 import com.example.ws.microservices.firstmicroservices.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.service.EmployeeSupervisorService;
-import com.example.ws.microservices.firstmicroservices.service.UserService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserService;
 import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.transaction.Transactional;

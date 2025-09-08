@@ -1,6 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
 import com.example.ws.microservices.firstmicroservices.customError.AuthenticationFailedException;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserService;
 import com.example.ws.microservices.firstmicroservices.dto.*;
 import com.example.ws.microservices.firstmicroservices.request.AssignRoleUserRequest;
 import com.example.ws.microservices.firstmicroservices.response.ResponseUsersNotVerification;
@@ -13,7 +14,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springdoc.core.service.SecurityService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 

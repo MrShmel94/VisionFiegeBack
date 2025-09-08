@@ -1,16 +1,16 @@
-package com.example.ws.microservices.firstmicroservices.serviceImpl;
+package com.example.ws.microservices.firstmicroservices.domain.usermanagement.user;
 
 import com.example.ws.microservices.firstmicroservices.customError.CustomException;
 import com.example.ws.microservices.firstmicroservices.customError.UnauthenticatedException;
 import com.example.ws.microservices.firstmicroservices.customError.UserAlreadyExistsException;
 import com.example.ws.microservices.firstmicroservices.customError.VerificationException;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserDto;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserMeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.*;
-import com.example.ws.microservices.firstmicroservices.mapper.UserMapper;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.service.*;
-import com.example.ws.microservices.firstmicroservices.entity.vision.UserEntity;
-import com.example.ws.microservices.firstmicroservices.repository.UserRepository;
 import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.serviceImpl.EmailTokenService;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
