@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
-public class SiteDTO {
+public class PhoneEmailTypeSupervisorDTO {
 
     private Integer id;
     private String name;

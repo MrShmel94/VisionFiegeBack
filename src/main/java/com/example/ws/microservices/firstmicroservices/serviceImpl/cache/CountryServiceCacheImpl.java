@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.cache;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.CountryDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Country;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.CountryDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.Country;
 import com.example.ws.microservices.firstmicroservices.repository.cache.CountryRepositoryCache;
 import com.example.ws.microservices.firstmicroservices.service.cache.CountryServiceCache;
 import lombok.AllArgsConstructor;

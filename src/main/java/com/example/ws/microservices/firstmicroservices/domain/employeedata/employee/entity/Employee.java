@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.employee;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

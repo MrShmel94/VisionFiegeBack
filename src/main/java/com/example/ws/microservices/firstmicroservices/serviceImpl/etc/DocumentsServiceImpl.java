@@ -1,13 +1,13 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.etc;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.SupervisorAllInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.dto.etc.DocumentDTO;
 import com.example.ws.microservices.firstmicroservices.dto.etc.TypeDocumentsDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.DepartmentDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.PositionDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.DepartmentDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.PositionDTO;
 import com.example.ws.microservices.firstmicroservices.entity.etc.*;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Department;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Position;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.Department;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.Position;
 import com.example.ws.microservices.firstmicroservices.repository.etc.DocumentRepository;
 import com.example.ws.microservices.firstmicroservices.request.etc.DocumentEtcRequest;
 import com.example.ws.microservices.firstmicroservices.response.etc.DocumentConfigurationSave;

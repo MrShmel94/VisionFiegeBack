@@ -2,8 +2,8 @@ package com.example.ws.microservices.firstmicroservices.serviceImpl.attendance.g
 
 import com.example.ws.microservices.firstmicroservices.customError.VerificationException;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.shifttimework.ShiftTimeWorkDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.SmallInformationSupervisorDTO;
+import com.example.ws.microservices.firstmicroservices.domain.attendace.shifttimework.ShiftTimeWorkDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SmallInformationSupervisorDTO;
 import com.example.ws.microservices.firstmicroservices.dto.attendance.gd.AttendanceStatusDTO;
 import com.example.ws.microservices.firstmicroservices.dto.attendance.gd.ScheduleTemplateDTO;
 import com.example.ws.microservices.firstmicroservices.entity.attendance.DaySchedule;

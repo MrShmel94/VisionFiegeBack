@@ -1,9 +1,9 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.performance_gd;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.shifttimework.ShiftTimeWorkDTO;
+import com.example.ws.microservices.firstmicroservices.domain.attendace.shifttimework.ShiftTimeWorkDTO;
 import com.example.ws.microservices.firstmicroservices.dto.performance.gd.PerformanceRowDTO;
 import com.example.ws.microservices.firstmicroservices.entity.performance_gd.*;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.shifttimework.ShiftTimeWork;
+import com.example.ws.microservices.firstmicroservices.domain.attendace.shifttimework.ShiftTimeWork;
 import com.example.ws.microservices.firstmicroservices.mapper.PerformanceMapper;
 import com.example.ws.microservices.firstmicroservices.service.ShiftTimeWorkService;
 import com.example.ws.microservices.firstmicroservices.service.performance_gd.*;

@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.etc;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.SupervisorAllInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.dto.etc.TypeDocumentsDTO;
 import com.example.ws.microservices.firstmicroservices.entity.etc.TypeDocument;
 import com.example.ws.microservices.firstmicroservices.repository.etc.TypeDocumentsRepository;

@@ -1,9 +1,9 @@
 package com.example.ws.microservices.firstmicroservices.entity.attendance.gd;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.Employee;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.shifttimework.ShiftTimeWork;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Department;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Site;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.Employee;
+import com.example.ws.microservices.firstmicroservices.domain.attendace.shifttimework.ShiftTimeWork;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.Department;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.Site;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

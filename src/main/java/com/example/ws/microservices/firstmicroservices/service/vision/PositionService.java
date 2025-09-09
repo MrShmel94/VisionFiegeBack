@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.service.vision;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.PositionDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.PositionDTO;
 
 import java.util.List;
 

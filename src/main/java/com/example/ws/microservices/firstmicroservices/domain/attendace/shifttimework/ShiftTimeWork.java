@@ -1,6 +1,6 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.shifttimework;
+package com.example.ws.microservices.firstmicroservices.domain.attendace.shifttimework;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Site;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.Site;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisorid;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

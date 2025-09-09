@@ -1,9 +1,9 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.*;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.*;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.EmployeeMapping;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.SiteDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.*;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.SiteDTO;
 import com.example.ws.microservices.firstmicroservices.repository.SiteRepository;
 import com.example.ws.microservices.firstmicroservices.request.SiteRequestModel;
 import com.example.ws.microservices.firstmicroservices.secure.aspects.AccessControl;

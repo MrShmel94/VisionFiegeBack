@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.entity.performance_gd;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.shifttimework.ShiftTimeWork;
+import com.example.ws.microservices.firstmicroservices.domain.attendace.shifttimework.ShiftTimeWork;
 
 import java.time.LocalDate;
 

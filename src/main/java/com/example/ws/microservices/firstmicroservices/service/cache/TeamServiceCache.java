@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.service.cache;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.TeamDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Team;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.TeamDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.Team;
 import com.example.ws.microservices.firstmicroservices.service.redice.CachingService;
 
 import java.util.List;

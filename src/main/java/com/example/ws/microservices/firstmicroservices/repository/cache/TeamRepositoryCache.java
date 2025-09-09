@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.repository.cache;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Team;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

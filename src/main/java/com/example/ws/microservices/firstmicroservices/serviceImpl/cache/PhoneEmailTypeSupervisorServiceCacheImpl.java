@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.cache;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.PhoneEmailTypeSupervisorDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.PhoneEmailTypeSupervisorDTO;
 import com.example.ws.microservices.firstmicroservices.repository.cache.PhoneEmailTypeSupervisorRepositoryCache;
 import com.example.ws.microservices.firstmicroservices.service.cache.PhoneEmailTypeSupervisorServiceCache;
 import lombok.AllArgsConstructor;

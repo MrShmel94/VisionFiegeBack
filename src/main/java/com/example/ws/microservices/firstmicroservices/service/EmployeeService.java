@@ -3,7 +3,7 @@ package com.example.ws.microservices.firstmicroservices.service;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.Employee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.Employee;
 import com.example.ws.microservices.firstmicroservices.response.PaginatedResponse;
 import org.springframework.data.domain.Pageable;
 

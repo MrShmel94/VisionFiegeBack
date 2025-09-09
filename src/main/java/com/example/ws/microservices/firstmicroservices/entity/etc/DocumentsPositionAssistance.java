@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.entity.etc;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Position;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.Position;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

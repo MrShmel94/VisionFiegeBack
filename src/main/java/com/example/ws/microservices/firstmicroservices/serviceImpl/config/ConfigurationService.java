@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.config;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.*;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.SupervisorAllInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SupervisorAllInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.*;
 import com.example.ws.microservices.firstmicroservices.dto.SiteAware;
 import com.example.ws.microservices.firstmicroservices.response.ConfigurationRegistrationDTO;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;

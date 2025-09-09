@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto;
 
 import lombok.*;
 

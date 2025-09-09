@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.reference;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,14 +7,14 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "department")
-public class Department {
+@Table(name = "position")
+public class Position {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name", length = 64)
+    @Column(name = "name", nullable = false, length = 64)
     private String name;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

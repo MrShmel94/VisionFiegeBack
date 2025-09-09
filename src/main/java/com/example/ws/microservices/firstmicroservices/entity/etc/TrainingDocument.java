@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.entity.etc;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.Employee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.Employee;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;

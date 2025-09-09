@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.repository;
 
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.aiemployee.AiEmployee;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.EmployeeMapping;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.EmployeeMapping;
 
 import java.util.List;
 

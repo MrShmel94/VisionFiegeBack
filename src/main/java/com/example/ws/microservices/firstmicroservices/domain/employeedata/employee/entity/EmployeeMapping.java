@@ -1,6 +1,6 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.*;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.*;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;

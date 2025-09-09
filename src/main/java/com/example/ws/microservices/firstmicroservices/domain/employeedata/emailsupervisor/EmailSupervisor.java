@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.domain.employeedata.emailsupervisor;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.Employee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.Employee;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.phoneemailtypesupervisor.PhoneEmailTypeSupervisor;
 import jakarta.persistence.*;
 import lombok.Getter;

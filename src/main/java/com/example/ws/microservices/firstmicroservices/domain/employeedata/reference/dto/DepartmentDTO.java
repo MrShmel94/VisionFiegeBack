@@ -1,4 +1,5 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto;
+
 
 import com.example.ws.microservices.firstmicroservices.dto.SiteAware;
 import lombok.AllArgsConstructor;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
-public class ShiftDTO implements SiteAware {
+public class DepartmentDTO implements SiteAware {
 
     private Integer id;
     private String name;

@@ -1,8 +1,8 @@
 package com.example.ws.microservices.firstmicroservices.mapper;
 
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.aiemployee.AiEmployee;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.Employee;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.EmployeeMapping;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.Employee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.EmployeeMapping;
 import com.example.ws.microservices.firstmicroservices.request.CreateEmployeeRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
