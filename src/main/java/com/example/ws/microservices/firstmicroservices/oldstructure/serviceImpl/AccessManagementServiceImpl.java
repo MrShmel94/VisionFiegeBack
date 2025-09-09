@@ -16,7 +16,7 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.service.Empl
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.secure.aspects.AccessControl;
-import com.example.ws.microservices.firstmicroservices.service.*;
+import com.example.ws.microservices.firstmicroservices.oldstructure.service.*;
 import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.transaction.Transactional;
