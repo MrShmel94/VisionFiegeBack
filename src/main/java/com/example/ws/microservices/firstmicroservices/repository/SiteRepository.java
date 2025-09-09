@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.repository;
 
-import com.example.ws.microservices.firstmicroservices.entity.vision.simpleTables.Site;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Site;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

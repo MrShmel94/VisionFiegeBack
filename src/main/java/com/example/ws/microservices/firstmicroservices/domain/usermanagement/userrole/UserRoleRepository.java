@@ -1,5 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole;
 
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

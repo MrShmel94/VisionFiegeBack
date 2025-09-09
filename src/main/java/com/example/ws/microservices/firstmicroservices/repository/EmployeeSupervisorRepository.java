@@ -1,9 +1,9 @@
 package com.example.ws.microservices.firstmicroservices.repository;
 
-import com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO;
-import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.entity.vision.EmployeeSupervisor;
-import com.example.ws.microservices.firstmicroservices.entity.vision.EmployeeSupervisorId;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.EmployeeSupervisor;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisorid.EmployeeSupervisorId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

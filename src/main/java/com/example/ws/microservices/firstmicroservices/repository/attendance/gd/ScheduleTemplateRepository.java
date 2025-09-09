@@ -1,13 +1,12 @@
 package com.example.ws.microservices.firstmicroservices.repository.attendance.gd;
 
-import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.entity.attendance.gd.ScheduleTemplate;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 

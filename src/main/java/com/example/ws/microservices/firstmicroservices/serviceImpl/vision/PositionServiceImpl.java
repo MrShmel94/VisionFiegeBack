@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.vision;
 
-import com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformationDTO;
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.PositionDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.SupervisorAllInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.PositionDTO;
 import com.example.ws.microservices.firstmicroservices.repository.vision.PositionRepository;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;

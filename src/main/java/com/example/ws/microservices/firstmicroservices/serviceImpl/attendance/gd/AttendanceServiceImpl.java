@@ -1,19 +1,19 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.attendance.gd;
 
-import com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO;
 import com.example.ws.microservices.firstmicroservices.dto.attendance.gd.AttendanceDTO;
 import com.example.ws.microservices.firstmicroservices.dto.attendance.gd.AttendanceEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.attendance.gd.AttendanceUpdateDto;
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.DepartmentDTO;
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.SiteDTO;
-import com.example.ws.microservices.firstmicroservices.entity.vision.Employee;
-import com.example.ws.microservices.firstmicroservices.entity.vision.ShiftTimeWork;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.DepartmentDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.SiteDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.Employee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.shifttimework.ShiftTimeWork;
 import com.example.ws.microservices.firstmicroservices.entity.attendance.DaySchedule;
 import com.example.ws.microservices.firstmicroservices.entity.attendance.gd.Attendance;
 import com.example.ws.microservices.firstmicroservices.entity.attendance.gd.AttendanceStatus;
 import com.example.ws.microservices.firstmicroservices.entity.attendance.gd.ScheduleTemplate;
-import com.example.ws.microservices.firstmicroservices.entity.vision.simpleTables.Department;
-import com.example.ws.microservices.firstmicroservices.entity.vision.simpleTables.Site;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Department;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Site;
 import com.example.ws.microservices.firstmicroservices.repository.attendance.gd.AttendanceRepository;
 import com.example.ws.microservices.firstmicroservices.request.attendance.gd.AttendanceChangeRequest;
 import com.example.ws.microservices.firstmicroservices.response.attendance.gd.EmployeeAttendanceDTO;

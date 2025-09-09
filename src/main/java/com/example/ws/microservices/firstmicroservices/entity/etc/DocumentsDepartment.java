@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.entity.etc;
 
-import com.example.ws.microservices.firstmicroservices.entity.vision.simpleTables.Department;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Department;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

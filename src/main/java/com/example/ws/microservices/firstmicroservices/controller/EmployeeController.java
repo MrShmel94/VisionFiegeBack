@@ -1,8 +1,8 @@
 package com.example.ws.microservices.firstmicroservices.controller;
 
-import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO;
-import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.request.*;
 import com.example.ws.microservices.firstmicroservices.response.ConfigurationRegistrationDTO;
 import com.example.ws.microservices.firstmicroservices.response.CreateEmployeeResponse;

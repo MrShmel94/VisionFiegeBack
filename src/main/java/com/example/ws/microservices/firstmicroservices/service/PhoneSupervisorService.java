@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.service;
 
-import com.example.ws.microservices.firstmicroservices.dto.PhoneDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.phonesupervisor.PhoneDTO;
 
 import java.util.List;
 

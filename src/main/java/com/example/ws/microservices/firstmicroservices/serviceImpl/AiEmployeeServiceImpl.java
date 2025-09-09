@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
 import com.example.ws.microservices.firstmicroservices.customError.EmployeeNotFound;
-import com.example.ws.microservices.firstmicroservices.entity.vision.AiEmployee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.aiemployee.AiEmployee;
 import com.example.ws.microservices.firstmicroservices.repository.AiEmployeeRepository;
 import com.example.ws.microservices.firstmicroservices.service.AiEmployeeService;
 import lombok.RequiredArgsConstructor;

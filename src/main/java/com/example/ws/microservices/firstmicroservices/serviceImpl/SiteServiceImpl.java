@@ -1,10 +1,9 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
-import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.DepartmentDTO;
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.SiteDTO;
-import com.example.ws.microservices.firstmicroservices.entity.vision.EmployeeMapping;
-import com.example.ws.microservices.firstmicroservices.entity.vision.simpleTables.*;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.*;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.*;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.SiteDTO;
 import com.example.ws.microservices.firstmicroservices.repository.SiteRepository;
 import com.example.ws.microservices.firstmicroservices.request.SiteRequestModel;
 import com.example.ws.microservices.firstmicroservices.secure.aspects.AccessControl;
@@ -17,7 +16,6 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.criteria.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;

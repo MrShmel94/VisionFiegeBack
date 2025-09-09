@@ -1,13 +1,11 @@
 package com.example.ws.microservices.firstmicroservices.request.attendance.gd;
 
-import com.example.ws.microservices.firstmicroservices.dto.ShiftTimeWorkDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.shifttimework.ShiftTimeWorkDTO;
 import com.example.ws.microservices.firstmicroservices.dto.attendance.gd.AttendanceStatusDTO;
 import com.example.ws.microservices.firstmicroservices.response.attendance.gd.ResponseScheduleTemplate;
-import com.example.ws.microservices.firstmicroservices.service.attendance.gd.AttendanceStatusService;
 import com.example.ws.microservices.firstmicroservices.service.attendance.gd.ScheduleTemplateService;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.util.CollectionUtils;
 

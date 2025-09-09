@@ -2,10 +2,10 @@ package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
 import com.example.ws.microservices.firstmicroservices.customError.AuthenticationFailedException;
 import com.example.ws.microservices.firstmicroservices.customError.CustomNotFoundException;
-import com.example.ws.microservices.firstmicroservices.entity.vision.AiEmployee;
-import com.example.ws.microservices.firstmicroservices.entity.vision.Employee;
-import com.example.ws.microservices.firstmicroservices.entity.vision.EmployeeMapping;
-import com.example.ws.microservices.firstmicroservices.entity.vision.simpleTables.*;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.aiemployee.AiEmployee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.Employee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.*;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.*;
 import com.example.ws.microservices.firstmicroservices.mapper.EmployeeMapper;
 import com.example.ws.microservices.firstmicroservices.repository.EmployeeMappingRepository;
 import com.example.ws.microservices.firstmicroservices.repository.EmployeeRepositoryCustom;

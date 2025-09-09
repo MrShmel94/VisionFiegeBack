@@ -1,8 +1,8 @@
 package com.example.ws.microservices.firstmicroservices.service;
 
-import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.SiteDTO;
-import com.example.ws.microservices.firstmicroservices.entity.vision.simpleTables.Site;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.SiteDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Site;
 import com.example.ws.microservices.firstmicroservices.request.SiteRequestModel;
 
 import java.util.List;

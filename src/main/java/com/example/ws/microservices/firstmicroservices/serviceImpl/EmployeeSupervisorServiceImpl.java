@@ -1,9 +1,9 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
-import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO;
-import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.repository.EmployeeSupervisorRepository;
 import com.example.ws.microservices.firstmicroservices.request.RemoveSupervisionRequest;
 import com.example.ws.microservices.firstmicroservices.request.RequestSetEmployeeToSupervisor;

@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.repository;
 
-import com.example.ws.microservices.firstmicroservices.entity.vision.AiEmployee;
-import com.example.ws.microservices.firstmicroservices.entity.vision.EmployeeMapping;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.aiemployee.AiEmployee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.EmployeeMapping;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;

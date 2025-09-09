@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.repository.cache;
 
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.PhoneEmailTypeSupervisorDTO;
-import com.example.ws.microservices.firstmicroservices.entity.vision.PhoneEmailTypeSupervisor;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.PhoneEmailTypeSupervisorDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.phoneemailtypesupervisor.PhoneEmailTypeSupervisor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

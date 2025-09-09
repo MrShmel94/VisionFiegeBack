@@ -1,12 +1,11 @@
 package com.example.ws.microservices.firstmicroservices.entity.performance_gd;
 
-import com.example.ws.microservices.firstmicroservices.entity.vision.ShiftTimeWork;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.shifttimework.ShiftTimeWork;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.time.LocalDate;
 

@@ -1,7 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.domain.usermanagement.role;
 
-import com.example.ws.microservices.firstmicroservices.dto.RoleDTO;
-import com.example.ws.microservices.firstmicroservices.dto.UserRoleDTO;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleDTO;
 
 import java.util.List;
 

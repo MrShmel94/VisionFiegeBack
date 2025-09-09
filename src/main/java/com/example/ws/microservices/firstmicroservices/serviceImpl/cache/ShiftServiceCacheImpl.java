@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.cache;
 
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.ShiftDTO;
-import com.example.ws.microservices.firstmicroservices.entity.vision.simpleTables.Shift;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.ShiftDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Shift;
 import com.example.ws.microservices.firstmicroservices.repository.cache.ShiftRepositoryCache;
 import com.example.ws.microservices.firstmicroservices.service.cache.ShiftServiceCache;
 import lombok.AllArgsConstructor;

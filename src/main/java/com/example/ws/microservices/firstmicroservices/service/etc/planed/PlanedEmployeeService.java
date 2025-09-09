@@ -1,9 +1,8 @@
 package com.example.ws.microservices.firstmicroservices.service.etc.planed;
 
-import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.etc.planed.PlanedEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.request.etc.MultiPlanedEmployeeRequest;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

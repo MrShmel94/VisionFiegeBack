@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.cache;
 
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.DepartmentDTO;
-import com.example.ws.microservices.firstmicroservices.entity.vision.simpleTables.Department;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.DepartmentDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Department;
 import com.example.ws.microservices.firstmicroservices.repository.cache.DepartmentRepositoryCache;
 import com.example.ws.microservices.firstmicroservices.service.cache.DepartmentServiceCache;
 import lombok.AllArgsConstructor;

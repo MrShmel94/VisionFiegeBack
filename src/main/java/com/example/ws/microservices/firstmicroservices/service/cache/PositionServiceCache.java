@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.service.cache;
 
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.PositionDTO;
-import com.example.ws.microservices.firstmicroservices.entity.vision.simpleTables.Position;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.PositionDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.Position;
 import com.example.ws.microservices.firstmicroservices.service.redice.CachingService;
 
 import java.util.List;

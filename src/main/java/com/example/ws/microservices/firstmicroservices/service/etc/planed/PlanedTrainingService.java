@@ -1,7 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.service.etc.planed;
 
-import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.dto.etc.DocumentDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.etc.planed.PlanedTrainingDTO;
 import com.example.ws.microservices.firstmicroservices.request.etc.PlaningTrainingRequest;
 

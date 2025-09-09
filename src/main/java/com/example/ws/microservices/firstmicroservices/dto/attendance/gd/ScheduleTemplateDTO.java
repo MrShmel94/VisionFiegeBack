@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.dto.attendance.gd;
 
-import com.example.ws.microservices.firstmicroservices.dto.SmallInformationSupervisorDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.SmallInformationSupervisorDTO;
 import com.example.ws.microservices.firstmicroservices.request.attendance.gd.DayScheduleRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.util.Map;
 
 @Data

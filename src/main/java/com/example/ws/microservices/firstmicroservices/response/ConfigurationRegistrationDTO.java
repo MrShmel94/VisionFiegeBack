@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.response;
 
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.*;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.*;
 import lombok.Builder;
 import lombok.Data;
 

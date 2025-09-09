@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.domain.usermanagement.user;
 
-import com.example.ws.microservices.firstmicroservices.entity.vision.Employee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.Employee;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

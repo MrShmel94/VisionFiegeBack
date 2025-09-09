@@ -1,10 +1,10 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.etc.planed;
 
-import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.attendance.gd.AttendanceUpdateDto;
 import com.example.ws.microservices.firstmicroservices.dto.etc.planed.PlanedEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.dto.templateTables.PositionDTO;
-import com.example.ws.microservices.firstmicroservices.entity.vision.Employee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.reference.dto.PositionDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.Employee;
 import com.example.ws.microservices.firstmicroservices.entity.etc.planed.PlanedEmployee;
 import com.example.ws.microservices.firstmicroservices.entity.etc.planed.PlanedTraining;
 import com.example.ws.microservices.firstmicroservices.repository.etc.planed.PlanedEmployeeRepository;

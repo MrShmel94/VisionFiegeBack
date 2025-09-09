@@ -1,10 +1,9 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl.etc.planed;
 
-import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.etc.DocumentDTO;
 import com.example.ws.microservices.firstmicroservices.dto.etc.planed.PlanedEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.etc.planed.PlanedTrainingDTO;
-import com.example.ws.microservices.firstmicroservices.entity.attendance.gd.ScheduleTemplate;
 import com.example.ws.microservices.firstmicroservices.entity.etc.Document;
 import com.example.ws.microservices.firstmicroservices.entity.etc.planed.PlanedTraining;
 import com.example.ws.microservices.firstmicroservices.repository.etc.planed.PlanedTrainingRepository;
@@ -20,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.lang.management.LockInfo;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;

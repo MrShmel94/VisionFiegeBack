@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.response.attendance.gd;
 
-import com.example.ws.microservices.firstmicroservices.dto.ShiftTimeWorkDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.shifttimework.ShiftTimeWorkDTO;
 import com.example.ws.microservices.firstmicroservices.dto.attendance.gd.AttendanceStatusDTO;
 import lombok.Builder;
 import lombok.Data;

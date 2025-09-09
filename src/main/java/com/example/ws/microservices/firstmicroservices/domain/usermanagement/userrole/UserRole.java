@@ -1,6 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole;
 
 
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleId;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

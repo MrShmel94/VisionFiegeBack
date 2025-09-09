@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.repository;
 
-import com.example.ws.microservices.firstmicroservices.entity.vision.EmployeeMapping;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeemapping.EmployeeMapping;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

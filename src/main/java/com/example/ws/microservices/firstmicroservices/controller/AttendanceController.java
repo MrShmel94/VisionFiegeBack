@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.controller;
 
 
-import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.attendance.gd.ScheduleTemplateDTO;
 import com.example.ws.microservices.firstmicroservices.request.attendance.gd.GetAttendanceList;
 import com.example.ws.microservices.firstmicroservices.request.attendance.gd.ScheduleTemplateRequest;

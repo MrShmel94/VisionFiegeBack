@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.repository;
 
-import com.example.ws.microservices.firstmicroservices.dto.EmailDTO;
-import com.example.ws.microservices.firstmicroservices.entity.vision.EmailSupervisor;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.emailsupervisor.EmailDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.emailsupervisor.EmailSupervisor;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

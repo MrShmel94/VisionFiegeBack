@@ -1,10 +1,11 @@
 package com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole;
 
 import com.example.ws.microservices.firstmicroservices.customError.AuthenticationFailedException;
-import com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO;
-import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.dto.UserRoleDTO;
-import com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleId;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.Role;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.RoleRepository;
 import com.example.ws.microservices.firstmicroservices.request.AssignRoleUserRequest;

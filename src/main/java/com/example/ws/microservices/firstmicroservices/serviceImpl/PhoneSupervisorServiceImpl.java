@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
-import com.example.ws.microservices.firstmicroservices.dto.PhoneDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.phonesupervisor.PhoneDTO;
 import com.example.ws.microservices.firstmicroservices.repository.PhoneRepository;
 import com.example.ws.microservices.firstmicroservices.service.PhoneSupervisorService;
 import lombok.AllArgsConstructor;

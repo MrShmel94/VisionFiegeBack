@@ -1,10 +1,10 @@
 package com.example.ws.microservices.firstmicroservices.repository;
 
-import com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO;
-import com.example.ws.microservices.firstmicroservices.dto.InformationContractDTO;
-import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.entity.vision.Employee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.InformationContractDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.Employee;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
-    @Query("SELECT new com.example.ws.microservices.firstmicroservices.dto.EmployeeDTO("
+    @Query("SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeDTO("
             + "e.id, e.expertis, e.brCode, "
             + "e.firstName, e.lastName, e.isWork, e.sex, "
             + "s.name, sh.name, d.name, t.name, p.name, a.name, e.isCanHasAccount, e.isSupervisor, e.validToAccount, e.validFromAccount, st.name, e.temporaryAssignmentFrom, e.temporaryAssignmentTo) "

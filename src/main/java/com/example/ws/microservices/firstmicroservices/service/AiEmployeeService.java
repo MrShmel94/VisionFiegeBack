@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.service;
 
-import com.example.ws.microservices.firstmicroservices.entity.vision.AiEmployee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.aiemployee.AiEmployee;
 
 import java.util.List;
 

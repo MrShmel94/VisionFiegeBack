@@ -1,8 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.response;
 
-import com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.dto.RoleDTO;
-import com.example.ws.microservices.firstmicroservices.dto.UserRoleDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.RoleDTO;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Data;
