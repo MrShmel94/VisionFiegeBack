@@ -1,7 +1,8 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
 import com.example.ws.microservices.firstmicroservices.customError.AuthenticationFailedException;
-import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.UserRoleService;
 import com.example.ws.microservices.firstmicroservices.dto.*;
 import com.example.ws.microservices.firstmicroservices.request.AssignRoleUserRequest;
 import com.example.ws.microservices.firstmicroservices.response.ResponseUsersNotVerification;

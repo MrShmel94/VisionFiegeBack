@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.service;
+package com.example.ws.microservices.firstmicroservices.domain.usermanagement.refreshtoken;
 
 import jakarta.servlet.http.HttpServletRequest;
 

@@ -5,7 +5,7 @@ import com.example.ws.microservices.firstmicroservices.dto.templateTables.*;
 import com.example.ws.microservices.firstmicroservices.response.ConfigurationRegistrationDTO;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
-import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AllArgsConstructor;

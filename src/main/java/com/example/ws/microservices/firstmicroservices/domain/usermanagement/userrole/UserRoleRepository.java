@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.repository;
+package com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole;
 
 import com.example.ws.microservices.firstmicroservices.entity.vision.role.UserRole;
 import com.example.ws.microservices.firstmicroservices.entity.vision.role.UserRoleId;

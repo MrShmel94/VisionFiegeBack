@@ -1,8 +1,7 @@
-package com.example.ws.microservices.firstmicroservices.controller;
+package com.example.ws.microservices.firstmicroservices.domain.usermanagement.refreshtoken;
 
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
-import com.example.ws.microservices.firstmicroservices.service.RefreshTokenService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

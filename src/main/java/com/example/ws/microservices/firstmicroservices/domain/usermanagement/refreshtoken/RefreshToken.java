@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.entity.vision;
+package com.example.ws.microservices.firstmicroservices.domain.usermanagement.refreshtoken;
 
 import jakarta.persistence.*;
 import lombok.Getter;

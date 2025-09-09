@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.serviceImpl;
 
 import com.example.ws.microservices.firstmicroservices.customError.EmailCooldownException;
-import com.example.ws.microservices.firstmicroservices.service.UserLookupService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserLookupService;
 import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
 import jakarta.annotation.Nullable;
 import lombok.RequiredArgsConstructor;

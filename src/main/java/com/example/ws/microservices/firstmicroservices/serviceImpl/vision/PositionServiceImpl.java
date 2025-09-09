@@ -5,7 +5,7 @@ import com.example.ws.microservices.firstmicroservices.dto.templateTables.Positi
 import com.example.ws.microservices.firstmicroservices.repository.vision.PositionRepository;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
-import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import com.example.ws.microservices.firstmicroservices.service.cache.PositionServiceCache;
 import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
 import com.example.ws.microservices.firstmicroservices.service.vision.PositionService;

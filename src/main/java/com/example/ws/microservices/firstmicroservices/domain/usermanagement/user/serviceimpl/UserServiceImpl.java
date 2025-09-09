@@ -1,9 +1,13 @@
-package com.example.ws.microservices.firstmicroservices.domain.usermanagement.user;
+package com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.serviceimpl;
 
 import com.example.ws.microservices.firstmicroservices.customError.CustomException;
 import com.example.ws.microservices.firstmicroservices.customError.UnauthenticatedException;
 import com.example.ws.microservices.firstmicroservices.customError.UserAlreadyExistsException;
 import com.example.ws.microservices.firstmicroservices.customError.VerificationException;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserEntity;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserMapper;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserRepository;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserDto;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserMeDTO;
 import com.example.ws.microservices.firstmicroservices.dto.*;

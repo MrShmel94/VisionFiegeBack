@@ -1,9 +1,6 @@
-package com.example.ws.microservices.firstmicroservices.serviceImpl;
+package com.example.ws.microservices.firstmicroservices.domain.usermanagement.refreshtoken;
 
-import com.example.ws.microservices.firstmicroservices.entity.vision.RefreshToken;
-import com.example.ws.microservices.firstmicroservices.repository.RefreshTokenRepository;
 import com.example.ws.microservices.firstmicroservices.secure.SecurityConstants;
-import com.example.ws.microservices.firstmicroservices.service.RefreshTokenService;
 import com.example.ws.microservices.firstmicroservices.utils.Utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

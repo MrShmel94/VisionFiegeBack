@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.secure;
 
-import com.example.ws.microservices.firstmicroservices.service.RefreshTokenService;
-import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.refreshtoken.RefreshTokenService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import com.example.ws.microservices.firstmicroservices.utils.Utils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

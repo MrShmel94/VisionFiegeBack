@@ -1,10 +1,10 @@
-package com.example.ws.microservices.firstmicroservices.serviceImpl;
+package com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.serviceimpl;
 
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserDto;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserEntity;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserMapper;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserRepository;
-import com.example.ws.microservices.firstmicroservices.service.UserLookupService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserLookupService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;

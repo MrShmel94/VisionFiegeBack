@@ -4,7 +4,7 @@ import com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformat
 import com.example.ws.microservices.firstmicroservices.dto.templateTables.DepartmentDTO;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
-import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import com.example.ws.microservices.firstmicroservices.service.cache.DepartmentServiceCache;
 import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
 import com.example.ws.microservices.firstmicroservices.service.vision.DepartmentService;

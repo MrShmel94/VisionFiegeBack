@@ -1,5 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.domain.usermanagement.user;
 
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserDto;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserMeDTO;
@@ -7,8 +8,8 @@ import com.example.ws.microservices.firstmicroservices.request.AssignRoleUserReq
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserDetailsRequestModel;
 import com.example.ws.microservices.firstmicroservices.response.ResponseUsersNotVerification;
 import com.example.ws.microservices.firstmicroservices.service.AccessManagementService;
-import com.example.ws.microservices.firstmicroservices.service.UserLookupService;
-import com.example.ws.microservices.firstmicroservices.service.UserRoleService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserLookupService;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.UserRoleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
