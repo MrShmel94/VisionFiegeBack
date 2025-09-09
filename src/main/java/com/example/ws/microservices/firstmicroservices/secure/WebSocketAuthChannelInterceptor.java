@@ -2,7 +2,7 @@ package com.example.ws.microservices.firstmicroservices.secure;
 
 
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
-import com.example.ws.microservices.firstmicroservices.utils.Utils;
+import com.example.ws.microservices.firstmicroservices.common.utils.Utils;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;

@@ -1,9 +1,9 @@
 package com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.serviceimpl;
 
-import com.example.ws.microservices.firstmicroservices.customError.CustomException;
-import com.example.ws.microservices.firstmicroservices.customError.UnauthenticatedException;
-import com.example.ws.microservices.firstmicroservices.customError.UserAlreadyExistsException;
-import com.example.ws.microservices.firstmicroservices.customError.VerificationException;
+import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.CustomException;
+import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.UnauthenticatedException;
+import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.UserAlreadyExistsException;
+import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.VerificationException;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SmallInformationSupervisorDTO;
@@ -16,10 +16,10 @@ import com.example.ws.microservices.firstmicroservices.domain.usermanagement.use
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserDto;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserMeDTO;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleDTO;
+import com.example.ws.microservices.firstmicroservices.oldstructure.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
-import com.example.ws.microservices.firstmicroservices.service.*;
-import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
-import com.example.ws.microservices.firstmicroservices.serviceImpl.EmailTokenService;
+import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.oldstructure.serviceImpl.EmailTokenService;
 import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;

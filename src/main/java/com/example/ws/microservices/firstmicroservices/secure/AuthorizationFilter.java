@@ -1,11 +1,11 @@
 package com.example.ws.microservices.firstmicroservices.secure;
 
-import com.example.ws.microservices.firstmicroservices.customError.AuthenticationFailedException;
-import com.example.ws.microservices.firstmicroservices.customError.InvalidTokenException;
-import com.example.ws.microservices.firstmicroservices.customError.TooManyRequestsException;
+import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.AuthenticationFailedException;
+import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.InvalidTokenException;
+import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.TooManyRequestsException;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.refreshtoken.RefreshTokenService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
-import com.example.ws.microservices.firstmicroservices.utils.Utils;
+import com.example.ws.microservices.firstmicroservices.common.utils.Utils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;

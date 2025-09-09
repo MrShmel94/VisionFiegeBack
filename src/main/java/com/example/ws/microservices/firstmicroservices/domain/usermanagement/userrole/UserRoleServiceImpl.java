@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole;
 
-import com.example.ws.microservices.firstmicroservices.customError.AuthenticationFailedException;
+import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.AuthenticationFailedException;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleId;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
@@ -8,13 +8,13 @@ import com.example.ws.microservices.firstmicroservices.domain.usermanagement.use
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.Role;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.RoleRepository;
-import com.example.ws.microservices.firstmicroservices.request.AssignRoleUserRequest;
+import com.example.ws.microservices.firstmicroservices.oldstructure.request.AssignRoleUserRequest;
 import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
-import com.example.ws.microservices.firstmicroservices.service.EmployeeService;
+import com.example.ws.microservices.firstmicroservices.oldstructure.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.RoleService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
-import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
+import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;

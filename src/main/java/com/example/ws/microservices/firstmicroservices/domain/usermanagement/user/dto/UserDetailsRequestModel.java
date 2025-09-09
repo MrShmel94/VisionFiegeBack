@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto;
 
-import com.example.ws.microservices.firstmicroservices.request.ValidBrCode;
-import com.example.ws.microservices.firstmicroservices.request.ValidPassword;
+import com.example.ws.microservices.firstmicroservices.oldstructure.request.ValidBrCode;
+import com.example.ws.microservices.firstmicroservices.oldstructure.request.ValidPassword;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
