@@ -1,10 +1,7 @@
-package com.example.ws.microservices.firstmicroservices.serviceImpl;
+package com.example.ws.microservices.firstmicroservices.domain.usermanagement.role;
 
 import com.example.ws.microservices.firstmicroservices.dto.RoleDTO;
 import com.example.ws.microservices.firstmicroservices.dto.UserRoleDTO;
-import com.example.ws.microservices.firstmicroservices.entity.vision.role.Role;
-import com.example.ws.microservices.firstmicroservices.repository.RoleRepository;
-import com.example.ws.microservices.firstmicroservices.service.RoleService;
 import com.example.ws.microservices.firstmicroservices.service.redice.RedisCacheService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AllArgsConstructor;

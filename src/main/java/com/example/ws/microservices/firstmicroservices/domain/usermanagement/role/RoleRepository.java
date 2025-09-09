@@ -1,8 +1,7 @@
-package com.example.ws.microservices.firstmicroservices.repository;
+package com.example.ws.microservices.firstmicroservices.domain.usermanagement.role;
 
 import com.example.ws.microservices.firstmicroservices.dto.RoleDTO;
 import com.example.ws.microservices.firstmicroservices.dto.UserRoleDTO;
-import com.example.ws.microservices.firstmicroservices.entity.vision.role.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

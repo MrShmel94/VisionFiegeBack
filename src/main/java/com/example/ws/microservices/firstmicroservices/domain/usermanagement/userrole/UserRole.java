@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.entity.vision.role;
+package com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole;
 
 
 import jakarta.persistence.*;

@@ -4,6 +4,7 @@ import com.example.ws.microservices.firstmicroservices.customError.CustomExcepti
 import com.example.ws.microservices.firstmicroservices.customError.UnauthenticatedException;
 import com.example.ws.microservices.firstmicroservices.customError.UserAlreadyExistsException;
 import com.example.ws.microservices.firstmicroservices.customError.VerificationException;
+import com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.RoleService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserEntity;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserMapper;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserRepository;
