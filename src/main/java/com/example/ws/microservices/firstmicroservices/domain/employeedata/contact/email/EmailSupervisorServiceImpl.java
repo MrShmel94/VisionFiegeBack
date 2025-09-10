@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.email;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.contact.email;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.phone;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.contact.phone;
 
 import java.util.List;
 

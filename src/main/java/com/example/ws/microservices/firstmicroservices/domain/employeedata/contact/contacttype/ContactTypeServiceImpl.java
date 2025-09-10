@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.contacttype;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.contact.contacttype;
 
 import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
 import lombok.RequiredArgsConstructor;

@@ -1,7 +1,7 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.contacttype;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.contact.contacttype;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.email.Email;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.phone.Phone;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.contact.email.Email;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.contact.phone.Phone;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

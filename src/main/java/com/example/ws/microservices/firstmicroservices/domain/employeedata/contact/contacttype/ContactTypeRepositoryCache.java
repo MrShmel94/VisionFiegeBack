@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.contacttype;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.contact.contacttype;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

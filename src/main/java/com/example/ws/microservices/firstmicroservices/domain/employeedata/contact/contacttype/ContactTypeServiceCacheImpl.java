@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.contacttype;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.contact.contacttype;
 
 import lombok.AllArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;

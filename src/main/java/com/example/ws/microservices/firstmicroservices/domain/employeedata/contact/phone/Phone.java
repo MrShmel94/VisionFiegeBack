@@ -1,7 +1,7 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.email;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.contact.phone;
 
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.Employee;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.contacttype.ContactType;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.contact.contacttype.ContactType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -9,15 +9,16 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "email_supervisor")
-public class Email {
+@Table(name = "phone_supervisor")
+public class Phone {
+
     @Id
-    @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Column(name = "email", nullable = false, length = 256)
-    private String email;
+    @Column(name = "phone_number", nullable = false , length = 128)
+    private String phoneNumber;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id", nullable = false)
@@ -29,5 +30,4 @@ public class Email {
 
     @Column(name = "user_id", nullable = false)
     private String userId;
-
 }
