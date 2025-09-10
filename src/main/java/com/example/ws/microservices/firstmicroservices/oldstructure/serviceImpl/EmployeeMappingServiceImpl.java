@@ -2,7 +2,7 @@ package com.example.ws.microservices.firstmicroservices.oldstructure.serviceImpl
 
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.AuthenticationFailedException;
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.CustomNotFoundException;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.aiemployee.AiEmployee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.EmployeeDetails;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.Employee;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.EmployeeMapping;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.*;
@@ -91,7 +91,7 @@ public class EmployeeMappingServiceImpl implements EmployeeMappingService {
                     errorMessages.add(err);
                 } else {
                     EmployeeMapping employee = EmployeeMapper.INSTANCE.toEmployeeMapping(request);
-                    AiEmployee aiEmployee = EmployeeMapper.INSTANCE.toAiEmployee(request);
+                    EmployeeDetails employeeDetails = EmployeeMapper.INSTANCE.toAiEmployee(request);
 
                     Site site = validSites.computeIfAbsent(
                             request.getSite(),
@@ -186,10 +186,10 @@ public class EmployeeMappingServiceImpl implements EmployeeMappingService {
 
                     employee.setUserId(user.getUserId());
                     employee.setAgency(agencyEntity);
-                    aiEmployee.setEmployee(employee);
-                    aiEmployee.setUserId(user.getUserId());
+                    employeeDetails.setEmployee(employee);
+                    employeeDetails.setUserId(user.getUserId());
 
-                    employeeDataList.add(new EmployeeData(employee, aiEmployee));
+                    employeeDataList.add(new EmployeeData(employee, employeeDetails));
                 }
             }else {
                 String err = "Mismatch between your site and the employee’s assigned site.";
@@ -241,7 +241,7 @@ public class EmployeeMappingServiceImpl implements EmployeeMappingService {
         List<EmployeeMapping> finalEmployees = finalEmployeeData.stream()
                 .map(EmployeeData::getEmployee)
                 .collect(Collectors.toList());
-        List<AiEmployee> finalAdditionalInfo = finalEmployeeData.stream()
+        List<EmployeeDetails> finalAdditionalInfo = finalEmployeeData.stream()
                 .map(EmployeeData::getAdditional)
                 .collect(Collectors.toList());
 
@@ -274,9 +274,9 @@ public class EmployeeMappingServiceImpl implements EmployeeMappingService {
 
         ConfigurationRegistrationDTO config = configurationService.getConfigurationForSite(request.getSite());
         Employee employee = employeeService.getEmployeeByExpertis(request.getExpertis());
-        AiEmployee aiEmployee = aiEmployeeService.getAiEmployeeById(employee.getId());
+        EmployeeDetails employeeDetails = aiEmployeeService.getAiEmployeeById(employee.getId());
 
-        EmployeeMapper.INSTANCE.updateAiEmployeeFromRequest(request, aiEmployee);
+        EmployeeMapper.INSTANCE.updateAiEmployeeFromRequest(request, employeeDetails);
 
         if (config == null) {
             String err = String.format("Configuration not found for site: %s", request.getSite());
@@ -381,7 +381,7 @@ public class EmployeeMappingServiceImpl implements EmployeeMappingService {
             EmployeeMapper.INSTANCE.updateEmployeeFromRequest(request, employee);
 
             employeeService.save(employee);
-            aiEmployeeService.save(aiEmployee);
+            aiEmployeeService.save(employeeDetails);
 
             employeeService.removeEmployeeFromRedis(request.getExpertis());
 

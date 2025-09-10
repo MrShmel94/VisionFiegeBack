@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.oldstructure.serviceImpl;
 
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.EmployeeNotFound;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.aiemployee.AiEmployee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.EmployeeDetails;
 import com.example.ws.microservices.firstmicroservices.oldstructure.repository.AiEmployeeRepository;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.AiEmployeeService;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +19,13 @@ public class AiEmployeeServiceImpl implements AiEmployeeService {
     private final AiEmployeeRepository aiEmployeeRepository;
 
     @Override
-    public void saveAiEmployee(List<AiEmployee> aiEmployee) {
-        aiEmployeeRepository.saveAll(aiEmployee);
+    public void saveAiEmployee(List<EmployeeDetails> employeeDetails) {
+        aiEmployeeRepository.saveAll(employeeDetails);
     }
 
     @Override
-    public AiEmployee getAiEmployeeById(Long id) {
-        Optional<AiEmployee> aiEmployee = aiEmployeeRepository.findByEmployeeId(id);
+    public EmployeeDetails getAiEmployeeById(Long id) {
+        Optional<EmployeeDetails> aiEmployee = aiEmployeeRepository.findByEmployeeId(id);
         if(aiEmployee.isEmpty()){
             throw new EmployeeNotFound("Additional information about employee, not found");
         }else{
@@ -34,7 +34,7 @@ public class AiEmployeeServiceImpl implements AiEmployeeService {
     }
 
     @Override
-    public void save(AiEmployee aiEmployee) {
-        aiEmployeeRepository.save(aiEmployee);
+    public void save(EmployeeDetails employeeDetails) {
+        aiEmployeeRepository.save(employeeDetails);
     }
 }

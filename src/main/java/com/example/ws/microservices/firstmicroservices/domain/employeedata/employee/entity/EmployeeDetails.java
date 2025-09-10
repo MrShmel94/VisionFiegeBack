@@ -1,6 +1,5 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.aiemployee;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.EmployeeMapping;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,7 +11,7 @@ import java.time.LocalDate;
 @Setter
 @Entity
 @Table(name = "ai_employee")
-public class AiEmployee {
+public class EmployeeDetails {
 
     @Id
     @Column(name = "id", nullable = false)

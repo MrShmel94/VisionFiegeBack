@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.oldstructure.mapper;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.aiemployee.AiEmployee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.EmployeeDetails;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.Employee;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.EmployeeMapping;
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.CreateEmployeeRequest;
@@ -26,11 +26,11 @@ public interface EmployeeMapper {
     EmployeeMapping toEmployeeMapping(CreateEmployeeRequest createEmployeeRequest);
 
     @Mapping(target = "employee", ignore = true)
-    AiEmployee toAiEmployee(CreateEmployeeRequest createEmployeeRequest);
+    EmployeeDetails toAiEmployee(CreateEmployeeRequest createEmployeeRequest);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "employee", ignore = true)
-    void updateAiEmployeeFromRequest(CreateEmployeeRequest request, @MappingTarget AiEmployee aiEmployee);
+    void updateAiEmployeeFromRequest(CreateEmployeeRequest request, @MappingTarget EmployeeDetails employeeDetails);
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "siteId", ignore = true)

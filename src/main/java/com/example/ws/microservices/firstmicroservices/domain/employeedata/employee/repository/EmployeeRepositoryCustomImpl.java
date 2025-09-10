@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.repository;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.aiemployee.AiEmployee;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.EmployeeDetails;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.EmployeeMapping;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -34,7 +34,7 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
 
     @Override
     @Transactional
-    public void saveEmployeesAndAiData(List<EmployeeMapping> employees, List<AiEmployee> aiEmployees, int chunkSize) {
+    public void saveEmployeesAndAiData(List<EmployeeMapping> employees, List<EmployeeDetails> employeeDetails, int chunkSize) {
         for (int i = 0; i < employees.size(); i++) {
             entityManager.persist(employees.get(i));
             if (i > 0 && i % chunkSize == 0) {
@@ -45,8 +45,8 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
         entityManager.flush();
         entityManager.clear();
 
-        for (int i = 0; i < aiEmployees.size(); i++) {
-            AiEmployee ai = aiEmployees.get(i);
+        for (int i = 0; i < employeeDetails.size(); i++) {
+            EmployeeDetails ai = employeeDetails.get(i);
             EmployeeMapping employee = employees.get(i);
             ai.setEmployee(employee);
         }
@@ -54,7 +54,7 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
         jdbcTemplate.batchUpdate(SQL_INSERT_AI_EMPLOYEE, new BatchPreparedStatementSetter() {
             @Override
             public void setValues(PreparedStatement ps, int i) throws SQLException {
-                AiEmployee ai = aiEmployees.get(i);
+                EmployeeDetails ai = employeeDetails.get(i);
                 ps.setString(1, ai.getNote());
                 ps.setDate(2, Date.valueOf(ai.getDateStartContract()));
                 ps.setDate(3, Date.valueOf(ai.getDateFinishContract()));
@@ -69,7 +69,7 @@ public class EmployeeRepositoryCustomImpl implements EmployeeRepositoryCustom {
 
             @Override
             public int getBatchSize() {
-                return aiEmployees.size();
+                return employeeDetails.size();
             }
         });
     }
