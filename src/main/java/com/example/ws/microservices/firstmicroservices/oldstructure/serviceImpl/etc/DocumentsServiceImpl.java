@@ -5,7 +5,7 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.dto.etc.Docu
 import com.example.ws.microservices.firstmicroservices.oldstructure.dto.etc.TypeDocumentsDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.DepartmentDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.PositionDTO;
-import com.example.ws.microservices.firstmicroservices.entity.etc.*;
+import com.example.ws.microservices.firstmicroservices.oldstructure.entity.etc.*;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.Department;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.Position;
 import com.example.ws.microservices.firstmicroservices.oldstructure.entity.etc.*;
@@ -16,7 +16,7 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.service.etc.
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
-import com.example.ws.microservices.firstmicroservices.service.etc.*;
+import com.example.ws.microservices.firstmicroservices.oldstructure.service.etc.*;
 import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.vision.DepartmentService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.vision.PositionService;
