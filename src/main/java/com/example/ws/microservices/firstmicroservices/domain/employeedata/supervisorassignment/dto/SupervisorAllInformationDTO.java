@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto;
 
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.contact.email.EmailDTO;

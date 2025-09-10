@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.oldstructure.serviceImpl.etc;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SupervisorAllInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.dto.etc.DocumentDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.dto.etc.TypeDocumentsDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.department.DepartmentDTO;

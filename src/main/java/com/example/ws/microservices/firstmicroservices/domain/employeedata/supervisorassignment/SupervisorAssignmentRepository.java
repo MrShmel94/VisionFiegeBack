@@ -1,8 +1,8 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment;
 
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.EmployeeSupervisorId;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto.EmployeeSupervisorDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -11,7 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.util.List;
 
-public interface EmployeeSupervisorRepository extends JpaRepository<EmployeeSupervisor, EmployeeSupervisorId> {
+public interface SupervisorAssignmentRepository extends JpaRepository<SupervisorAssignment, EmployeeSupervisorDTO> {
 
     @Query(value = """
             WITH deleted AS (

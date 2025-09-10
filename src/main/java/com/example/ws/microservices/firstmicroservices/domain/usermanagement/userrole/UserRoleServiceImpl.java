@@ -5,7 +5,7 @@ import com.example.ws.microservices.firstmicroservices.domain.usermanagement.use
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SupervisorAllInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.Role;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.RoleRepository;
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.AssignRoleUserRequest;

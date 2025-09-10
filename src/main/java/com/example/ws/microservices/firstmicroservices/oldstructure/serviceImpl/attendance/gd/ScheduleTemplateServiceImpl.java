@@ -3,7 +3,7 @@ package com.example.ws.microservices.firstmicroservices.oldstructure.serviceImpl
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.VerificationException;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.dto.attendance.gd.ShiftTimeWorkDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SmallInformationSupervisorDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto.SupervisorFullNameDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.dto.attendance.gd.AttendanceStatusDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.dto.attendance.gd.ScheduleTemplateDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.entity.attendance.DaySchedule;
@@ -89,8 +89,8 @@ public class ScheduleTemplateServiceImpl implements ScheduleTemplateService {
     }
 
     private ScheduleTemplateDTO convertEntityToScheduleTemplateDTO(ScheduleTemplate scheduleTemplate, ResponseScheduleTemplate template) {
-        SmallInformationSupervisorDTO informationAboutUser = userService
-                .getSmallInformationSupervisor(scheduleTemplate.getUserId()).orElse(SmallInformationSupervisorDTO.builder()
+        SupervisorFullNameDTO informationAboutUser = userService
+                .getSmallInformationSupervisor(scheduleTemplate.getUserId()).orElse(SupervisorFullNameDTO.builder()
                         .firstName("Unknown")
                         .lastName("Unknown")
                         .build());

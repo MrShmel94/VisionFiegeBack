@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment;
 
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
@@ -7,7 +7,7 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.request.Requ
 
 import java.util.List;
 
-public interface EmployeeSupervisorService {
+public interface SupervisorAssignmentService {
 
     List<String> addEmployeeAccessForSupervisor(List<RequestSetEmployeeToSupervisor> employees);
     List<EmployeeFullInformationDTO> getAllEmployeeBySupervisor(String expertis);

@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EmployeeSupervisorId implements Serializable {
+public class EmployeeSupervisorDTO implements Serializable {
     private Long employeeId;
     private String supervisorExpertis;
 }

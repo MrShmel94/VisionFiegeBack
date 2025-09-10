@@ -1,9 +1,9 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment;
 
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SupervisorAllInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.RemoveSupervisionRequest;
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.RequestSetEmployeeToSupervisor;
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
@@ -30,9 +30,9 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class EmployeeSupervisorServiceImpl implements EmployeeSupervisorService {
+public class SupervisorAssignmentServiceImpl implements SupervisorAssignmentService {
 
-    private final EmployeeSupervisorRepository repository;
+    private final SupervisorAssignmentRepository repository;
     private final EmployeeService employeeService;
     private final UserService userService;
     private final RedisCacheService redisCacheService;

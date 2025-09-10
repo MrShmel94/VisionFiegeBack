@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.oldstructure.dto.attendance.gd;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SmallInformationSupervisorDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto.SupervisorFullNameDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.attendance.gd.DayScheduleRequest;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -21,6 +21,6 @@ public class ScheduleTemplateDTO {
     private Map<String, DayScheduleRequest> schedule;
     private String nameScheduleTemplate;
     private String description;
-    private SmallInformationSupervisorDTO fullNameCreator;
+    private SupervisorFullNameDTO fullNameCreator;
 
 }

@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.position;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SupervisorAllInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;

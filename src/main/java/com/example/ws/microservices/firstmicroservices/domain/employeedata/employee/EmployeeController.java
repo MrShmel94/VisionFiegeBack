@@ -8,7 +8,7 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.response.Con
 import com.example.ws.microservices.firstmicroservices.oldstructure.response.CreateEmployeeResponse;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.service.EmployeeMappingService;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.service.EmployeeService;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.EmployeeSupervisorService;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.SupervisorAssignmentService;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.site.SiteService;
 import com.example.ws.microservices.firstmicroservices.common.cache.ConfigurationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,7 +37,7 @@ import java.util.*;
 public class EmployeeController {
 
     private final EmployeeService employeeServices;
-    private final EmployeeSupervisorService employeeSupervisorService;
+    private final SupervisorAssignmentService supervisorAssignmentService;
     private final EmployeeMappingService employeeMappingService;
     private final SiteService siteService;
     private final ConfigurationService configurationService;
@@ -145,7 +145,7 @@ public class EmployeeController {
     @GetMapping(path = "/getEmployeeWithoutSupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PreviewEmployeeDTO>> getListEmployeesWithoutSupervisor(){
         log.info("Controller: Fetching employees without supervisor.");
-        List<PreviewEmployeeDTO> employees = employeeSupervisorService.getEmployeeWithoutSupervisors();
+        List<PreviewEmployeeDTO> employees = supervisorAssignmentService.getEmployeeWithoutSupervisors();
         log.info("Controller: Found {} employees without supervisor.", employees.size());
         return ResponseEntity.ok(employees);
     }
@@ -166,7 +166,7 @@ public class EmployeeController {
     @GetMapping(path = "/getSupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<PreviewEmployeeDTO>> getListSupervisor() {
         log.info("Controller: Fetching supervisors.");
-        List<PreviewEmployeeDTO> supervisors = employeeSupervisorService.getSupervisors();
+        List<PreviewEmployeeDTO> supervisors = supervisorAssignmentService.getSupervisors();
         log.info("Controller: Found {} supervisors.", supervisors.size());
         return ResponseEntity.ok(supervisors);
     }
@@ -188,13 +188,13 @@ public class EmployeeController {
     @GetMapping(path = "/getEmployeeBySupervisor/{expertis}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<EmployeeFullInformationDTO>> getListEmployeeBySupervisor(
             @PathVariable("expertis") String expertis) {
-        List<EmployeeFullInformationDTO> employees = employeeSupervisorService.getAllEmployeeBySupervisor(expertis);
+        List<EmployeeFullInformationDTO> employees = supervisorAssignmentService.getAllEmployeeBySupervisor(expertis);
         return ResponseEntity.ok(employees);
     }
 
     @GetMapping(path = "/getEmployeeBySupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<EmployeeFullInformationDTO>> getListEmployeeBySupervisor() {
-        List<EmployeeFullInformationDTO> employees = employeeSupervisorService.getAllEmployeeBySupervisor();
+        List<EmployeeFullInformationDTO> employees = supervisorAssignmentService.getAllEmployeeBySupervisor();
         return ResponseEntity.ok(employees);
     }
 
@@ -219,7 +219,7 @@ public class EmployeeController {
     @PostMapping(path = "/setEmployeeToSupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<String>> setEmployeeToSupervisor(
             @RequestBody List<RequestSetEmployeeToSupervisor> setEmployeeToSupervisor) {
-        List<String> result = employeeSupervisorService.addEmployeeAccessForSupervisor(setEmployeeToSupervisor);
+        List<String> result = supervisorAssignmentService.addEmployeeAccessForSupervisor(setEmployeeToSupervisor);
         return ResponseEntity.ok(result);
     }
 
@@ -238,7 +238,7 @@ public class EmployeeController {
     @PostMapping(path = "/deleteEmployeeToSupervisor", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> deleteEmployeeToSupervisor(
             @RequestBody RemoveSupervisionRequest removeSupervisionRequest) {
-        employeeSupervisorService.deleteEmployeeAccessForSupervisor(removeSupervisionRequest);
+        supervisorAssignmentService.deleteEmployeeAccessForSupervisor(removeSupervisionRequest);
         return ResponseEntity.ok().build();
     }
 

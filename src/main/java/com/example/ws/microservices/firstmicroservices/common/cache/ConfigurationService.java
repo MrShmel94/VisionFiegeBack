@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.common.cache;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SupervisorAllInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.agency.AgencyDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.country.CountryDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.department.DepartmentDTO;

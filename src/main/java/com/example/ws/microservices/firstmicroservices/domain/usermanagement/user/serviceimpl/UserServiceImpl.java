@@ -6,8 +6,8 @@ import com.example.ws.microservices.firstmicroservices.common.errorhandling.cust
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.VerificationException;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SmallInformationSupervisorDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SupervisorAllInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto.SupervisorFullNameDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.RoleService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserEntity;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.UserMapper;
@@ -180,7 +180,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<SmallInformationSupervisorDTO> getSmallInformationSupervisor(@org.jetbrains.annotations.Nullable String userId) {
+    public Optional<SupervisorFullNameDTO> getSmallInformationSupervisor(@org.jetbrains.annotations.Nullable String userId) {
         return userRepository.findSmallInformationSupervisorDTOByUserId(userId);
     }
 

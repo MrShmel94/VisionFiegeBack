@@ -1,8 +1,8 @@
 package com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service;
 
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SmallInformationSupervisorDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SupervisorAllInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto.SupervisorFullNameDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserDto;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserMeDTO;
 import jakarta.annotation.Nullable;
@@ -18,7 +18,7 @@ public interface UserService extends UserDetailsService {
     UserDto updateUser(String id, UserDto userDto);
     void verifyUserAccount(String userId);
     SupervisorAllInformationDTO getSupervisorAllInformation(@Nullable String expertis, @Nullable String UserId);
-    Optional<SmallInformationSupervisorDTO> getSmallInformationSupervisor(@Nullable String UserId);
+    Optional<SupervisorFullNameDTO> getSmallInformationSupervisor(@Nullable String UserId);
 
     List<PreviewEmployeeDTO> getAllUsersWithoutVerification();
     List<PreviewEmployeeDTO> getAllUsersVerification();

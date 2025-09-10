@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "employee_supervisors")
-public class EmployeeSupervisor {
+public class SupervisorAssignment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

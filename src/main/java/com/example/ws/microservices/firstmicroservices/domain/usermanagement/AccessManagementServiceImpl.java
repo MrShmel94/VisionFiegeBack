@@ -3,7 +3,7 @@ package com.example.ws.microservices.firstmicroservices.domain.usermanagement;
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.AuthenticationFailedException;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SupervisorAllInformationDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.RoleService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.UserRoleService;
@@ -11,7 +11,7 @@ import com.example.ws.microservices.firstmicroservices.domain.usermanagement.use
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.AssignRoleUserRequest;
 import com.example.ws.microservices.firstmicroservices.oldstructure.response.ResponseUsersNotVerification;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.service.EmployeeService;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.EmployeeSupervisorService;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.SupervisorAssignmentService;
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.common.security.aspects.AccessControl;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AccessManagementServiceImpl implements AccessManagementService {
 
-    private final EmployeeSupervisorService supervisorService;
+    private final SupervisorAssignmentService supervisorService;
     private final EmployeeService employeeService;
     private final RedisCacheService redisCacheService;
     private final UserService userService;
