@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.oldstructure.serviceImpl;
 
-import com.example.ws.microservices.firstmicroservices.domain.attendace.shifttimework.ShiftTimeWorkDTO;
+import com.example.ws.microservices.firstmicroservices.oldstructure.dto.attendance.gd.ShiftTimeWorkDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.repository.ShiftTimeWorkRepository;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.ShiftTimeWorkService;
 import lombok.RequiredArgsConstructor;

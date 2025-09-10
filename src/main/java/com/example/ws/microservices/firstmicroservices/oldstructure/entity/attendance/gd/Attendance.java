@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.oldstructure.entity.attendance.gd;
 
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.Employee;
-import com.example.ws.microservices.firstmicroservices.domain.attendace.shifttimework.ShiftTimeWork;
+import com.example.ws.microservices.firstmicroservices.oldstructure.entity.attendance.ShiftTimeWork;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.Department;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.Site;
 import jakarta.persistence.*;

@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.oldstructure.entity.performance_gd;
 
-import com.example.ws.microservices.firstmicroservices.domain.attendace.shifttimework.ShiftTimeWork;
+import com.example.ws.microservices.firstmicroservices.oldstructure.entity.attendance.ShiftTimeWork;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

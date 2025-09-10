@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.oldstructure.repository;
 
-import com.example.ws.microservices.firstmicroservices.domain.attendace.shifttimework.ShiftTimeWork;
+import com.example.ws.microservices.firstmicroservices.oldstructure.entity.attendance.ShiftTimeWork;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -2,7 +2,7 @@ package com.example.ws.microservices.firstmicroservices.oldstructure.serviceImpl
 
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.VerificationException;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.domain.attendace.shifttimework.ShiftTimeWorkDTO;
+import com.example.ws.microservices.firstmicroservices.oldstructure.dto.attendance.gd.ShiftTimeWorkDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SmallInformationSupervisorDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.dto.attendance.gd.AttendanceStatusDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.dto.attendance.gd.ScheduleTemplateDTO;

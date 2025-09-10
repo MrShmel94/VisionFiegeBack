@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.oldstructure.request.attendance.gd;
 
-import com.example.ws.microservices.firstmicroservices.domain.attendace.shifttimework.ShiftTimeWorkDTO;
+import com.example.ws.microservices.firstmicroservices.oldstructure.dto.attendance.gd.ShiftTimeWorkDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.dto.attendance.gd.AttendanceStatusDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.response.attendance.gd.ResponseScheduleTemplate;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.attendance.gd.ScheduleTemplateService;

@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.domain.attendace.shifttimework;
+package com.example.ws.microservices.firstmicroservices.oldstructure.dto.attendance.gd;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

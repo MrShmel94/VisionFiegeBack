@@ -7,7 +7,7 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.dto.attendan
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.DepartmentDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.SiteDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.Employee;
-import com.example.ws.microservices.firstmicroservices.domain.attendace.shifttimework.ShiftTimeWork;
+import com.example.ws.microservices.firstmicroservices.oldstructure.entity.attendance.ShiftTimeWork;
 import com.example.ws.microservices.firstmicroservices.oldstructure.entity.attendance.DaySchedule;
 import com.example.ws.microservices.firstmicroservices.oldstructure.entity.attendance.gd.Attendance;
 import com.example.ws.microservices.firstmicroservices.oldstructure.entity.attendance.gd.AttendanceStatus;
