@@ -2,5 +2,5 @@ package com.example.ws.microservices.firstmicroservices.domain.employeedata.refe
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface PhoneEmailTypeSupervisorRepository extends JpaRepository<PhoneEmailTypeSupervisor, Long> {
+public interface ContactTypeRepository extends JpaRepository<ContactType, Long> {
 }

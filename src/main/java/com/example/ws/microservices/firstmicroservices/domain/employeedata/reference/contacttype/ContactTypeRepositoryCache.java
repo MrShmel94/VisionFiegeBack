@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface PhoneEmailTypeSupervisorRepositoryCache extends JpaRepository<PhoneEmailTypeSupervisor, Integer> {
+public interface ContactTypeRepositoryCache extends JpaRepository<ContactType, Integer> {
 
     @Query("""
             SELECT new com.example.ws.microservices.firstmicroservices.dto.templateTables.PhoneEmailTypeSupervisorDTO(
@@ -13,5 +13,5 @@ public interface PhoneEmailTypeSupervisorRepositoryCache extends JpaRepository<P
             )
             FROM PhoneEmailTypeSupervisor p
             """)
-    List<PhoneEmailTypeSupervisorDTO> getAllType();
+    List<ContactTypeDTO> getAllType();
 }

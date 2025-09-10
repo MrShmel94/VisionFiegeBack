@@ -12,7 +12,7 @@ import java.util.List;
 @Setter
 @Entity
 @Table(name = "phone_email_type_supervisor")
-public class PhoneEmailTypeSupervisor {
+public class ContactType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

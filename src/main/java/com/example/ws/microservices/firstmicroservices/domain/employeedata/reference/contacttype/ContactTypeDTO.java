@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @NoArgsConstructor
-public class PhoneEmailTypeSupervisorDTO {
+public class ContactTypeDTO {
 
     private Integer id;
     private String name;

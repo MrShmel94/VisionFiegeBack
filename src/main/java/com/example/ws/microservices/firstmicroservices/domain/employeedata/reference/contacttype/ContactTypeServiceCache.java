@@ -2,4 +2,4 @@ package com.example.ws.microservices.firstmicroservices.domain.employeedata.refe
 
 import com.example.ws.microservices.firstmicroservices.common.cache.redice.CachingService;
 
-public interface PhoneEmailTypeSupervisorServiceCache extends CachingService<PhoneEmailTypeSupervisorDTO> { }
+public interface ContactTypeServiceCache extends CachingService<ContactTypeDTO> { }

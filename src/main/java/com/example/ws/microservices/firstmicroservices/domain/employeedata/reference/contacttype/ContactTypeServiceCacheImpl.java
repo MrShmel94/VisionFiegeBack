@@ -8,13 +8,13 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class PhoneEmailTypeSupervisorServiceCacheImpl implements PhoneEmailTypeSupervisorServiceCache {
+public class ContactTypeServiceCacheImpl implements ContactTypeServiceCache {
 
-    private final PhoneEmailTypeSupervisorRepositoryCache phoneEmailTypeSupervisorRepositoryCache;
+    private final ContactTypeRepositoryCache contactTypeRepositoryCache;
 
     @Override
     public void preloadToCache(RedisTemplate<String, Object> redisTemplate) {
-        List<PhoneEmailTypeSupervisorDTO> allTypes = phoneEmailTypeSupervisorRepositoryCache.getAllType();
+        List<ContactTypeDTO> allTypes = contactTypeRepositoryCache.getAllType();
 
         redisTemplate.opsForValue().set("typePhoneAndEmail", allTypes);
 
@@ -24,12 +24,12 @@ public class PhoneEmailTypeSupervisorServiceCacheImpl implements PhoneEmailTypeS
     }
 
     @Override
-    public List<PhoneEmailTypeSupervisorDTO> getAllFromDB() {
-        return phoneEmailTypeSupervisorRepositoryCache.getAllType();
+    public List<ContactTypeDTO> getAllFromDB() {
+        return contactTypeRepositoryCache.getAllType();
     }
 
     @Override
     public boolean supportsType(Class<?> type) {
-        return type.equals(PhoneEmailTypeSupervisorDTO.class);
+        return type.equals(ContactTypeDTO.class);
     }
 }

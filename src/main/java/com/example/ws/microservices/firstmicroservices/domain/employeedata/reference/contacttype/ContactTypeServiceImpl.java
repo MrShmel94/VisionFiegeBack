@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PhoneEmailTypeSupervisorServiceImpl implements PhoneEmailTypeSupervisorService {
+public class ContactTypeServiceImpl implements ContactTypeService {
 
-    private final PhoneEmailTypeSupervisorRepository repository;
-    private final PhoneEmailTypeSupervisorServiceCache phoneEmailTypeSupervisorServiceCache;
+    private final ContactTypeRepository repository;
+    private final ContactTypeServiceCache contactTypeServiceCache;
     private final RedisCacheService redisCacheService;
 
 }

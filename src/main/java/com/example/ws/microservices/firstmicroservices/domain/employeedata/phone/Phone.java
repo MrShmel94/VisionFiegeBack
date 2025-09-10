@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.domain.employeedata.phone;
 
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.Employee;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.contacttype.PhoneEmailTypeSupervisor;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.contacttype.ContactType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -22,7 +22,7 @@ public class Phone {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "type_id", nullable = false)
-    private PhoneEmailTypeSupervisor typeId;
+    private ContactType typeId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
