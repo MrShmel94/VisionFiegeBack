@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.emailsupervisor;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.email;
 
 import lombok.Builder;
 import lombok.Data;

@@ -1,7 +1,7 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.emailsupervisor;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.email;
 
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.Employee;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.phoneemailtypesupervisor.PhoneEmailTypeSupervisor;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.PhoneEmailTypeSupervisor;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,7 +10,7 @@ import lombok.Setter;
 @Setter
 @Entity
 @Table(name = "email_supervisor")
-public class EmailSupervisor {
+public class Email {
     @Id
     @Column(name = "id", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)

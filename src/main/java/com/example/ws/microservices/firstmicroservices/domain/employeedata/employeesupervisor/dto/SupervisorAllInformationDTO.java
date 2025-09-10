@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto;
 
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.emailsupervisor.EmailDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.email.EmailDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.phonesupervisor.PhoneDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

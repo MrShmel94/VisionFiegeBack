@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.oldstructure.serviceImpl;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.emailsupervisor.EmailDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.email.EmailDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.repository.EmailRepository;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.EmailSupervisorService;
 import lombok.AllArgsConstructor;

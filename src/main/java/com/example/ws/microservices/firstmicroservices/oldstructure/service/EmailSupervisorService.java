@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.oldstructure.service;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.emailsupervisor.EmailDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.email.EmailDTO;
 
 import java.util.List;
 

@@ -1,6 +1,6 @@
-package com.example.ws.microservices.firstmicroservices.domain.employeedata.phoneemailtypesupervisor;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.reference;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.emailsupervisor.EmailSupervisor;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.email.Email;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.phonesupervisor.PhoneSupervisor;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -25,7 +25,7 @@ public class PhoneEmailTypeSupervisor {
     private List<PhoneSupervisor> phones;
 
     @OneToMany(mappedBy = "typeId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EmailSupervisor> emails;
+    private List<Email> emails;
 
     @Column(name = "user_id", nullable = false)
     private String userId;

@@ -1,14 +1,14 @@
 package com.example.ws.microservices.firstmicroservices.oldstructure.repository;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.emailsupervisor.EmailDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.emailsupervisor.EmailSupervisor;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.email.EmailDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.email.Email;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface EmailRepository extends JpaRepository<EmailSupervisor, Integer> {
+public interface EmailRepository extends JpaRepository<Email, Integer> {
 
     @Query("""
             SELECT new com.example.ws.microservices.firstmicroservices.dto.EmailDTO(
