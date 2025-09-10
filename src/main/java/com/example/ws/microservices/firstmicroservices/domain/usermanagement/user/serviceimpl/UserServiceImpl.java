@@ -17,7 +17,7 @@ import com.example.ws.microservices.firstmicroservices.domain.usermanagement.use
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserMeDTO;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.EmployeeService;
-import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
+import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.serviceImpl.EmailTokenService;
 import jakarta.annotation.Nullable;

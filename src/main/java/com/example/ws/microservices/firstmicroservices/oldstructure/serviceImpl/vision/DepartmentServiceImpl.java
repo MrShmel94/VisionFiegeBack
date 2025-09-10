@@ -2,8 +2,8 @@ package com.example.ws.microservices.firstmicroservices.oldstructure.serviceImpl
 
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.DepartmentDTO;
-import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
-import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
+import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
+import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import com.example.ws.microservices.firstmicroservices.common.cache.DepartmentServiceCache;
 import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;

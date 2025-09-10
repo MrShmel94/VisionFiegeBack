@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.secure;
+package com.example.ws.microservices.firstmicroservices.common.security;
 
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.AuthenticationFailedException;
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.InvalidTokenException;
@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.example.ws.microservices.firstmicroservices.secure.SecurityConstants.*;
+import static com.example.ws.microservices.firstmicroservices.common.security.SecurityConstants.*;
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
 /**

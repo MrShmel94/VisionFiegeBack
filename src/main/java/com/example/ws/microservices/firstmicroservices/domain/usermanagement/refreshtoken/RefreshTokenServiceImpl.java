@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.domain.usermanagement.refreshtoken;
 
-import com.example.ws.microservices.firstmicroservices.secure.SecurityConstants;
+import com.example.ws.microservices.firstmicroservices.common.security.SecurityConstants;
 import com.example.ws.microservices.firstmicroservices.common.utils.Utils;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

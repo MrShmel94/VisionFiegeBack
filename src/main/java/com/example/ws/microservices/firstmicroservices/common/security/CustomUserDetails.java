@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.secure;
+package com.example.ws.microservices.firstmicroservices.common.security;
 
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleDTO;
 import lombok.AllArgsConstructor;

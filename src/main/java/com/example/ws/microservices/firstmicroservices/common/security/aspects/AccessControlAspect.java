@@ -1,8 +1,8 @@
-package com.example.ws.microservices.firstmicroservices.secure.aspects;
+package com.example.ws.microservices.firstmicroservices.common.security.aspects;
 
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employeesupervisor.dto.SupervisorAllInformationDTO;
-import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
+import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

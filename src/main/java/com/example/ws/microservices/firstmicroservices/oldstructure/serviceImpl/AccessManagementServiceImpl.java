@@ -13,10 +13,9 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.response.Res
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.AccessManagementService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.EmployeeSupervisorService;
-import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
-import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
-import com.example.ws.microservices.firstmicroservices.secure.aspects.AccessControl;
-import com.example.ws.microservices.firstmicroservices.oldstructure.service.*;
+import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
+import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
+import com.example.ws.microservices.firstmicroservices.common.security.aspects.AccessControl;
 import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.transaction.Transactional;

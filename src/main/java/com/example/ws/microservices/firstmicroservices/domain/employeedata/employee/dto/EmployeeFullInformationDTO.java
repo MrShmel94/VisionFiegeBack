@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto;
 
-import com.example.ws.microservices.firstmicroservices.secure.aspects.MaskField;
+import com.example.ws.microservices.firstmicroservices.common.security.aspects.MaskField;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

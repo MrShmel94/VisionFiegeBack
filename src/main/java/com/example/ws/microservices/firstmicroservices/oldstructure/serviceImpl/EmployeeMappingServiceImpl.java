@@ -13,8 +13,8 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.request.Crea
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.EmployeeData;
 import com.example.ws.microservices.firstmicroservices.oldstructure.response.ConfigurationRegistrationDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.response.CreateEmployeeResponse;
-import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
-import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
+import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
+import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.AiEmployeeService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.EmployeeMappingService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.EmployeeService;

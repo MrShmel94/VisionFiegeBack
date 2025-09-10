@@ -7,8 +7,8 @@ import com.example.ws.microservices.firstmicroservices.domain.employeedata.emplo
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.Employee;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.repository.EmployeeRepository;
 import com.example.ws.microservices.firstmicroservices.oldstructure.response.PaginatedResponse;
-import com.example.ws.microservices.firstmicroservices.secure.aspects.AccessControl;
-import com.example.ws.microservices.firstmicroservices.secure.aspects.MaskField;
+import com.example.ws.microservices.firstmicroservices.common.security.aspects.AccessControl;
+import com.example.ws.microservices.firstmicroservices.common.security.aspects.MaskField;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
 import com.fasterxml.jackson.core.type.TypeReference;

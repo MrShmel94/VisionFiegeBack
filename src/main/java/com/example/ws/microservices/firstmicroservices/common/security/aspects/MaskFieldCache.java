@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.secure.aspects;
+package com.example.ws.microservices.firstmicroservices.common.security.aspects;
 
 
 import lombok.extern.slf4j.Slf4j;

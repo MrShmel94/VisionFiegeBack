@@ -9,8 +9,8 @@ import com.example.ws.microservices.firstmicroservices.domain.employeedata.emplo
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.Role;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.RoleRepository;
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.AssignRoleUserRequest;
-import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
-import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
+import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
+import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.RoleService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;

@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices;
 
-import com.example.ws.microservices.firstmicroservices.secure.CorsProperties;
+import com.example.ws.microservices.firstmicroservices.common.security.CorsProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

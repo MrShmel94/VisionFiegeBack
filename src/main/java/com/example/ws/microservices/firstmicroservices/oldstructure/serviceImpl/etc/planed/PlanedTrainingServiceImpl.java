@@ -8,8 +8,8 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.entity.etc.D
 import com.example.ws.microservices.firstmicroservices.oldstructure.entity.etc.planed.PlanedTraining;
 import com.example.ws.microservices.firstmicroservices.oldstructure.repository.etc.planed.PlanedTrainingRepository;
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.etc.PlaningTrainingRequest;
-import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
-import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
+import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
+import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.etc.DocumentsService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.etc.planed.PlanedEmployeeService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.etc.planed.PlanedTrainingService;

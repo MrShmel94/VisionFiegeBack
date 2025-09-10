@@ -18,8 +18,8 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.repository.a
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.attendance.gd.AttendanceChangeRequest;
 import com.example.ws.microservices.firstmicroservices.oldstructure.response.attendance.gd.EmployeeAttendanceDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.response.attendance.gd.ResponseScheduleTemplate;
-import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
-import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
+import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
+import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.SiteService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.attendance.gd.AttendanceService;

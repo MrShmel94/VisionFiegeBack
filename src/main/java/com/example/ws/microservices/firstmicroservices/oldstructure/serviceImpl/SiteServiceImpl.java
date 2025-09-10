@@ -6,8 +6,8 @@ import com.example.ws.microservices.firstmicroservices.domain.employeedata.refer
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.SiteDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.repository.SiteRepository;
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.SiteRequestModel;
-import com.example.ws.microservices.firstmicroservices.secure.aspects.AccessControl;
-import com.example.ws.microservices.firstmicroservices.secure.aspects.MaskField;
+import com.example.ws.microservices.firstmicroservices.common.security.aspects.AccessControl;
+import com.example.ws.microservices.firstmicroservices.common.security.aspects.MaskField;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.SiteService;
 import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
 import com.fasterxml.jackson.core.type.TypeReference;

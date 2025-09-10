@@ -4,8 +4,8 @@ import com.example.ws.microservices.firstmicroservices.domain.employeedata.emplo
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.*;
 import com.example.ws.microservices.firstmicroservices.oldstructure.dto.SiteAware;
 import com.example.ws.microservices.firstmicroservices.oldstructure.response.ConfigurationRegistrationDTO;
-import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
-import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
+import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
+import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
 import com.fasterxml.jackson.core.type.TypeReference;

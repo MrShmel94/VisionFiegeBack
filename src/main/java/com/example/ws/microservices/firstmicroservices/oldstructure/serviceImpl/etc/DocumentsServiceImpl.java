@@ -13,8 +13,8 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.repository.e
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.etc.DocumentEtcRequest;
 import com.example.ws.microservices.firstmicroservices.oldstructure.response.etc.DocumentConfigurationSave;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.etc.*;
-import com.example.ws.microservices.firstmicroservices.secure.CustomUserDetails;
-import com.example.ws.microservices.firstmicroservices.secure.SecurityUtils;
+import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
+import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import com.example.ws.microservices.firstmicroservices.service.etc.*;
 import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;
