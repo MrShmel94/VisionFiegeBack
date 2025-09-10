@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.oldstructure.entity.attendance;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.Site;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.site.Site;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

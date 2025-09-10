@@ -12,7 +12,7 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.repository.a
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.attendance.gd.DayScheduleRequest;
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.attendance.gd.ScheduleTemplateRequest;
 import com.example.ws.microservices.firstmicroservices.oldstructure.response.attendance.gd.ResponseScheduleTemplate;
-import com.example.ws.microservices.firstmicroservices.oldstructure.service.ShiftTimeWorkService;
+import com.example.ws.microservices.firstmicroservices.oldstructure.service.attendance.gd.ShiftTimeWorkService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.attendance.gd.AttendanceStatusService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.attendance.gd.ScheduleTemplateService;

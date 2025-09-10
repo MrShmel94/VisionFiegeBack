@@ -5,7 +5,7 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.dto.performa
 import com.example.ws.microservices.firstmicroservices.oldstructure.entity.attendance.ShiftTimeWork;
 import com.example.ws.microservices.firstmicroservices.oldstructure.entity.performance_gd.*;
 import com.example.ws.microservices.firstmicroservices.oldstructure.mapper.PerformanceMapper;
-import com.example.ws.microservices.firstmicroservices.oldstructure.service.ShiftTimeWorkService;
+import com.example.ws.microservices.firstmicroservices.oldstructure.service.attendance.gd.ShiftTimeWorkService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.performance_gd.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

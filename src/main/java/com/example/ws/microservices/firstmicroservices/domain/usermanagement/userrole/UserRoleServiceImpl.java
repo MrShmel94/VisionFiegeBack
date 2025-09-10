@@ -11,7 +11,7 @@ import com.example.ws.microservices.firstmicroservices.domain.usermanagement.rol
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.AssignRoleUserRequest;
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
-import com.example.ws.microservices.firstmicroservices.oldstructure.service.EmployeeService;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.RoleService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import com.example.ws.microservices.firstmicroservices.common.cache.redice.RedisCacheService;

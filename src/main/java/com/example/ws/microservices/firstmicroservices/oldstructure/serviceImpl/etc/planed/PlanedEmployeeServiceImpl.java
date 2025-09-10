@@ -3,7 +3,7 @@ package com.example.ws.microservices.firstmicroservices.oldstructure.serviceImpl
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.dto.attendance.gd.AttendanceUpdateDto;
 import com.example.ws.microservices.firstmicroservices.oldstructure.dto.etc.planed.PlanedEmployeeDTO;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.PositionDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.position.PositionDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.Employee;
 import com.example.ws.microservices.firstmicroservices.oldstructure.entity.etc.planed.PlanedEmployee;
 import com.example.ws.microservices.firstmicroservices.oldstructure.entity.etc.planed.PlanedTraining;
@@ -13,10 +13,10 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.request.atte
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.etc.MultiPlanedEmployeeRequest;
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
-import com.example.ws.microservices.firstmicroservices.oldstructure.service.EmployeeService;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.attendance.gd.AttendanceService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.etc.planed.PlanedEmployeeService;
-import com.example.ws.microservices.firstmicroservices.oldstructure.service.vision.PositionService;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.position.PositionService;
 import com.example.ws.microservices.firstmicroservices.common.utils.CompressionUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

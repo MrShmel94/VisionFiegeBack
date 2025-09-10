@@ -1,0 +1,13 @@
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.country;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
+
+public interface CountryRepositoryCache extends JpaRepository<Country, Short> {
+
+    @Query("SELECT a FROM Country a LEFT JOIN FETCH a.site")
+    List<Country> findAllWithSite();
+
+}

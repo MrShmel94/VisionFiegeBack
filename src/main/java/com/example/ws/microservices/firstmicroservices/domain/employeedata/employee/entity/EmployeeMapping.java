@@ -1,6 +1,12 @@
 package com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.*;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.agency.Agency;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.country.Country;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.department.Department;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.position.Position;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.shift.Shift;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.site.Site;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.team.Team;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;

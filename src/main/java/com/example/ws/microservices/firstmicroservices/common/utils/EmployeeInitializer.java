@@ -2,7 +2,7 @@ package com.example.ws.microservices.firstmicroservices.common.utils;
 
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.CreateEmployeeRequest;
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.CreateEmployeeRequestList;
-import com.example.ws.microservices.firstmicroservices.oldstructure.service.EmployeeMappingService;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.service.EmployeeMappingService;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 

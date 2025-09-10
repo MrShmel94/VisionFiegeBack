@@ -6,7 +6,7 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.request.etc.
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.etc.DocumentsService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.etc.planed.PlanedEmployeeService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.etc.planed.PlanedTrainingService;
-import com.example.ws.microservices.firstmicroservices.oldstructure.service.vision.DepartmentService;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.department.DepartmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

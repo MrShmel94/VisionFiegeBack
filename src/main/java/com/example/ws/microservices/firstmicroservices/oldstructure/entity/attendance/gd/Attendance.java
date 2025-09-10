@@ -2,8 +2,8 @@ package com.example.ws.microservices.firstmicroservices.oldstructure.entity.atte
 
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.Employee;
 import com.example.ws.microservices.firstmicroservices.oldstructure.entity.attendance.ShiftTimeWork;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.Department;
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.Site;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.department.Department;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.site.Site;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

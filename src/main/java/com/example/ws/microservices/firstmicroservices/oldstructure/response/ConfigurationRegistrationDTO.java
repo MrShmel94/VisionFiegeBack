@@ -1,6 +1,12 @@
 package com.example.ws.microservices.firstmicroservices.oldstructure.response;
 
-import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.dto.*;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.agency.AgencyDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.country.CountryDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.department.DepartmentDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.position.PositionDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.shift.ShiftDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.site.SiteDTO;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.team.TeamDTO;
 import lombok.Builder;
 import lombok.Data;
 
