@@ -2,13 +2,11 @@ package com.example.ws.microservices.firstmicroservices.oldstructure.serviceImpl
 
 import com.example.ws.microservices.firstmicroservices.domain.attendace.shifttimework.ShiftTimeWorkDTO;
 import com.example.ws.microservices.firstmicroservices.oldstructure.dto.performance.gd.PerformanceRowDTO;
-import com.example.ws.microservices.firstmicroservices.entity.performance_gd.*;
 import com.example.ws.microservices.firstmicroservices.domain.attendace.shifttimework.ShiftTimeWork;
 import com.example.ws.microservices.firstmicroservices.oldstructure.entity.performance_gd.*;
 import com.example.ws.microservices.firstmicroservices.oldstructure.mapper.PerformanceMapper;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.ShiftTimeWorkService;
 import com.example.ws.microservices.firstmicroservices.oldstructure.service.performance_gd.*;
-import com.example.ws.microservices.firstmicroservices.service.performance_gd.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
