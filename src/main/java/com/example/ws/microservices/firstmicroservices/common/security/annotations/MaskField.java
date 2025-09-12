@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.common.security.aspects;
+package com.example.ws.microservices.firstmicroservices.common.security.annotations;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -1,6 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.common.security.aspects;
 
 
+import com.example.ws.microservices.firstmicroservices.common.security.annotations.MaskField;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

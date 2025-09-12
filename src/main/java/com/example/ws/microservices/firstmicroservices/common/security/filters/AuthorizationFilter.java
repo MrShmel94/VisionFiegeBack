@@ -1,8 +1,11 @@
-package com.example.ws.microservices.firstmicroservices.common.security;
+package com.example.ws.microservices.firstmicroservices.common.security.filters;
 
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.AuthenticationFailedException;
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.InvalidTokenException;
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.TooManyRequestsException;
+import com.example.ws.microservices.firstmicroservices.common.security.ratelimiting.BucketWrapper;
+import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
+import com.example.ws.microservices.firstmicroservices.common.security.config.SecurityConstants;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.refreshtoken.RefreshTokenService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import com.example.ws.microservices.firstmicroservices.common.utils.Utils;
@@ -31,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.example.ws.microservices.firstmicroservices.common.security.SecurityConstants.*;
+import static com.example.ws.microservices.firstmicroservices.common.security.config.SecurityConstants.*;
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
 
 /**

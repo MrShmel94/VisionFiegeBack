@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.common.security;
+package com.example.ws.microservices.firstmicroservices.common.security.ratelimiting;
 
 import io.github.bucket4j.Bucket;
 import lombok.Getter;

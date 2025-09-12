@@ -8,7 +8,7 @@ import com.example.ws.microservices.firstmicroservices.oldstructure.request.Remo
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.RequestSetEmployeeToSupervisor;
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
-import com.example.ws.microservices.firstmicroservices.common.security.aspects.MaskField;
+import com.example.ws.microservices.firstmicroservices.common.security.annotations.MaskField;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.service.EmployeeService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;

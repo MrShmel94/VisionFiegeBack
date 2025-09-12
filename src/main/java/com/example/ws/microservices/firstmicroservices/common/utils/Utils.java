@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.common.utils;
 
-import com.example.ws.microservices.firstmicroservices.common.security.SecretKeyProvider;
-import com.example.ws.microservices.firstmicroservices.common.security.SecurityConstants;
+import com.example.ws.microservices.firstmicroservices.common.security.config.SecretKeyProvider;
+import com.example.ws.microservices.firstmicroservices.common.security.config.SecurityConstants;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

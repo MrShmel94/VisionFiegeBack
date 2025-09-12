@@ -1,6 +1,8 @@
-package com.example.ws.microservices.firstmicroservices.common.security;
+package com.example.ws.microservices.firstmicroservices.common.security.filters;
 
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.*;
+import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
+import com.example.ws.microservices.firstmicroservices.common.security.config.SecurityConstants;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserMeDTO;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.dto.UserLoginRequestModel;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.refreshtoken.RefreshTokenService;

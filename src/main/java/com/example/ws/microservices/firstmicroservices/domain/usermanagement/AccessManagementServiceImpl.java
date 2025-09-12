@@ -14,7 +14,7 @@ import com.example.ws.microservices.firstmicroservices.domain.employeedata.emplo
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.SupervisorAssignmentService;
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
-import com.example.ws.microservices.firstmicroservices.common.security.aspects.AccessControl;
+import com.example.ws.microservices.firstmicroservices.common.security.annotations.AccessControl;
 import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.transaction.Transactional;

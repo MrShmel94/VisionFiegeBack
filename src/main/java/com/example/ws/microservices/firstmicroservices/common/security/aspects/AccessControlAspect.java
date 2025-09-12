@@ -1,5 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.common.security.aspects;
 
+import com.example.ws.microservices.firstmicroservices.common.security.annotations.AccessControl;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto.SupervisorAllInformationDTO;
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;

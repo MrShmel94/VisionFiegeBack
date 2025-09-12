@@ -9,8 +9,8 @@ import com.example.ws.microservices.firstmicroservices.domain.employeedata.refer
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.shift.Shift;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.team.Team;
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.SiteRequestModel;
-import com.example.ws.microservices.firstmicroservices.common.security.aspects.AccessControl;
-import com.example.ws.microservices.firstmicroservices.common.security.aspects.MaskField;
+import com.example.ws.microservices.firstmicroservices.common.security.annotations.AccessControl;
+import com.example.ws.microservices.firstmicroservices.common.security.annotations.MaskField;
 import com.example.ws.microservices.firstmicroservices.common.cache.RedisService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import jakarta.persistence.EntityManager;

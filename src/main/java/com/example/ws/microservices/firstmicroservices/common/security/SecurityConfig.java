@@ -1,5 +1,9 @@
 package com.example.ws.microservices.firstmicroservices.common.security;
 
+import com.example.ws.microservices.firstmicroservices.common.security.config.CorsProperties;
+import com.example.ws.microservices.firstmicroservices.common.security.config.SecurityConstants;
+import com.example.ws.microservices.firstmicroservices.common.security.filters.AuthenticationFilter;
+import com.example.ws.microservices.firstmicroservices.common.security.filters.AuthorizationFilter;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.refreshtoken.RefreshTokenService;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.user.service.UserService;
 import com.example.ws.microservices.firstmicroservices.common.utils.Utils;
@@ -26,7 +30,7 @@ import java.util.List;
 @EnableWebSecurity
 @Configuration
 @RequiredArgsConstructor
-public class WebSecurity {
+public class SecurityConfig {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
