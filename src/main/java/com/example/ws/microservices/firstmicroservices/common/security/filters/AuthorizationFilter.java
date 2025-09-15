@@ -3,7 +3,7 @@ package com.example.ws.microservices.firstmicroservices.common.security.filters;
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.AuthenticationFailedException;
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.InvalidTokenException;
 import com.example.ws.microservices.firstmicroservices.common.errorhandling.customError.TooManyRequestsException;
-import com.example.ws.microservices.firstmicroservices.common.security.ratelimiting.BucketWrapper;
+import com.example.ws.microservices.firstmicroservices.common.security.RateLimiter;
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.common.security.config.SecurityConstants;
 import com.example.ws.microservices.firstmicroservices.domain.usermanagement.refreshtoken.RefreshTokenService;
@@ -48,7 +48,7 @@ import static org.springframework.http.HttpHeaders.SET_COOKIE;
 @Slf4j
 public class AuthorizationFilter extends BasicAuthenticationFilter {
 
-    private final ConcurrentHashMap<String, BucketWrapper> buckets = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, RateLimiter> buckets = new ConcurrentHashMap<>();
     private final RefreshTokenService refreshTokenService;
     private final Utils utils;
     private final UserService userService;
@@ -293,7 +293,7 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
      * @return a Bucket instance associated with the given key.
      */
     private Bucket resolveBucket(String key) {
-        BucketWrapper wrapper = buckets.computeIfAbsent(key, k -> new BucketWrapper(
+        RateLimiter wrapper = buckets.computeIfAbsent(key, k -> new RateLimiter(
                 Bucket.builder()
                         .addLimit(limit -> limit.capacity(BUCKET_CAPACITY).refillGreedy(BUCKET_REFILL_TOKENS, Duration.ofMinutes(1)))
                         .build()

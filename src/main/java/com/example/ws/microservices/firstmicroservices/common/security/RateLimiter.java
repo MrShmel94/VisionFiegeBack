@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.common.security.ratelimiting;
+package com.example.ws.microservices.firstmicroservices.common.security;
 
 import io.github.bucket4j.Bucket;
 import lombok.Getter;
@@ -17,7 +17,7 @@ import lombok.Getter;
  * ensuring consistent reads and writes in a concurrent environment.
  */
 @Getter
-public class BucketWrapper {
+public class RateLimiter {
 
 
     private final Bucket bucket;
@@ -28,7 +28,7 @@ public class BucketWrapper {
      *
      * @param bucket the Bucket instance to wrap.
      */
-    public BucketWrapper(Bucket bucket) {
+    public RateLimiter(Bucket bucket) {
         this.bucket = bucket;
         this.lastAccessed = System.currentTimeMillis();
     }
