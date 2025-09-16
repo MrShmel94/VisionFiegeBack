@@ -102,7 +102,7 @@ public interface SupervisorAssignmentRepository extends JpaRepository<Supervisor
     );
 
     @Query("""
-            SELECT new com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO(
+            SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO(
             e.id, e.expertis, e.brCode, e.firstName, e.lastName, e.sex,
             t.name, s.name, sh.name, c.name, d.name, p.name, e.isSupervisor, e.isCanHasAccount, e.validToAccount, e.validFromAccount, a.name, ai.note, ai.dateStartContract, ai.dateFinishContract,
             ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(em.firstName, ' ', em.lastName), 'No Supervisor'), COALESCE(em.expertis, 'No Supervisor'), st.name, e.temporaryAssignmentFrom, e.temporaryAssignmentTo
@@ -132,7 +132,7 @@ public interface SupervisorAssignmentRepository extends JpaRepository<Supervisor
     List<String> getAllExpertisEmployeeBySupervisor(@Param("expertis") String expertis);
 
     @Query("""
-           SELECT new com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO(
+           SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO(
            e.id, e.expertis, e.firstName, e.lastName, d.name, t.name, p.name, s.name
            ) FROM Employee e
            JOIN Department d ON e.departmentId = d.id
@@ -146,7 +146,7 @@ public interface SupervisorAssignmentRepository extends JpaRepository<Supervisor
     List<PreviewEmployeeDTO> getEmployeeWithoutSupervisor(@Param("siteName") String siteName);
 
     @Query("""
-           SELECT new com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO(
+           SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO(
            e.id, e.expertis, e.firstName, e.lastName, d.name, t.name, p.name, s.name
            ) FROM Employee e
            JOIN Department d ON e.departmentId = d.id

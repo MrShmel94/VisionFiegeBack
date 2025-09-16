@@ -19,7 +19,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByUserId(String userId);
 
     @Query("""
-        SELECT new com.example.ws.microservices.firstmicroservices.dto.SupervisorAllInformationDTO(
+        SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto.SupervisorAllInformationDTO(
             e.id, ur.expertis, e.brCode, e.firstName, e.lastName, e.isWork, e.sex,
             s.name, sh.name, d.name, t.name, p.name, a.name, ur.userId, ur.email, ur.isVerified, ur.emailVerificationStatus,
             e.isCanHasAccount, e.isSupervisor,  e.validToAccount, e.validFromAccount, ai.note, ai.dateStartContract, ai.dateFinishContract, ai.dateBhpNow, ai.dateBhpFuture,
@@ -48,7 +48,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     void setVerified(String userId);
 
     @Query("""
-           SELECT new com.example.ws.microservices.firstmicroservices.dto.SmallInformationSupervisorDTO(
+           SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.supervisorassignment.dto.SmallInformationSupervisorDTO(
             e.firstName, e.lastName
             )
             FROM UserEntity ue
@@ -58,7 +58,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<SupervisorFullNameDTO> findSmallInformationSupervisorDTOByUserId(@Param("userId") String userId);
 
     @Query("""
-           SELECT new com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO(
+           SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO(
            e.id, e.expertis, e.firstName, e.lastName, d.name, t.name, p.name, s.name
            ) FROM Employee e
            JOIN UserEntity ue ON e.expertis = ue.expertis
@@ -71,7 +71,7 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     List<PreviewEmployeeDTO> getAllUsersWithoutVerification();
 
     @Query("""
-           SELECT new com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO(
+           SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO(
            e.id, e.expertis, e.firstName, e.lastName, d.name, t.name, p.name, s.name
            ) FROM Employee e
            JOIN UserEntity ue ON e.expertis = ue.expertis

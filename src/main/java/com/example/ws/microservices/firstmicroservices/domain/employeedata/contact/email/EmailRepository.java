@@ -9,7 +9,7 @@ import java.util.List;
 public interface EmailRepository extends JpaRepository<Email, Integer> {
 
     @Query("""
-            SELECT new com.example.ws.microservices.firstmicroservices.dto.EmailDTO(
+            SELECT new com.example.ws.microservices.firstmicroservices.domain.contact.email.EmailDTO(
             e.id, e.email, t.name
             )
             FROM EmailSupervisor e

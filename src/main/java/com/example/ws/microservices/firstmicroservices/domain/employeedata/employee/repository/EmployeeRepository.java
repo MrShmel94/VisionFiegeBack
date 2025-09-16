@@ -34,7 +34,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<EmployeeDTO> findEmployeeByExpertis(@Param("expertis") String expertis);
 
     @Query("""
-            SELECT new com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO(
+            SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO(
             e.id, e.expertis, e.brCode, e.firstName, e.lastName, e.sex,
             t.name, s.name, sh.name, c.name, d.name, p.name, e.isSupervisor, e.isCanHasAccount, e.validToAccount, e.validFromAccount, a.name, ai.note, ai.dateStartContract, ai.dateFinishContract,
             ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(supervisor.firstName, ' ', supervisor.lastName), 'No Supervisor'), COALESCE(supervisor.expertis, 'No Supervisor'), st.name, e.temporaryAssignmentFrom, e.temporaryAssignmentTo
@@ -55,7 +55,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Page<EmployeeFullInformationDTO> findEmployeeFullInformationByExpertisListPageable(@Param("expertisList") List<String> expertisList, Pageable pageable);
 
     @Query("""
-            SELECT new com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO(
+            SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO(
             e.id, e.expertis, e.brCode, e.firstName, e.lastName, e.sex,
             t.name, s.name, sh.name, c.name, d.name, p.name, e.isSupervisor, e.isCanHasAccount, e.validToAccount, e.validFromAccount, a.name, ai.note, ai.dateStartContract, ai.dateFinishContract,
             ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(supervisor.firstName, ' ', supervisor.lastName), 'No Supervisor'), COALESCE(supervisor.expertis, 'No Supervisor'), st.name, e.temporaryAssignmentFrom, e.temporaryAssignmentTo
@@ -76,7 +76,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     List<EmployeeFullInformationDTO> findEmployeeFullInformationByExpertisList(@Param("expertisList") List<String> expertisList);
 
     @Query("""
-            SELECT new com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO(
+            SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO(
             e.id, e.expertis, e.brCode, e.firstName, e.lastName, e.sex,
             t.name, s.name, sh.name, c.name, d.name, p.name, e.isSupervisor, e.isCanHasAccount, e.validToAccount, e.validFromAccount, a.name, ai.note, ai.dateStartContract, ai.dateFinishContract,
             ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(supervisor.firstName, ' ', supervisor.lastName), 'No Supervisor'), COALESCE(supervisor.expertis, 'No Supervisor'), st.name, e.temporaryAssignmentFrom, e.temporaryAssignmentTo
@@ -97,7 +97,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<EmployeeFullInformationDTO> findEmployeeFullInformationByExpertis(@Param("expertis") String expertis);
 
     @Query("""
-           SELECT new com.example.ws.microservices.firstmicroservices.dto.InformationContractDTO(
+           SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.InformationContractDTO(
            e.expertis, ae.dateStartContract, ae.dateFinishContract
            ) FROM Employee e
            LEFT JOIN AiEmployee ae ON ae.id = e.id
@@ -115,7 +115,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<Employee> findByExpertis(String expertis);
 
     @Query("""
-    SELECT new com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO(
+    SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO(
             e.id, e.expertis, e.brCode, e.firstName, e.lastName, e.sex,
             t.name, s.name, sh.name, c.name, d.name, p.name, e.isSupervisor, e.isCanHasAccount, e.validToAccount, e.validFromAccount, a.name, ai.note, ai.dateStartContract, ai.dateFinishContract,
             ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(supervisor.firstName, ' ', supervisor.lastName), 'No Supervisor'), COALESCE(supervisor.expertis, 'No Supervisor'), st.name, e.temporaryAssignmentFrom, e.temporaryAssignmentTo
@@ -138,7 +138,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     List<EmployeeFullInformationDTO> searchByAnyField(@Param("query") String query);
 
     @Query("""
-    SELECT new com.example.ws.microservices.firstmicroservices.dto.EmployeeFullInformationDTO(
+    SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.EmployeeFullInformationDTO(
             e.id, e.expertis, e.brCode, e.firstName, e.lastName, e.sex,
             t.name, s.name, sh.name, c.name, d.name, p.name, e.isSupervisor, e.isCanHasAccount, e.validToAccount, e.validFromAccount, a.name, ai.note, ai.dateStartContract, ai.dateFinishContract,
             ai.dateBhpNow, ai.dateBhpFuture, ai.dateAdrNow, ai.dateAdrFuture, ai.fte, COALESCE(CONCAT(supervisor.firstName, ' ', supervisor.lastName), 'No Supervisor'), COALESCE(supervisor.expertis, 'No Supervisor'), st.name, e.temporaryAssignmentFrom, e.temporaryAssignmentTo
@@ -161,7 +161,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
 
     @Query(value = """
-                   SELECT new com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO(
+                   SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO(
                    e.id, e.expertis, e.firstName, e.lastName, d.name, t.name, p.name, s.name
                    ) FROM Employee e
                    JOIN Department d ON e.departmentId = d.id

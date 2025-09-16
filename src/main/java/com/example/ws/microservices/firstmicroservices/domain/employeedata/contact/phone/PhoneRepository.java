@@ -9,7 +9,7 @@ import java.util.List;
 public interface PhoneRepository extends JpaRepository<Phone, Integer> {
 
     @Query("""
-            SELECT new com.example.ws.microservices.firstmicroservices.dto.PhoneDTO(
+            SELECT new com.example.ws.microservices.firstmicroservices.domain.contact.phone.PhoneDTO(
             e.id, e.phoneNumber, t.name
             )
             FROM PhoneSupervisor e
