@@ -12,7 +12,7 @@ import java.util.List;
 public interface CheckNameFileRepository extends JpaRepository<CheckNameFile, Long> {
 
     @Query("""
-                SELECT new com.example.ws.microservices.firstmicroservices.dto.performance.gd.CheckNameFileDTO(
+                SELECT new com.example.ws.microservices.firstmicroservices.oldstructure.dto.performance.gd.CheckNameFileDTO(
                     cnf.id, cnf.nameFile, CONCAT(e.firstName, ' ', e.lastName), cnf.date, cnf.status
                 )
                 FROM CheckNameFile cnf

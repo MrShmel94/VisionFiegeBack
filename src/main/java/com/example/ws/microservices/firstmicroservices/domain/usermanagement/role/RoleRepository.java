@@ -13,7 +13,7 @@ public interface RoleRepository extends JpaRepository<Role, Integer> {
     Optional<Role> findByName(String name);
 
     @Query("""
-        SELECT new com.example.ws.microservices.firstmicroservices.dto.UserRoleDTO(
+        SELECT new com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleDTO(
             ur.id.userId, r.name, r.id, r.weight, COALESCE(ur.validFrom, CURRENT_DATE), COALESCE(ur.validTo, CURRENT_DATE)
         )
         FROM Role r
@@ -23,14 +23,14 @@ public interface RoleRepository extends JpaRepository<Role, Integer> {
     List<UserRoleDTO> findAllRolesByUserId(@Param("userId") Long userId);
 
     @Query("""
-           SELECT new com.example.ws.microservices.firstmicroservices.dto.RoleDTO(
+           SELECT new com.example.ws.microservices.firstmicroservices.domain.usermanagement.role.RoleDTO(
            r.id, r.name, r.weight, r.description
            ) FROM Role r
            """)
     List<RoleDTO> findAllRolesByDTO();
 
     @Query("""
-    SELECT new com.example.ws.microservices.firstmicroservices.dto.UserRoleDTO(
+    SELECT new com.example.ws.microservices.firstmicroservices.domain.usermanagement.userrole.dto.UserRoleDTO(
         ur.id.userId,
         r.name,
         r.id,

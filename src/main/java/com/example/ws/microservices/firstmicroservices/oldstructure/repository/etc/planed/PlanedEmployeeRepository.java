@@ -11,7 +11,7 @@ import java.util.List;
 public interface PlanedEmployeeRepository extends JpaRepository<PlanedEmployee, Long> {
 
     @Query("""
-           SELECT new com.example.ws.microservices.firstmicroservices.dto.etc.planed.PlanedEmployeeDTO(
+           SELECT new com.example.ws.microservices.firstmicroservices.oldstructure.dto.etc.planed.PlanedEmployeeDTO(
            pe.id, pe.planedTraining.id, CONCAT(emp.firstName, ' ' , emp.lastName), emp.expertis, emp.id, emp.sex, dep.name, team.name, shift.name,
            COALESCE(CONCAT(supervisor.firstName, ' ', supervisor.lastName), 'No Supervisor'), COALESCE(supervisor.expertis, 'No Supervisor'), pe.isPresent, pe.date, CONCAT(fnUser.firstName, ' ' , fnUser.lastName)
            ) FROM PlanedEmployee pe
@@ -19,7 +19,7 @@ public interface PlanedEmployeeRepository extends JpaRepository<PlanedEmployee, 
            JOIN Department dep ON emp.departmentId = dep.id
            JOIN Team team ON emp.teamId = team.id
            JOIN Shift shift ON emp.shiftId = shift.id
-           LEFT JOIN EmployeeSupervisor es ON es.employeeId = pe.employee.id
+           LEFT JOIN SupervisorAssignment es ON es.employeeId = pe.employee.id
            JOIN Employee supervisor ON supervisor.id = es.supervisorId
            JOIN UserEntity ui ON ui.userId = pe.userId
            JOIN Employee fnUser ON fnUser.expertis = ui.expertis

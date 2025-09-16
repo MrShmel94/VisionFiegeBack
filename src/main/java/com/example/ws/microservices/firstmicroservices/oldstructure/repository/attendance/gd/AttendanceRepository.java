@@ -15,7 +15,7 @@ import java.util.List;
 public interface AttendanceRepository extends JpaRepository<Attendance, Long>, AttendanceRepositoryCustom {
 
     @Query("""
-           SELECT new com.example.ws.microservices.firstmicroservices.dto.attendance.gd.AttendanceDTO(
+           SELECT new com.example.ws.microservices.firstmicroservices.oldstructure.dto.attendance.gd.AttendanceDTO(
            at.id, emp.id, at.date, shw.name, att.statusCode, dep.name, site.name, at.hoursWorked, at.comment, at.createdAt
            ) FROM Attendance at
            JOIN ShiftTimeWork shw ON at.shift.id = shw.id
@@ -73,7 +73,7 @@ public interface AttendanceRepository extends JpaRepository<Attendance, Long>, A
     @Query(value = """
     INSERT INTO attendance.attendance
     (employee_id, date, shift_id, site_id, department_id, status_id, hours_worked, comment, user_id)
-    VALUES (:employeeId, :date, :shiftId, :siteId, :statusId, :hoursWorked, :comment, :userId)
+    VALUES (:employeeId, :date, :shiftId, :siteId, :departmentId, :statusId, :hoursWorked, :comment, :userId)
     ON CONFLICT (employee_id, date, site_id)
     DO UPDATE SET
         shift_id = EXCLUDED.shift_id,

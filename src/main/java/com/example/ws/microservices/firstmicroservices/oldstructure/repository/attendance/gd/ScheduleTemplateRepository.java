@@ -15,7 +15,7 @@ public interface ScheduleTemplateRepository extends JpaRepository<ScheduleTempla
     List<ScheduleTemplate> findAllByUserId(String userId);
 
     @Query("""
-           SELECT new com.example.ws.microservices.firstmicroservices.dto.PreviewEmployeeDTO(
+           SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.PreviewEmployeeDTO(
            e.id, e.expertis, e.firstName, e.lastName, d.name, t.name, p.name, s.name
            ) FROM Employee e
            JOIN Department d ON e.departmentId = d.id

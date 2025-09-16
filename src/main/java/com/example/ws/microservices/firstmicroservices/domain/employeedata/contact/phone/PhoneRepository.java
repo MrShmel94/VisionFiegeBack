@@ -9,12 +9,12 @@ import java.util.List;
 public interface PhoneRepository extends JpaRepository<Phone, Integer> {
 
     @Query("""
-            SELECT new com.example.ws.microservices.firstmicroservices.domain.contact.phone.PhoneDTO(
-            e.id, e.phoneNumber, t.name
+            SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.contact.phone.PhoneDTO(
+            ph.id, ph.phoneNumber, t.name
             )
-            FROM PhoneSupervisor e
-            LEFT JOIN e.typeId t
-            WHERE e.employee.id = :employeeId
+            FROM Phone ph
+            LEFT JOIN ph.typeId t
+            WHERE ph.employee.id = :employeeId
             """)
     List<PhoneDTO> findAllByPhoneSupervisorId(@Param("employeeId") Integer emailSupervisorId);
 }

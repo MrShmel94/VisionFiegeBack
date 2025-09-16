@@ -47,8 +47,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             JOIN Position p ON e.positionId = p.id
             JOIN Agency a ON e.agencyId = a.id
             JOIN Country c ON e.countryId = c.id
-            JOIN AiEmployee ai ON e.id = ai.employee.id
-            LEFT JOIN EmployeeSupervisor es ON es.employeeId = e.id
+            JOIN EmployeeDetails ai ON e.id = ai.employee.id
+            LEFT JOIN SupervisorAssignment es ON es.employeeId = e.id
             LEFT JOIN Employee supervisor ON es.supervisorId = supervisor.id
             WHERE e.expertis IN :expertisList
             """)
@@ -68,8 +68,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             JOIN Position p ON e.positionId = p.id
             JOIN Agency a ON e.agencyId = a.id
             JOIN Country c ON e.countryId = c.id
-            JOIN AiEmployee ai ON e.id = ai.employee.id
-            LEFT JOIN EmployeeSupervisor es ON es.employeeId = e.id
+            JOIN EmployeeDetails ai ON e.id = ai.employee.id
+            LEFT JOIN SupervisorAssignment es ON es.employeeId = e.id
             LEFT JOIN Employee supervisor ON es.supervisorId = supervisor.id
             WHERE e.expertis IN :expertisList
             """)
@@ -89,8 +89,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             JOIN Position p ON e.positionId = p.id
             JOIN Agency a ON e.agencyId = a.id
             JOIN Country c ON e.countryId = c.id
-            JOIN AiEmployee ai ON e.id = ai.employee.id
-            LEFT JOIN EmployeeSupervisor es ON es.employeeId = e.id
+            JOIN EmployeeDetails ai ON e.id = ai.employee.id
+            LEFT JOIN SupervisorAssignment es ON es.employeeId = e.id
             LEFT JOIN Employee supervisor ON es.supervisorId = supervisor.id
             WHERE e.expertis = :expertis
             """)
@@ -100,7 +100,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
            SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.dto.InformationContractDTO(
            e.expertis, ae.dateStartContract, ae.dateFinishContract
            ) FROM Employee e
-           LEFT JOIN AiEmployee ae ON ae.id = e.id
+           LEFT JOIN EmployeeDetails ae ON ae.id = e.id
            WHERE e.expertis IN :expertisList
            """)
     List<InformationContractDTO> getAllInformationContractsByListExertis(@Param("expertisList") List<String> listExertis);
@@ -128,8 +128,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             JOIN Position p ON e.positionId = p.id
             JOIN Agency a ON e.agencyId = a.id
             JOIN Country c ON e.countryId = c.id
-            JOIN AiEmployee ai ON e.id = ai.employee.id
-            LEFT JOIN EmployeeSupervisor es ON es.employeeId = e.id
+            JOIN EmployeeDetails ai ON e.id = ai.employee.id
+            LEFT JOIN SupervisorAssignment es ON es.employeeId = e.id
             LEFT JOIN Employee supervisor ON es.supervisorId = supervisor.id
             WHERE e.expertis LIKE CONCAT(:query, '%')
                OR LOWER(e.firstName) LIKE LOWER(CONCAT(:query, '%'))
@@ -151,8 +151,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             JOIN Position p ON e.positionId = p.id
             JOIN Agency a ON e.agencyId = a.id
             JOIN Country c ON e.countryId = c.id
-            JOIN AiEmployee ai ON e.id = ai.employee.id
-            LEFT JOIN EmployeeSupervisor es ON es.employeeId = e.id
+            JOIN EmployeeDetails ai ON e.id = ai.employee.id
+            LEFT JOIN SupervisorAssignment es ON es.employeeId = e.id
             LEFT JOIN Employee supervisor ON es.supervisorId = supervisor.id
             WHERE LOWER(CONCAT(e.firstName, ' ', e.lastName)) LIKE LOWER(CONCAT(:first, ' ', :second, '%'))
                 OR LOWER(CONCAT(e.lastName, ' ', e.firstName)) LIKE LOWER(CONCAT(:first, ' ', :second, '%'))

@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface DocumentRepository extends JpaRepository<Document, Long> {
 
     @Query("""
-           SELECT new com.example.ws.microservices.firstmicroservices.dto.etc.DocumentDTO(
+           SELECT new com.example.ws.microservices.firstmicroservices.oldstructure.dto.etc.DocumentDTO(
            d.id, d.name, d.description, td.name, d.url,
            d.version, d.dateLastUpd, d.dateStart, d.dateFinish, ui.expertis
            ) FROM Document d
@@ -22,7 +22,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
     List<DocumentDTO> findAllCustom();
 
     @Query("""
-    SELECT new com.example.ws.microservices.firstmicroservices.dto.etc.DocumentDTO(
+    SELECT new com.example.ws.microservices.firstmicroservices.oldstructure.dto.etc.DocumentDTO(
         d.id, d.name, d.description, td.name, d.url,
         d.version, d.dateLastUpd, d.dateStart, d.dateFinish, ui.expertis
     )

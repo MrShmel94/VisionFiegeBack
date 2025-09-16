@@ -8,10 +8,10 @@ import java.util.List;
 public interface ContactTypeRepositoryCache extends JpaRepository<ContactType, Integer> {
 
     @Query("""
-            SELECT new com.example.ws.microservices.firstmicroservices.dto.templateTables.PhoneEmailTypeSupervisorDTO(
-                p.id, p.name
+            SELECT new com.example.ws.microservices.firstmicroservices.domain.employeedata.contact.contacttype.ContactTypeDTO(
+                ct.id, ct.name
             )
-            FROM PhoneEmailTypeSupervisor p
+            FROM ContactType ct
             """)
     List<ContactTypeDTO> getAllType();
 }

@@ -115,8 +115,8 @@ public interface SupervisorAssignmentRepository extends JpaRepository<Supervisor
             JOIN Position p ON e.positionId = p.id
             JOIN Agency a ON e.agencyId = a.id
             JOIN Country c ON e.countryId = c.id
-            JOIN AiEmployee ai ON e.id = ai.employee.id
-            JOIN EmployeeSupervisor es ON es.employeeId = e.id
+            JOIN EmployeeDetails ai ON e.id = ai.employee.id
+            JOIN SupervisorAssignment es ON es.employeeId = e.id
             JOIN Employee em ON es.supervisorId = em.id
             WHERE em.expertis = :expertis
             """)
@@ -141,7 +141,7 @@ public interface SupervisorAssignmentRepository extends JpaRepository<Supervisor
            JOIN Site s ON e.siteId = s.id
            WHERE e.isWork = true
            AND s.name = :siteName
-           AND e.id NOT IN (SELECT es.employeeId FROM EmployeeSupervisor es)
+           AND e.id NOT IN (SELECT es.employeeId FROM SupervisorAssignment es)
            """)
     List<PreviewEmployeeDTO> getEmployeeWithoutSupervisor(@Param("siteName") String siteName);
 
