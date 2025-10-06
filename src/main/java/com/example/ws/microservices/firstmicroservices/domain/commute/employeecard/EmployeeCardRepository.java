@@ -1,4 +1,4 @@
-package app.domain.employeecard;
+package com.example.ws.microservices.firstmicroservices.domain.commute.employeecard;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

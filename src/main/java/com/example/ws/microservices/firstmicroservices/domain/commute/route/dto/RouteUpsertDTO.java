@@ -1,4 +1,4 @@
-package app.domain.route.dto;
+package com.example.ws.microservices.firstmicroservices.domain.commute.route.dto;
 
 import jakarta.validation.constraints.*;
 

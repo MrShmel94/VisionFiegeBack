@@ -1,4 +1,4 @@
-package app.domain.employeecard.dto;
+package com.example.ws.microservices.firstmicroservices.domain.commute.employeecard.dto;
 
 import app.domain.employeecard.EmployeeCard;
 

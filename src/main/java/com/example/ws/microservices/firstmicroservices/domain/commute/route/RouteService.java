@@ -1,4 +1,4 @@
-package app.domain.route;
+package com.example.ws.microservices.firstmicroservices.domain.commute.route;
 
 import app.common.errorhandling.BusinessException;
 import app.common.errorhandling.EntityError;

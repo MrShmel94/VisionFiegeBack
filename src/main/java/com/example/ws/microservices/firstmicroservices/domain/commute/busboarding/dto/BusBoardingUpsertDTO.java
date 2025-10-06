@@ -1,4 +1,4 @@
-package app.domain.busboarding.dto;
+package com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.dto;
 
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDateTime;

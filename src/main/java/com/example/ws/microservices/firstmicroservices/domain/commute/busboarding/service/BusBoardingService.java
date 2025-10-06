@@ -1,4 +1,4 @@
-package app.domain.busboarding.service;
+package com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.service;
 
 import app.common.errorhandling.BusinessException;
 import app.common.errorhandling.EntityError;

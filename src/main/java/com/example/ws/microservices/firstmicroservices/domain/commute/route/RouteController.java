@@ -1,4 +1,4 @@
-package app.domain.route;
+package com.example.ws.microservices.firstmicroservices.domain.commute.route;
 
 import app.domain.route.dto.RouteResponseDTO;
 import app.domain.route.dto.RouteUpsertDTO;
