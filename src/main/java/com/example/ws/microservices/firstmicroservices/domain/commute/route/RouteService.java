@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.domain.commute.route;
 
-import app.common.errorhandling.BusinessException;
-import app.common.errorhandling.EntityError;
+import com.example.ws.microservices.firstmicroservices.common.errorhandling.BusinessException;
+import com.example.ws.microservices.firstmicroservices.common.errorhandling.EntityError;
 import com.example.ws.microservices.firstmicroservices.domain.commute.route.dto.RouteResponseDTO;
 import com.example.ws.microservices.firstmicroservices.domain.commute.route.dto.RouteUpsertDTO;
 import lombok.RequiredArgsConstructor;

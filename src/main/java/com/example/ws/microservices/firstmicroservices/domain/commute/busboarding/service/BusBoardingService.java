@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.service;
 
-import app.common.errorhandling.BusinessException;
-import app.common.errorhandling.EntityError;
+import com.example.ws.microservices.firstmicroservices.common.errorhandling.BusinessException;
+import com.example.ws.microservices.firstmicroservices.common.errorhandling.EntityError;
 import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.BusBoarding;
 import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.BusBoardingRepository;
 import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.dto.BusBoardingResponseDTO;

@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.domain.commute.employeecard;
 
-import app.common.errorhandling.BusinessException;
-import app.common.errorhandling.EntityError;
+import com.example.ws.microservices.firstmicroservices.common.errorhandling.BusinessException;
+import com.example.ws.microservices.firstmicroservices.common.errorhandling.EntityError;
 import com.example.ws.microservices.firstmicroservices.domain.commute.employeecard.dto.EmployeeCardResponseDTO;
 import com.example.ws.microservices.firstmicroservices.domain.commute.employeecard.dto.EmployeeCardUpsertDTO;
 import lombok.RequiredArgsConstructor;

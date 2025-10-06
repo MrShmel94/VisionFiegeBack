@@ -4,6 +4,7 @@ import com.example.ws.microservices.firstmicroservices.common.errorhandling.cust
 import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -19,16 +20,20 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.sql.SQLException;
+import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 @Slf4j
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
+
+    private final MessageSource messageSource;
+
+    public GlobalExceptionHandler(MessageSource messageSource) {
+        this.messageSource = messageSource;
+    }
 
     @ExceptionHandler(OptimisticLockException.class)
     public ResponseEntity<String> handleOptimisticLockException(OptimisticLockException ex) {
@@ -138,6 +143,25 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         String message = String.format("Invalid value for parameter '%s': '%s'. Expected type: %s",
                 ex.getName(), ex.getValue(), Objects.requireNonNull(ex.getRequiredType()).getSimpleName());
         return buildErrorResponse(HttpStatus.BAD_REQUEST, message);
+    }
+
+    @ExceptionHandler(BusinessException.class)
+    public ResponseEntity<ErrorResponseDTO> handleBusiness(BusinessException ex, Locale locale) {
+        String localized = messageSource.getMessage(
+                ex.getMessageKey(),
+                ex.getMessageArgs(),
+                ex.getMessageKey(),
+                locale
+        );
+        return ResponseEntity
+                .status(ex.getStatus())
+                .body(new ErrorResponseDTO(
+                        ex.getCode(),
+                        localized,
+                        ex.getStatus().value(),
+                        Instant.now(),
+                        Map.of()
+                ));
     }
 
     private ResponseEntity<Object> buildErrorResponse(HttpStatus status, String message) {
