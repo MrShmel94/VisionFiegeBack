@@ -1,10 +1,10 @@
 package com.example.ws.microservices.firstmicroservices.domain.commute.busboarding;
 
-import app.domain.busboarding.dto.BusBoardingBulkDTO;
-import app.domain.busboarding.dto.BusBoardingResponseDTO;
-import app.domain.busboarding.dto.BusBoardingUpsertDTO;
-import app.domain.busboarding.service.BusBoardingBulkService;
-import app.domain.busboarding.service.BusBoardingService;
+import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.dto.BusBoardingBulkDTO;
+import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.dto.BusBoardingResponseDTO;
+import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.dto.BusBoardingUpsertDTO;
+import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.service.BusBoardingBulkService;
+import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.service.BusBoardingService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
