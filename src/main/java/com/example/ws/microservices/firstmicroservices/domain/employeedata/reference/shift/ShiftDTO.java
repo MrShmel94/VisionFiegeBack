@@ -1,6 +1,6 @@
 package com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.shift;
 
-import com.example.ws.microservices.firstmicroservices.oldstructure.dto.SiteAware;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.SiteAware;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

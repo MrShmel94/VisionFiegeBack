@@ -7,7 +7,7 @@ import com.example.ws.microservices.firstmicroservices.domain.employeedata.refer
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.position.PositionDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.shift.ShiftDTO;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.team.TeamDTO;
-import com.example.ws.microservices.firstmicroservices.oldstructure.dto.SiteAware;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.SiteAware;
 import com.example.ws.microservices.firstmicroservices.oldstructure.response.ConfigurationRegistrationDTO;
 import com.example.ws.microservices.firstmicroservices.common.security.CustomUserDetails;
 import com.example.ws.microservices.firstmicroservices.common.security.SecurityUtils;
