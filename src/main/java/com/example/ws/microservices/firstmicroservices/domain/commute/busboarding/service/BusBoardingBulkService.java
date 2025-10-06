@@ -1,12 +1,12 @@
 package com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.service;
 
-import app.domain.employeecard.EmployeeCard;
-import app.domain.employeecard.EmployeeCardRepository;
-import app.domain.route.Route;
 import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.BusBoarding;
 import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.BusBoardingRepository;
 import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.dto.BusBoardingBulkDTO;
 import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.dto.BusBoardingResponseDTO;
+import com.example.ws.microservices.firstmicroservices.domain.commute.employeecard.EmployeeCard;
+import com.example.ws.microservices.firstmicroservices.domain.commute.employeecard.EmployeeCardRepository;
+import com.example.ws.microservices.firstmicroservices.domain.commute.route.Route;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

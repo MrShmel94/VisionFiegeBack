@@ -1,12 +1,12 @@
 package com.example.ws.microservices.firstmicroservices.domain.commute.employeecard;
 
-import app.domain.employeecard.dto.EmployeeCardResponseDTO;
-import app.domain.employeecard.dto.EmployeeCardUpsertDTO;
+import com.example.ws.microservices.firstmicroservices.domain.commute.employeecard.dto.EmployeeCardResponseDTO;
+import com.example.ws.microservices.firstmicroservices.domain.commute.employeecard.dto.EmployeeCardUpsertDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/employee-card")

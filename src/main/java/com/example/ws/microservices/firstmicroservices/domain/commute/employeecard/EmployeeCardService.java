@@ -2,12 +2,12 @@ package com.example.ws.microservices.firstmicroservices.domain.commute.employeec
 
 import app.common.errorhandling.BusinessException;
 import app.common.errorhandling.EntityError;
-import app.domain.employeecard.dto.EmployeeCardResponseDTO;
-import app.domain.employeecard.dto.EmployeeCardUpsertDTO;
+import com.example.ws.microservices.firstmicroservices.domain.commute.employeecard.dto.EmployeeCardResponseDTO;
+import com.example.ws.microservices.firstmicroservices.domain.commute.employeecard.dto.EmployeeCardUpsertDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor

@@ -1,7 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.domain.commute.busboarding;
 
-import app.domain.employeecard.EmployeeCard;
-import app.domain.route.Route;
+import com.example.ws.microservices.firstmicroservices.domain.commute.employeecard.EmployeeCard;
+import com.example.ws.microservices.firstmicroservices.domain.commute.route.Route;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

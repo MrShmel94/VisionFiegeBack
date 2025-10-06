@@ -2,14 +2,12 @@ package com.example.ws.microservices.firstmicroservices.domain.commute.busboardi
 
 import app.common.errorhandling.BusinessException;
 import app.common.errorhandling.EntityError;
-import app.domain.busboarding.BusBoarding;
-import app.domain.busboarding.BusBoardingRepository;
-import app.domain.busboarding.dto.BusBoardingResponseDTO;
-import app.domain.busboarding.dto.BusBoardingUpsertDTO;
-
-import app.domain.employeecard.EmployeeCardRepository;
-
-import app.domain.route.RouteRepository;
+import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.BusBoarding;
+import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.BusBoardingRepository;
+import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.dto.BusBoardingResponseDTO;
+import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.dto.BusBoardingUpsertDTO;
+import com.example.ws.microservices.firstmicroservices.domain.commute.employeecard.EmployeeCardRepository;
+import com.example.ws.microservices.firstmicroservices.domain.commute.route.RouteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

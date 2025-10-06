@@ -1,6 +1,7 @@
 package com.example.ws.microservices.firstmicroservices.domain.commute.employeecard.dto;
 
-import app.domain.employeecard.EmployeeCard;
+import com.example.ws.microservices.firstmicroservices.domain.commute.employeecard.EmployeeCard;
+
 
 public record EmployeeCardResponseDTO(
         Long id,

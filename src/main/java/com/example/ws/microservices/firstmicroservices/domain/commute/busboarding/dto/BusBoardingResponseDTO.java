@@ -1,8 +1,9 @@
 package com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.dto;
 
-import app.domain.busboarding.BusBoarding;
-import app.domain.employeecard.dto.EmployeeCardResponseDTO;
-import app.domain.route.dto.RouteResponseDTO;
+
+import com.example.ws.microservices.firstmicroservices.domain.commute.busboarding.BusBoarding;
+import com.example.ws.microservices.firstmicroservices.domain.commute.employeecard.dto.EmployeeCardResponseDTO;
+import com.example.ws.microservices.firstmicroservices.domain.commute.route.dto.RouteResponseDTO;
 
 import java.time.LocalDateTime;
 
