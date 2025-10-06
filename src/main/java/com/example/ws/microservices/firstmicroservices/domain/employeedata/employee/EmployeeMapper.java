@@ -1,4 +1,4 @@
-package com.example.ws.microservices.firstmicroservices.oldstructure.mapper;
+package com.example.ws.microservices.firstmicroservices.domain.employeedata.employee;
 
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.EmployeeDetails;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.entity.Employee;

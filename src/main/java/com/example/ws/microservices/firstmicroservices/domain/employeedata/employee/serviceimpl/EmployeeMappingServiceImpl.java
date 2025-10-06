@@ -15,7 +15,7 @@ import com.example.ws.microservices.firstmicroservices.domain.employeedata.refer
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.shift.Shift;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.site.Site;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.reference.team.Team;
-import com.example.ws.microservices.firstmicroservices.oldstructure.mapper.EmployeeMapper;
+import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.EmployeeMapper;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.repository.EmployeeMappingRepository;
 import com.example.ws.microservices.firstmicroservices.domain.employeedata.employee.repository.EmployeeRepositoryCustom;
 import com.example.ws.microservices.firstmicroservices.oldstructure.request.CreateEmployeeRequest;
