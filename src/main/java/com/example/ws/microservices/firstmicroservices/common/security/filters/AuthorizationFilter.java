@@ -33,6 +33,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import static com.example.ws.microservices.firstmicroservices.common.security.config.SecurityConstants.*;
 import static org.springframework.http.HttpHeaders.SET_COOKIE;
@@ -270,9 +271,20 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
      * @param uri the URI of the incoming request.
      * @return true if the URI is public, false otherwise.
      */
+    private static final Pattern SWAGGER_UI_PATTERN =
+            Pattern.compile("^/swagger-ui(?:/.*)?(?:\\?.*)?$");
+
+    private static final Pattern API_DOCS_PATTERN =
+            Pattern.compile("^/v3/api-docs(?:/.*)?(?:\\?.*)?$");
+
     private boolean isPublicUri(String uri) {
+
         return uri.equals(SIGN_UP_URL)
                 || uri.equals("/swagger-ui/index.html")
+                || uri.equals("/swagger-ui/index.css")
+                || SWAGGER_UI_PATTERN.matcher(uri).matches()
+                || API_DOCS_PATTERN.matcher(uri).matches()
+                || uri.equals("/swagger-ui/swagger-initializer.js")
                 || uri.contains("/api/v1/users/verify-email/")
                 || uri.startsWith("/actuator")
                 || uri.contains("/favicon.ico");
@@ -280,6 +292,9 @@ public class AuthorizationFilter extends BasicAuthenticationFilter {
 
 
     /**
+     *
+     *
+     *
      * Resolves or creates a rate-limiting bucket for a given key (e.g., user IP or user ID).
      * <p>
      * Each key is associated with a separate Bucket instance to allow granular rate limiting.

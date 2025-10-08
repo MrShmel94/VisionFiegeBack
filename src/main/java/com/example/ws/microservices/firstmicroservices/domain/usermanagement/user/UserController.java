@@ -87,6 +87,7 @@ public class UserController {
     })
     @PostMapping("/sign-up")
     public ResponseEntity<String> createUser(@Valid @RequestBody UserDetailsRequestModel userDetails) {
+        System.out.println(userDetails);
         UserDto userDto = UserMapper.INSTANCE.toUserDto(userDetails);
         userService.createUser(userDto);
         return ResponseEntity.ok("User created successfully. Please check your email for verification.");

@@ -24,7 +24,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
             + "s.name, sh.name, d.name, t.name, p.name, a.name, e.isCanHasAccount, e.isSupervisor, e.validToAccount, e.validFromAccount, st.name, e.temporaryAssignmentFrom, e.temporaryAssignmentTo) "
             + "FROM Employee e "
             + "JOIN Site s ON e.siteId = s.id "
-            + "JOIN Site st ON e.temporaryAssignmentSiteId = st.id "
+            + "LEFT JOIN Site st ON e.temporaryAssignmentSiteId = st.id "
             + "JOIN Shift sh ON e.shiftId = sh.id "
             + "JOIN Department d ON e.departmentId = d.id "
             + "JOIN Team t ON e.teamId = t.id "
