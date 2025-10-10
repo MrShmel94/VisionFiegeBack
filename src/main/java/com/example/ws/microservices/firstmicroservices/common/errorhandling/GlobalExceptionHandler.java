@@ -4,7 +4,9 @@ import com.example.ws.microservices.firstmicroservices.common.errorhandling.cust
 import jakarta.persistence.OptimisticLockException;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     private final MessageSource messageSource;
+    @Autowired private Environment env;
 
     public GlobalExceptionHandler(MessageSource messageSource) {
         this.messageSource = messageSource;
@@ -95,6 +98,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleGeneralException(Exception ex) {
+        if (Arrays.asList(env.getActiveProfiles()).contains("dev")) {
+            ex.printStackTrace();
+        }
+
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred.");
     }
 
