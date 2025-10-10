@@ -3,8 +3,8 @@ package com.example.ws.microservices.firstmicroservices.domain.commute.route;
 import jakarta.persistence.*;
 import lombok.*;
 
-
 @Entity
+@Table(name = "route", schema = "commute")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
+@Table(name = "bus_boarding", schema = "commute")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,10 +26,10 @@ public class BusBoarding {
     private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "employeeCardId", nullable = false)
+    @JoinColumn(name = "employee_card_id", nullable = false)
     private EmployeeCard employeeCard;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "routeId", nullable = false)
+    @JoinColumn(name = "route_id", nullable = false)
     private Route route;
 }

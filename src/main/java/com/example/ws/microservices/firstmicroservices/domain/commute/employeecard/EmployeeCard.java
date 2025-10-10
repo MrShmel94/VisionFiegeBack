@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
+@Table(name = "employee_card", schema = "commute")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
